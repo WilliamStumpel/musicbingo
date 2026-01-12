@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "musicbingo-cards"
+version = "0.1.0"
+description = "Music Bingo card generation system with QR codes and PDF export"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    {name = "Music Bingo"},
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "click>=8.1.0",
+    "qrcode>=7.4.0",
+    "pillow>=10.0.0",
+    "reportlab>=4.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+musicbingo = "musicbingo_cards.cli:main"
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+select = ["E", "F", "I", "N", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=musicbingo_cards --cov-report=term-missing"
