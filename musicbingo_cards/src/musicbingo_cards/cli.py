@@ -1,9 +1,12 @@
 """Command-line interface for Music Bingo card generation."""
 
 import sys
+from pathlib import Path
 
 import click
 
+from .generator import CardGenerator, CardGenerationError
+from .pdf_generator import PDFCardGenerator
 from .playlist import PlaylistError, PlaylistParser, validate_playlist_size
 
 
@@ -33,9 +36,15 @@ def main():
     default="cards.pdf",
     help="Output PDF file path",
 )
+@click.option(
+    "--seed",
+    "-s",
+    type=int,
+    help="Random seed for reproducible card generation",
+)
 @click.option("--venue-logo", type=click.Path(exists=True), help="Venue logo image file")
 @click.option("--dj-contact", type=str, help="DJ contact information")
-def generate(playlist_file, num_cards, output, venue_logo, dj_contact):
+def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact):
     """Generate bingo cards from a playlist.
 
     PLAYLIST_FILE: Path to playlist file (CSV, JSON, or TXT format)
@@ -70,20 +79,67 @@ def generate(playlist_file, num_cards, output, venue_logo, dj_contact):
         )
         sys.exit(1)
 
+    if seed is not None:
+        click.echo(f"🎲 Random seed: {seed}")
+
+    # Generate cards
     click.echo(f"\n🎲 Generating {num_cards} unique bingo cards...")
-    click.echo(f"Output: {output}")
 
-    if venue_logo:
-        click.echo(f"Venue logo: {venue_logo}")
-    if dj_contact:
-        click.echo(f"DJ contact: {dj_contact}")
+    try:
+        generator = CardGenerator(playlist, random_seed=seed)
+        cards = generator.generate_cards(num_cards)
+        click.secho(f"✓ Generated {len(cards)} unique cards", fg="green")
 
-    # TODO: Implement card generation algorithm
-    click.secho("\n⚠ Card generation algorithm not yet implemented", fg="yellow")
-    click.echo("\nNext steps:")
-    click.echo("  1. Implement card generation algorithm (30-40% song overlap)")
-    click.echo("  2. Generate QR codes for each card")
-    click.echo("  3. Create PDF with cards")
+        # Show statistics
+        stats = generator.get_statistics(cards)
+        if stats.get("num_cards", 0) > 0 and "overlap" in stats:
+            avg_overlap = stats["overlap"]["average_percentage"]
+            click.echo(f"  Average overlap: {avg_overlap:.1f}%")
+            click.echo(f"  Target range: 30-40%")
+
+            if 30 <= avg_overlap <= 40:
+                click.secho("  ✓ Overlap within target range!", fg="green")
+            elif avg_overlap < 30:
+                click.secho("  ⚠ Overlap slightly low", fg="yellow")
+            else:
+                click.secho("  ⚠ Overlap slightly high", fg="yellow")
+
+    except CardGenerationError as e:
+        click.secho(f"\n✗ Card generation failed: {e}", fg="red", err=True)
+        sys.exit(1)
+
+    # Generate PDF
+    click.echo(f"\n📄 Creating PDF: {output}")
+
+    try:
+        pdf_generator = PDFCardGenerator()
+        output_path = Path(output)
+
+        # Create parent directory if needed
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Generate PDF
+        pdf_generator.generate_pdf(cards, output_path)
+
+        # Check file size
+        file_size_mb = output_path.stat().st_size / (1024 * 1024)
+        click.secho(f"✓ PDF created successfully ({file_size_mb:.2f} MB)", fg="green")
+
+        # Summary
+        click.echo("\n✨ Generation complete!")
+        click.echo(f"  Cards: {len(cards)}")
+        click.echo(f"  Output: {output_path.absolute()}")
+
+        if venue_logo or dj_contact:
+            click.echo("\nℹ Custom branding options:")
+            if venue_logo:
+                click.secho("  ⚠ Venue logo support: Coming soon", fg="yellow")
+            if dj_contact:
+                click.secho("  ⚠ DJ contact info support: Coming soon", fg="yellow")
+
+    except Exception as e:
+        click.secho(f"\n✗ PDF generation failed: {e}", fg="red", err=True)
+        sys.exit(1)
 
 
 @main.command()
