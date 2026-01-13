@@ -67,6 +67,21 @@ class AddCardResponse(BaseModel):
     card_number: int
 
 
+class BulkAddCardsRequest(BaseModel):
+    """Request to add multiple cards to a game."""
+
+    cards: list[AddCardRequest] = Field(..., min_length=1, description="List of cards to add")
+
+
+class BulkAddCardsResponse(BaseModel):
+    """Response from bulk adding cards."""
+
+    success: bool
+    game_id: UUID
+    cards_added: int
+    cards: list[dict] = Field(default_factory=list, description="List of added card info")
+
+
 class StartGameRequest(BaseModel):
     """Request to start a game."""
 

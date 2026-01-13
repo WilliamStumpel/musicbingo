@@ -439,3 +439,74 @@ def test_five_in_a_row_pattern_with_diagonal():
     data = response.json()
     assert data["winner"] is True
     assert data["pattern"] == "five_in_a_row"
+
+
+def test_bulk_add_cards():
+    """Test bulk adding multiple cards to a game."""
+    # Create game
+    game_id = str(uuid4())
+    playlist = create_test_playlist()
+    client.post(
+        "/api/game/start",
+        json={"game_id": game_id, "playlist": playlist, "pattern": "row"},
+    )
+
+    # Prepare bulk card data
+    cards_to_add = []
+    for i in range(10):
+        card_id = str(uuid4())
+        song_positions = {playlist[j]["song_id"]: [0, j % 5] for j in range(i, i + 5)}
+
+        cards_to_add.append(
+            {
+                "card_id": card_id,
+                "card_number": i + 1,
+                "song_positions": song_positions,
+            }
+        )
+
+    # Bulk add cards
+    response = client.post(f"/api/game/{game_id}/cards/bulk", json={"cards": cards_to_add})
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["cards_added"] == 10
+    assert len(data["cards"]) == 10
+
+    # Verify game state shows all cards
+    response = client.get(f"/api/game/{game_id}/state")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["card_count"] == 10
+
+
+def test_bulk_add_cards_empty_list():
+    """Test bulk adding with empty list fails validation."""
+    game_id = str(uuid4())
+    playlist = create_test_playlist()
+    client.post(
+        "/api/game/start",
+        json={"game_id": game_id, "playlist": playlist, "pattern": "row"},
+    )
+
+    # Try to add empty list
+    response = client.post(f"/api/game/{game_id}/cards/bulk", json={"cards": []})
+
+    assert response.status_code == 422  # Validation error
+
+
+def test_bulk_add_cards_to_nonexistent_game():
+    """Test bulk adding cards to non-existent game."""
+    game_id = str(uuid4())
+    cards_to_add = [
+        {
+            "card_id": str(uuid4()),
+            "card_number": 1,
+            "song_positions": {str(uuid4()): [0, 0]},
+        }
+    ]
+
+    response = client.post(f"/api/game/{game_id}/cards/bulk", json={"cards": cards_to_add})
+
+    assert response.status_code == 404

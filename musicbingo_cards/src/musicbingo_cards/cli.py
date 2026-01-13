@@ -5,6 +5,7 @@ from pathlib import Path
 
 import click
 
+from .exporter import CardExporter
 from .generator import CardGenerator, CardGenerationError
 from .pdf_generator import PDFCardGenerator
 from .playlist import PlaylistError, PlaylistParser, validate_playlist_size
@@ -44,7 +45,13 @@ def main():
 )
 @click.option("--venue-logo", type=click.Path(exists=True), help="Venue logo image file")
 @click.option("--dj-contact", type=str, help="DJ contact information")
-def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact):
+@click.option(
+    "--export-json",
+    "-j",
+    type=click.Path(),
+    help="Export card data to JSON file (for API integration)",
+)
+def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact, export_json):
     """Generate bingo cards from a playlist.
 
     PLAYLIST_FILE: Path to playlist file (CSV, JSON, or TXT format)
@@ -140,6 +147,25 @@ def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact):
     except Exception as e:
         click.secho(f"\n✗ PDF generation failed: {e}", fg="red", err=True)
         sys.exit(1)
+
+    # Export JSON if requested
+    if export_json:
+        click.echo(f"\n📤 Exporting card data to JSON: {export_json}")
+        try:
+            json_path = Path(export_json)
+            CardExporter.save_json(cards, json_path)
+
+            summary = CardExporter.get_summary(cards)
+            click.secho(f"✓ JSON export successful", fg="green")
+            click.echo(f"  Game ID: {summary['game_id']}")
+            click.echo(f"  Cards exported: {summary['card_count']}")
+            click.echo(f"  File: {json_path.absolute()}")
+            click.echo("\nℹ Use this JSON file to load cards into the API:")
+            click.echo(f"  POST /api/game/{{game_id}}/cards/bulk")
+
+        except Exception as e:
+            click.secho(f"\n✗ JSON export failed: {e}", fg="red", err=True)
+            sys.exit(1)
 
 
 @main.command()

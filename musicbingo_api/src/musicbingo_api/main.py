@@ -11,6 +11,8 @@ from .models import CardData, PatternType, Song
 from .schemas import (
     AddCardRequest,
     AddCardResponse,
+    BulkAddCardsRequest,
+    BulkAddCardsResponse,
     CreateGameRequest,
     CreateGameResponse,
     ErrorResponse,
@@ -126,6 +128,49 @@ async def add_card(game_id: UUID, request: AddCardRequest):
             card_id=card.card_id,
             game_id=game_id,
             card_number=request.card_number,
+        )
+
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post(
+    "/api/game/{game_id}/cards/bulk",
+    response_model=BulkAddCardsResponse,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+async def bulk_add_cards(game_id: UUID, request: BulkAddCardsRequest):
+    """Add multiple cards to a game in bulk.
+
+    This is the main endpoint for loading generated cards into a game.
+    Cards must be added before activating the game.
+    """
+    try:
+        service = get_game_service()
+
+        added_cards = []
+        for card_request in request.cards:
+            card = CardData(
+                card_id=card_request.card_id,
+                game_id=game_id,
+                card_number=card_request.card_number,
+                song_positions=card_request.song_positions,
+            )
+
+            service.add_card(game_id, card)
+
+            added_cards.append({
+                "card_id": str(card.card_id),
+                "card_number": card.card_number,
+            })
+
+        return BulkAddCardsResponse(
+            success=True,
+            game_id=game_id,
+            cards_added=len(added_cards),
+            cards=added_cards,
         )
 
     except ValueError as e:
