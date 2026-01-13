@@ -1,0 +1,264 @@
+"""Game state management service."""
+
+from typing import Optional
+from uuid import UUID
+
+from .models import CardData, GameState, GameStatus, PatternType, Song
+
+
+class GameService:
+    """Service for managing game state.
+
+    Keeps active games in memory for fast access. Can be extended with
+    database persistence layer.
+    """
+
+    def __init__(self):
+        """Initialize game service with empty state."""
+        self._games: dict[UUID, GameState] = {}
+
+    def create_game(
+        self,
+        game_id: UUID,
+        playlist: list[Song],
+        pattern: PatternType = PatternType.ROW,
+    ) -> GameState:
+        """Create a new game session.
+
+        Args:
+            game_id: Unique identifier for the game
+            playlist: List of songs in the game
+            pattern: Winning pattern for this game
+
+        Returns:
+            Created GameState
+
+        Raises:
+            ValueError: If game_id already exists or playlist is invalid
+        """
+        if game_id in self._games:
+            raise ValueError(f"Game {game_id} already exists")
+
+        if len(playlist) < 24:
+            raise ValueError(f"Playlist must have at least 24 songs, got {len(playlist)}")
+
+        game = GameState(
+            game_id=game_id,
+            status=GameStatus.SETUP,
+            playlist=playlist,
+            current_pattern=pattern,
+        )
+
+        self._games[game_id] = game
+        return game
+
+    def get_game(self, game_id: UUID) -> Optional[GameState]:
+        """Get game by ID.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            GameState if found, None otherwise
+        """
+        return self._games.get(game_id)
+
+    def get_game_or_raise(self, game_id: UUID) -> GameState:
+        """Get game by ID or raise error.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            GameState
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game(game_id)
+        if game is None:
+            raise ValueError(f"Game {game_id} not found")
+        return game
+
+    def start_game(self, game_id: UUID) -> GameState:
+        """Mark game as active and ready to play.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            Updated GameState
+
+        Raises:
+            ValueError: If game not found or already started
+        """
+        game = self.get_game_or_raise(game_id)
+
+        if game.status != GameStatus.SETUP:
+            raise ValueError(f"Game {game_id} already started")
+
+        if not game.cards:
+            raise ValueError(f"Game {game_id} has no cards")
+
+        game.status = GameStatus.ACTIVE
+        return game
+
+    def add_card(self, game_id: UUID, card: CardData) -> None:
+        """Add a card to a game.
+
+        Args:
+            game_id: Game identifier
+            card: Card data to add
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+        game.add_card(card)
+
+    def record_played_song(self, game_id: UUID, song_id: UUID) -> GameState:
+        """Record a song as played in the game.
+
+        Args:
+            game_id: Game identifier
+            song_id: Song identifier
+
+        Returns:
+            Updated GameState
+
+        Raises:
+            ValueError: If game not found or song not in playlist
+        """
+        game = self.get_game_or_raise(game_id)
+
+        if game.status not in (GameStatus.ACTIVE, GameStatus.PAUSED):
+            raise ValueError(f"Cannot play songs in game with status {game.status}")
+
+        game.add_played_song(song_id)
+        return game
+
+    def verify_card(self, game_id: UUID, card_id: UUID) -> tuple[bool, Optional[PatternType], int]:
+        """Verify if a card is a winner.
+
+        Args:
+            game_id: Game identifier
+            card_id: Card identifier
+
+        Returns:
+            Tuple of (is_winner, pattern_type, card_number)
+
+        Raises:
+            ValueError: If game or card not found
+        """
+        game = self.get_game_or_raise(game_id)
+        return game.verify_card(card_id)
+
+    def set_pattern(self, game_id: UUID, pattern: PatternType) -> GameState:
+        """Change the winning pattern for a game.
+
+        Args:
+            game_id: Game identifier
+            pattern: New winning pattern
+
+        Returns:
+            Updated GameState
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+        game.current_pattern = pattern
+        return game
+
+    def pause_game(self, game_id: UUID) -> GameState:
+        """Pause an active game.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            Updated GameState
+
+        Raises:
+            ValueError: If game not found or not active
+        """
+        game = self.get_game_or_raise(game_id)
+
+        if game.status != GameStatus.ACTIVE:
+            raise ValueError(f"Cannot pause game with status {game.status}")
+
+        game.status = GameStatus.PAUSED
+        return game
+
+    def resume_game(self, game_id: UUID) -> GameState:
+        """Resume a paused game.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            Updated GameState
+
+        Raises:
+            ValueError: If game not found or not paused
+        """
+        game = self.get_game_or_raise(game_id)
+
+        if game.status != GameStatus.PAUSED:
+            raise ValueError(f"Cannot resume game with status {game.status}")
+
+        game.status = GameStatus.ACTIVE
+        return game
+
+    def complete_game(self, game_id: UUID) -> GameState:
+        """Mark game as completed.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            Updated GameState
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+        game.status = GameStatus.COMPLETED
+        return game
+
+    def list_games(self) -> list[GameState]:
+        """Get all games.
+
+        Returns:
+            List of all games
+        """
+        return list(self._games.values())
+
+    def delete_game(self, game_id: UUID) -> None:
+        """Delete a game.
+
+        Args:
+            game_id: Game identifier
+
+        Raises:
+            ValueError: If game not found
+        """
+        if game_id not in self._games:
+            raise ValueError(f"Game {game_id} not found")
+        del self._games[game_id]
+
+
+# Global service instance
+_game_service: Optional[GameService] = None
+
+
+def get_game_service() -> GameService:
+    """Get the global game service instance.
+
+    Returns:
+        GameService singleton
+    """
+    global _game_service
+    if _game_service is None:
+        _game_service = GameService()
+    return _game_service
