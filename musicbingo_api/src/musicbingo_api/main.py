@@ -33,9 +33,13 @@ app = FastAPI(
 # Enable CORS for web clients
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=[
+        "http://localhost:3000",  # React dev server
+        "http://localhost:8000",  # API dev server
+        "https://williamstumpel.github.io",  # GitHub Pages
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
