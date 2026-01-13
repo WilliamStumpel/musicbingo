@@ -321,3 +321,121 @@ def test_set_pattern():
     assert response.status_code == 200
     data = response.json()
     assert data["current_pattern"] == "diagonal"
+
+
+def test_five_in_a_row_pattern_with_row():
+    """Test 5 in a row pattern detecting a row win."""
+    # Setup game with five_in_a_row pattern
+    game_id = str(uuid4())
+    playlist = create_test_playlist()
+    client.post(
+        "/api/game/start",
+        json={"game_id": game_id, "playlist": playlist, "pattern": "five_in_a_row"},
+    )
+
+    # Add card with first 5 songs in top row
+    card_id = str(uuid4())
+    song_positions = {playlist[i]["song_id"]: [0, i] for i in range(5)}
+    client.post(
+        f"/api/game/{game_id}/card",
+        json={
+            "card_id": card_id,
+            "card_number": 1,
+            "song_positions": song_positions,
+        },
+    )
+    client.post(f"/api/game/{game_id}/activate")
+
+    # Play all 5 songs in the row
+    for i in range(5):
+        client.post(
+            f"/api/game/{game_id}/song-played",
+            json={"song_id": playlist[i]["song_id"]},
+        )
+
+    # Verify card wins
+    response = client.get(f"/api/verify/{game_id}/{card_id}")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["winner"] is True
+    assert data["pattern"] == "five_in_a_row"
+    assert data["card_number"] == 1
+
+
+def test_five_in_a_row_pattern_with_column():
+    """Test 5 in a row pattern detecting a column win."""
+    # Setup game with five_in_a_row pattern
+    game_id = str(uuid4())
+    playlist = create_test_playlist()
+    client.post(
+        "/api/game/start",
+        json={"game_id": game_id, "playlist": playlist, "pattern": "five_in_a_row"},
+    )
+
+    # Add card with first 5 songs in left column
+    card_id = str(uuid4())
+    song_positions = {playlist[i]["song_id"]: [i, 0] for i in range(5)}
+    client.post(
+        f"/api/game/{game_id}/card",
+        json={
+            "card_id": card_id,
+            "card_number": 1,
+            "song_positions": song_positions,
+        },
+    )
+    client.post(f"/api/game/{game_id}/activate")
+
+    # Play all 5 songs in the column
+    for i in range(5):
+        client.post(
+            f"/api/game/{game_id}/song-played",
+            json={"song_id": playlist[i]["song_id"]},
+        )
+
+    # Verify card wins
+    response = client.get(f"/api/verify/{game_id}/{card_id}")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["winner"] is True
+    assert data["pattern"] == "five_in_a_row"
+
+
+def test_five_in_a_row_pattern_with_diagonal():
+    """Test 5 in a row pattern detecting a diagonal win."""
+    # Setup game with five_in_a_row pattern
+    game_id = str(uuid4())
+    playlist = create_test_playlist()
+    client.post(
+        "/api/game/start",
+        json={"game_id": game_id, "playlist": playlist, "pattern": "five_in_a_row"},
+    )
+
+    # Add card with first 5 songs on main diagonal
+    card_id = str(uuid4())
+    song_positions = {playlist[i]["song_id"]: [i, i] for i in range(5)}
+    client.post(
+        f"/api/game/{game_id}/card",
+        json={
+            "card_id": card_id,
+            "card_number": 1,
+            "song_positions": song_positions,
+        },
+    )
+    client.post(f"/api/game/{game_id}/activate")
+
+    # Play all 5 songs on the diagonal
+    for i in range(5):
+        client.post(
+            f"/api/game/{game_id}/song-played",
+            json={"song_id": playlist[i]["song_id"]},
+        )
+
+    # Verify card wins
+    response = client.get(f"/api/verify/{game_id}/{card_id}")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["winner"] is True
+    assert data["pattern"] == "five_in_a_row"

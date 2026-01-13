@@ -26,7 +26,7 @@ class CreateGameRequest(BaseModel):
 
     game_id: UUID
     playlist: list[SongSchema] = Field(..., min_length=24)
-    pattern: PatternType = PatternType.ROW
+    pattern: PatternType = PatternType.FIVE_IN_A_ROW
 
 
 class CreateGameResponse(BaseModel):

@@ -10,6 +10,7 @@ from uuid import UUID, uuid4
 class PatternType(str, Enum):
     """Bingo winning pattern types."""
 
+    FIVE_IN_A_ROW = "five_in_a_row"  # Most common: any row, column, or diagonal
     ROW = "row"
     COLUMN = "column"
     DIAGONAL = "diagonal"
@@ -58,7 +59,24 @@ class BingoPattern:
         Returns:
             True if positions form a winning pattern
         """
-        if self.pattern_type == PatternType.ROW:
+        if self.pattern_type == PatternType.FIVE_IN_A_ROW:
+            # Classic bingo: any row, column, or diagonal wins
+            # Check rows
+            for row in range(5):
+                if all((row, col) in marked_positions for col in range(5)):
+                    return True
+            # Check columns
+            for col in range(5):
+                if all((row, col) in marked_positions for row in range(5)):
+                    return True
+            # Check diagonals
+            main_diagonal = all((i, i) in marked_positions for i in range(5))
+            anti_diagonal = all((i, 4 - i) in marked_positions for i in range(5))
+            if main_diagonal or anti_diagonal:
+                return True
+            return False
+
+        elif self.pattern_type == PatternType.ROW:
             # Check all rows
             for row in range(5):
                 if all((row, col) in marked_positions for col in range(5)):
@@ -97,6 +115,11 @@ class BingoPattern:
 
 # Default patterns
 DEFAULT_PATTERNS = {
+    PatternType.FIVE_IN_A_ROW: BingoPattern(
+        PatternType.FIVE_IN_A_ROW,
+        "5 in a Row",
+        "Complete any row, column, or diagonal (classic bingo)"
+    ),
     PatternType.ROW: BingoPattern(PatternType.ROW, "Any Row", "Complete any horizontal row"),
     PatternType.COLUMN: BingoPattern(
         PatternType.COLUMN, "Any Column", "Complete any vertical column"
@@ -153,7 +176,7 @@ class GameState:
     status: GameStatus
     playlist: list[Song]  # All songs in the game
     played_songs: list[UUID] = field(default_factory=list)  # Songs played so far (in order)
-    current_pattern: PatternType = PatternType.ROW
+    current_pattern: PatternType = PatternType.FIVE_IN_A_ROW
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
 

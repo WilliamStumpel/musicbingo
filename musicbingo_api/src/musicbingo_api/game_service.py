@@ -21,7 +21,7 @@ class GameService:
         self,
         game_id: UUID,
         playlist: list[Song],
-        pattern: PatternType = PatternType.ROW,
+        pattern: PatternType = PatternType.FIVE_IN_A_ROW,
     ) -> GameState:
         """Create a new game session.
 

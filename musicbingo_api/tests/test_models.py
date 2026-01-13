@@ -78,6 +78,33 @@ def test_bingo_pattern_four_corners():
     assert pattern.check_win(marked) is False
 
 
+def test_bingo_pattern_five_in_a_row():
+    """Test 5 in a row pattern detection (row OR column OR diagonal)."""
+    pattern = BingoPattern(
+        PatternType.FIVE_IN_A_ROW, "5 in a Row", "Any row, column, or diagonal"
+    )
+
+    # Test winning with a row
+    marked = {(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)}
+    assert pattern.check_win(marked) is True
+
+    # Test winning with a column
+    marked = {(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)}
+    assert pattern.check_win(marked) is True
+
+    # Test winning with main diagonal
+    marked = {(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)}
+    assert pattern.check_win(marked) is True
+
+    # Test winning with anti-diagonal
+    marked = {(0, 4), (1, 3), (2, 2), (3, 1), (4, 0)}
+    assert pattern.check_win(marked) is True
+
+    # Test not winning (incomplete row and column)
+    marked = {(0, 0), (0, 1), (0, 2), (1, 0), (2, 0)}
+    assert pattern.check_win(marked) is False
+
+
 def test_card_data_marked_positions():
     """Test getting marked positions from played songs."""
     song1 = uuid4()
@@ -174,10 +201,10 @@ def test_game_state_verify_card_winner():
     for i in range(5):
         game.add_played_song(songs[i].song_id)
 
-    # Verify card is winner (row pattern)
+    # Verify card is winner (five_in_a_row pattern, detects row)
     is_winner, pattern, card_number = game.verify_card(card.card_id)
     assert is_winner is True
-    assert pattern == PatternType.ROW
+    assert pattern == PatternType.FIVE_IN_A_ROW
     assert card_number == 1
 
 
