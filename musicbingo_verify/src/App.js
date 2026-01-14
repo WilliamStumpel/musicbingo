@@ -82,7 +82,8 @@ function App() {
           onScan={handleScan}
           onError={(err) => {
             console.error('Scanner error:', err);
-            handleScan(null); // This will trigger error handling
+            // Scanner component handles its own error UI for camera issues
+            // Don't trigger QR parsing - there's no QR code to parse
           }}
         />
       )}
