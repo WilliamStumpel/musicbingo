@@ -156,21 +156,16 @@ class PDFCardGenerator:
     def _create_branding_header(self) -> List:
         """Create header branding elements (logo and DJ contact) for single-card layout.
 
+        Centered layout: logo centered, DJ contact centered below logo.
+
         Returns:
             List of ReportLab flowable elements for header
         """
-        from reportlab.platypus import Table, TableStyle
-
         elements = []
         if not self.venue_logo_path and not self.dj_contact:
             return elements
 
-        # Build header row with logo (left) and DJ contact (right)
-        header_cells = []
-        logo_cell = ""
-        dj_cell = ""
-
-        # Logo on left
+        # Centered logo
         if self.venue_logo_path and self.venue_logo_path.exists():
             try:
                 from PIL import Image as PILImage
@@ -183,11 +178,11 @@ class PDFCardGenerator:
                     img_width, img_height = img.size
                     aspect_ratio = img_width / img_height
 
-                    # Scale to max 0.75 inch height
-                    logo_height = 0.75 * inch
+                    # Scale to max 1.0 inch height for better visibility
+                    logo_height = 1.0 * inch
                     logo_width = logo_height * aspect_ratio
-                    if logo_width > 1.5 * inch:
-                        logo_width = 1.5 * inch
+                    if logo_width > 2.0 * inch:
+                        logo_width = 2.0 * inch
                         logo_height = logo_width / aspect_ratio
 
                     # Save to buffer as PNG
@@ -195,33 +190,28 @@ class PDFCardGenerator:
                     img.save(img_buffer, format='PNG')
                     img_buffer.seek(0)
 
-                logo_cell = Image(img_buffer, width=logo_width, height=logo_height)
+                # Create centered image using a single-cell table
+                logo_image = Image(img_buffer, width=logo_width, height=logo_height)
+                logo_table = Table([[logo_image]], colWidths=[self.page_size[0] - 2 * self.margin])
+                logo_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (0, 0), 'CENTER'),
+                    ('VALIGN', (0, 0), (0, 0), 'MIDDLE'),
+                ]))
+                elements.append(logo_table)
+                elements.append(Spacer(1, 0.1 * inch))
             except Exception:
                 pass  # Skip logo on error
 
-        # DJ contact on right
+        # Centered DJ contact below logo
         if self.dj_contact:
             dj_style = ParagraphStyle(
-                'DJContact',
+                'DJContactCentered',
                 parent=self.styles['Normal'],
-                alignment=2,  # Right align (TA_RIGHT)
-                fontSize=10,
+                alignment=TA_CENTER,
+                fontSize=11,
             )
-            dj_cell = Paragraph(self.dj_contact, dj_style)
-
-        if logo_cell or dj_cell:
-            page_width = self.page_size[0] - 2 * self.margin
-            header_table = Table(
-                [[logo_cell or "", dj_cell or ""]],
-                colWidths=[page_width / 2, page_width / 2],
-            )
-            header_table.setStyle(TableStyle([
-                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-                ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
-            ]))
-            elements.append(header_table)
-            elements.append(Spacer(1, 0.3 * inch))
+            elements.append(Paragraph(self.dj_contact, dj_style))
+            elements.append(Spacer(1, 0.15 * inch))
 
         return elements
 
@@ -294,8 +284,10 @@ class PDFCardGenerator:
             grid_data.append(row_data)
 
         # Calculate available space for grid
+        # Reduce grid cell size when branding is present to prevent QR overflow
+        has_branding = self.venue_logo_path or self.dj_contact
         page_width = self.page_size[0] - 2 * self.margin
-        cell_size = min(page_width / 5, 1.4 * inch)  # Max 1.4 inches per cell
+        cell_size = min(page_width / 5, 1.2 * inch if has_branding else 1.4 * inch)
 
         # Create table
         table = Table(
