@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 
 from .game_service import get_game_service
 from .models import CardData, PatternType, Song
+from .network import get_local_ip
 from .schemas import (
     AddCardRequest,
     AddCardResponse,
@@ -65,6 +66,26 @@ async def root():
 async def health():
     """Health check endpoint."""
     return {"status": "healthy"}
+
+
+# Default port for the server
+DEFAULT_PORT = 8000
+
+
+@app.get("/api/network/info")
+async def network_info():
+    """Get network information for connecting from other devices.
+
+    Returns the local IP address and URL that other devices on the same
+    network can use to connect to this server. Useful for the scanner app
+    to discover the server URL.
+    """
+    ip = get_local_ip()
+    return {
+        "ip": ip,
+        "port": DEFAULT_PORT,
+        "url": f"http://{ip}:{DEFAULT_PORT}",
+    }
 
 
 @app.post(
