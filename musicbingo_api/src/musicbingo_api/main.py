@@ -31,13 +31,20 @@ app = FastAPI(
 )
 
 # Enable CORS for web clients
+# Pattern matches localhost and private network IP ranges:
+# - localhost (for development)
+# - 192.168.x.x (most home/small office networks)
+# - 10.x.x.x (larger private networks)
+# - 172.16-31.x.x (private network range)
+# Also matches with or without port number
+CORS_ORIGIN_REGEX = r"^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",  # React dev server
-        "http://localhost:8000",  # API dev server
-        "https://williamstumpel.github.io",  # GitHub Pages
+        "https://williamstumpel.github.io",  # GitHub Pages (deployed scanner PWA)
     ],
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
