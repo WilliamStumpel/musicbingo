@@ -17,6 +17,12 @@ export function useScanner() {
    * @param {string} qrString - Raw QR code string
    */
   const handleScan = async (qrString) => {
+    // Guard: ignore null/empty scans (e.g., from scanner errors)
+    if (!qrString || typeof qrString !== 'string') {
+      console.warn('handleScan called with invalid input:', qrString);
+      return;
+    }
+
     setIsProcessing(true);
     setError(null);
     setResult(null);
