@@ -115,11 +115,26 @@ def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact, exp
         click.secho(f"\n✗ Card generation failed: {e}", fg="red", err=True)
         sys.exit(1)
 
+    # Validate venue logo if provided
+    venue_logo_path = None
+    if venue_logo:
+        venue_logo_path = Path(venue_logo)
+        if not venue_logo_path.suffix.lower() in ['.png', '.jpg', '.jpeg']:
+            click.secho(
+                f"✗ Venue logo must be PNG or JPG format",
+                fg="red",
+                err=True
+            )
+            sys.exit(1)
+
     # Generate PDF
     click.echo(f"\n📄 Creating PDF: {output}")
 
     try:
-        pdf_generator = PDFCardGenerator()
+        pdf_generator = PDFCardGenerator(
+            venue_logo_path=venue_logo_path,
+            dj_contact=dj_contact,
+        )
         output_path = Path(output)
 
         # Create parent directory if needed
@@ -138,11 +153,11 @@ def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact, exp
         click.echo(f"  Output: {output_path.absolute()}")
 
         if venue_logo or dj_contact:
-            click.echo("\nℹ Custom branding options:")
+            click.echo("\n✓ Custom branding applied:")
             if venue_logo:
-                click.secho("  ⚠ Venue logo support: Coming soon", fg="yellow")
+                click.secho(f"  Logo: {venue_logo}", fg="green")
             if dj_contact:
-                click.secho("  ⚠ DJ contact info support: Coming soon", fg="yellow")
+                click.secho(f"  Contact: {dj_contact}", fg="green")
 
     except Exception as e:
         click.secho(f"\n✗ PDF generation failed: {e}", fg="red", err=True)
