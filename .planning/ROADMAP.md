@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01: Local server startup and network discovery
-- [ ] 01-02: Game selector with 8 pre-loaded games
+- [x] 01-02: Game selector with 8 pre-loaded games
 - [ ] 01-03: Scanner PWA connection to local backend
 
 ### Phase 2: Card Printing System
@@ -128,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Local Backend Infrastructure | 1/3 | In progress | - |
+| 1. Local Backend Infrastructure | 2/3 | In progress | - |
 | 2. Card Printing System | 0/3 | Not started | - |
 | 3. Spotify Integration | 0/4 | Not started | - |
 | 4. Host View | 0/4 | Not started | - |
