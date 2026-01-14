@@ -1,5 +1,6 @@
 [build]
-builder = "NIXPACKS"
+builder = "nixpacks"
+buildCommand = "pip install --upgrade pip && pip install -r requirements.txt && pip install -e ."
 
 [deploy]
 startCommand = "uvicorn musicbingo_api.main:app --host 0.0.0.0 --port $PORT"
