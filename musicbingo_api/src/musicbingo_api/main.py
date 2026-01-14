@@ -1,11 +1,13 @@
 """Main FastAPI application for Music Bingo API."""
 
+import json
 from uuid import UUID
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from .game_loader import list_available_games, load_game_from_file
 from .game_service import get_game_service
 from .models import CardData, PatternType, Song
 from .network import get_local_ip
@@ -17,7 +19,10 @@ from .schemas import (
     CreateGameRequest,
     CreateGameResponse,
     ErrorResponse,
+    GameListItem,
+    GameListResponse,
     GameStateResponse,
+    LoadGameResponse,
     RecordSongRequest,
     RecordSongResponse,
     StartGameRequest,
@@ -86,6 +91,61 @@ async def network_info():
         "port": DEFAULT_PORT,
         "url": f"http://{ip}:{DEFAULT_PORT}",
     }
+
+
+@app.get(
+    "/api/games",
+    response_model=GameListResponse,
+)
+async def get_games():
+    """List available games from games/ directory.
+
+    Returns list of game files that can be loaded. Games are JSON files
+    exported from the card generator.
+    """
+    games = list_available_games()
+    return GameListResponse(
+        games=[GameListItem(**g) for g in games]
+    )
+
+
+@app.post(
+    "/api/games/load/{filename:path}",
+    response_model=LoadGameResponse,
+    responses={404: {"model": ErrorResponse}, 400: {"model": ErrorResponse}},
+)
+async def load_game(filename: str):
+    """Load a game file into memory, ready to play.
+
+    Loads game from JSON file in games/ directory, registers it in
+    GameService, and sets status to SETUP (needs activation).
+
+    If a game with the same game_id already exists, it will be replaced.
+    """
+    try:
+        # Load game from file
+        game = load_game_from_file(filename)
+
+        # Register in GameService (delete existing if present)
+        service = get_game_service()
+        existing = service.get_game(game.game_id)
+        if existing is not None:
+            service.delete_game(game.game_id)
+
+        # Re-register the game
+        service._games[game.game_id] = game
+
+        return LoadGameResponse(
+            game_id=game.game_id,
+            name=filename.replace(".json", "").replace("-", " ").title(),
+            status=game.status,
+            card_count=len(game.cards),
+        )
+
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except (ValueError, KeyError, json.JSONDecodeError) as e:
+        raise HTTPException(status_code=400, detail=f"Invalid game file: {e}")
 
 
 @app.post(

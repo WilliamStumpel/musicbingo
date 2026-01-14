@@ -140,3 +140,28 @@ class ErrorResponse(BaseModel):
 
     error: str
     detail: Optional[str] = None
+
+
+class GameListItem(BaseModel):
+    """Item in game list response."""
+
+    filename: str
+    game_id: str
+    name: str
+    song_count: int
+    card_count: int
+
+
+class GameListResponse(BaseModel):
+    """Response from listing available games."""
+
+    games: list[GameListItem]
+
+
+class LoadGameResponse(BaseModel):
+    """Response from loading a game file."""
+
+    game_id: UUID
+    name: str
+    status: GameStatus
+    card_count: int
