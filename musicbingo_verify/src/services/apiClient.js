@@ -3,14 +3,21 @@
  * Handles communication with the Music Bingo backend API
  */
 
-import config from '../config';
+import { getApiUrl } from '../config';
 
 /**
  * API Client for Music Bingo verification
  */
 export class ApiClient {
-  constructor(baseUrl = config.API_URL) {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl = null) {
+    this._baseUrl = baseUrl;
+  }
+
+  /**
+   * Get the base URL - uses provided URL or reads from config
+   */
+  get baseUrl() {
+    return this._baseUrl || getApiUrl();
   }
 
   /**
