@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/musicbingo/static/css/main.de4426d1.css",
+    "main.js": "/musicbingo/static/js/main.58a400c9.js",
+    "static/js/453.30de8702.chunk.js": "/musicbingo/static/js/453.30de8702.chunk.js",
+    "static/media/logo.svg": "/musicbingo/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/musicbingo/index.html",
+    "main.de4426d1.css.map": "/musicbingo/static/css/main.de4426d1.css.map",
+    "main.58a400c9.js.map": "/musicbingo/static/js/main.58a400c9.js.map",
+    "453.30de8702.chunk.js.map": "/musicbingo/static/js/453.30de8702.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.de4426d1.css",
+    "static/js/main.58a400c9.js"
+  ]
+}
