@@ -153,6 +153,101 @@ class PDFCardGenerator:
         doc.build(story)
         return buffer.getvalue()
 
+    def _create_branding_header(self) -> List:
+        """Create header branding elements (logo and DJ contact) for single-card layout.
+
+        Returns:
+            List of ReportLab flowable elements for header
+        """
+        from reportlab.platypus import Table, TableStyle
+
+        elements = []
+        if not self.venue_logo_path and not self.dj_contact:
+            return elements
+
+        # Build header row with logo (left) and DJ contact (right)
+        header_cells = []
+        logo_cell = ""
+        dj_cell = ""
+
+        # Logo on left
+        if self.venue_logo_path and self.venue_logo_path.exists():
+            try:
+                from PIL import Image as PILImage
+
+                with PILImage.open(self.venue_logo_path) as img:
+                    # Convert to RGB if needed
+                    if img.mode != 'RGB':
+                        img = img.convert('RGB')
+
+                    img_width, img_height = img.size
+                    aspect_ratio = img_width / img_height
+
+                    # Scale to max 0.75 inch height
+                    logo_height = 0.75 * inch
+                    logo_width = logo_height * aspect_ratio
+                    if logo_width > 1.5 * inch:
+                        logo_width = 1.5 * inch
+                        logo_height = logo_width / aspect_ratio
+
+                    # Save to buffer as PNG
+                    img_buffer = io.BytesIO()
+                    img.save(img_buffer, format='PNG')
+                    img_buffer.seek(0)
+
+                logo_cell = Image(img_buffer, width=logo_width, height=logo_height)
+            except Exception:
+                pass  # Skip logo on error
+
+        # DJ contact on right
+        if self.dj_contact:
+            dj_style = ParagraphStyle(
+                'DJContact',
+                parent=self.styles['Normal'],
+                alignment=2,  # Right align (TA_RIGHT)
+                fontSize=10,
+            )
+            dj_cell = Paragraph(self.dj_contact, dj_style)
+
+        if logo_cell or dj_cell:
+            page_width = self.page_size[0] - 2 * self.margin
+            header_table = Table(
+                [[logo_cell or "", dj_cell or ""]],
+                colWidths=[page_width / 2, page_width / 2],
+            )
+            header_table.setStyle(TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+            ]))
+            elements.append(header_table)
+            elements.append(Spacer(1, 0.3 * inch))
+
+        return elements
+
+    def _create_branding_footer(self) -> List:
+        """Create footer branding elements for single-card layout.
+
+        Returns:
+            List of ReportLab flowable elements for footer
+        """
+        elements = []
+        if not self.dj_contact:
+            return elements
+
+        footer_style = ParagraphStyle(
+            'BrandingFooter',
+            parent=self.styles['Normal'],
+            alignment=TA_CENTER,
+            fontSize=8,
+            textColor=colors.gray,
+        )
+        footer_text = f"Music Bingo by {self.dj_contact}"
+        elements.append(Spacer(1, 0.2 * inch))
+        elements.append(Paragraph(footer_text, footer_style))
+
+        return elements
+
     def _create_card_elements(self, card: BingoCard, card_number: int) -> List:
         """Create PDF elements for a single bingo card.
 
@@ -164,6 +259,9 @@ class PDFCardGenerator:
             List of ReportLab flowable elements
         """
         elements = []
+
+        # Add branding header (logo and DJ contact)
+        elements.extend(self._create_branding_header())
 
         # Card title/number
         title = Paragraph(
@@ -234,6 +332,9 @@ class PDFCardGenerator:
             self.styles['Normal']
         )
         elements.append(card_id_text)
+
+        # Add branding footer
+        elements.extend(self._create_branding_footer())
 
         return elements
 
@@ -346,9 +447,14 @@ class PDFCardGenerator:
         if self.venue_logo_path and self.venue_logo_path.exists():
             try:
                 from PIL import Image as PILImage
+                from reportlab.lib.utils import ImageReader
 
-                # Get image dimensions to maintain aspect ratio
+                # Load and convert image to RGB PNG buffer for reliable rendering
                 with PILImage.open(self.venue_logo_path) as img:
+                    # Convert to RGB if needed (handles RGBA, palette, CMYK, etc.)
+                    if img.mode != 'RGB':
+                        img = img.convert('RGB')
+
                     img_width, img_height = img.size
                     aspect_ratio = img_width / img_height
 
@@ -361,15 +467,22 @@ class PDFCardGenerator:
                         logo_width = 1.5 * inch
                         logo_height = logo_width / aspect_ratio
 
+                    # Save to buffer as PNG for reliable rendering
+                    img_buffer = io.BytesIO()
+                    img.save(img_buffer, format='PNG')
+                    img_buffer.seek(0)
+
                 canvas.drawImage(
-                    str(self.venue_logo_path),
+                    ImageReader(img_buffer),
                     self.margin,
                     header_y,
                     width=logo_width,
                     height=logo_height,
                 )
-            except Exception:
-                pass  # Skip logo if there's an error
+            except Exception as e:
+                # Log error but continue without logo
+                import sys
+                print(f"Warning: Could not load logo: {e}", file=sys.stderr)
 
         # Draw DJ contact if provided
         if self.dj_contact:
