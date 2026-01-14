@@ -325,8 +325,7 @@ class PDFCardGenerator:
         )
         elements.append(card_id_text)
 
-        # Add branding footer
-        elements.extend(self._create_branding_footer())
+        # Note: DJ contact is now in the header (centered below logo), so no footer needed
 
         return elements
 
