@@ -370,17 +370,14 @@ class PDFCardGenerator:
         card_height = 4.5 * inch
         gutter = 0.25 * inch
 
-        # Header space for branding
-        header_height = 0.75 * inch if (self.venue_logo_path or self.dj_contact) else 0
-        footer_height = 0.3 * inch if self.dj_contact else 0
-
+        # No page-level branding for 4-up - branding is per-card instead
         # Calculate card positions (2x2 grid centered)
-        usable_height = page_height - 2 * self.margin - header_height - footer_height
+        usable_height = page_height - 2 * self.margin
         total_cards_width = 2 * card_width + gutter
         total_cards_height = 2 * card_height + gutter
 
         x_offset = (page_width - total_cards_width) / 2
-        y_offset = self.margin + footer_height + (usable_height - total_cards_height) / 2
+        y_offset = self.margin + (usable_height - total_cards_height) / 2
 
         # Card positions: [top-left, top-right, bottom-left, bottom-right]
         positions = [
@@ -393,9 +390,7 @@ class PDFCardGenerator:
         # Process cards in groups of 4
         num_pages = math.ceil(len(cards) / 4)
         for page_num in range(num_pages):
-            # Add header/footer to each page
-            self._draw_page_header(c, page_width, page_height, compact=True)
-            self._draw_page_footer(c, page_width)
+            # No page-level branding for 4-up - branding is per-card
 
             # Draw up to 4 cards on this page
             start_idx = page_num * 4
@@ -619,6 +614,18 @@ class PDFCardGenerator:
     ) -> None:
         """Draw a compact bingo card for 4-up layout.
 
+        With branding: mini logo at top, DJ contact at bottom of each card.
+        Layout (4.5 inch = 324 points height):
+        - Logo: 0.3 inch (if present)
+        - Title: 0.25 inch
+        - Gap: 0.05 inch
+        - Grid: 5 * 0.55 inch = 2.75 inch (reduced from 0.6 inch cells)
+        - Gap: 0.1 inch
+        - QR: 0.55 inch (reduced from 0.6 inch)
+        - Card ID: 0.15 inch
+        - DJ contact: 0.2 inch (if present)
+        - Total: ~4.35 inch (fits in 4.5 inch)
+
         Args:
             canvas: ReportLab canvas
             card: BingoCard to render
@@ -628,23 +635,76 @@ class PDFCardGenerator:
             height: Card height in points
             card_number: Card number for display
         """
-        # Cell sizing for 5x5 grid
-        cell_size = 0.6 * inch  # ~43 points
-        grid_size = cell_size * 5  # ~3 inches
-        qr_size = 0.6 * inch  # ~43 points (reduced for compact layout)
+        # Check if branding is present
+        has_branding = self.venue_logo_path or self.dj_contact
+
+        # Adjust sizes for branding
+        if has_branding:
+            cell_size = 0.55 * inch  # Reduced from 0.6 inch
+            qr_size = 0.55 * inch    # Reduced from 0.6 inch
+            logo_height = 0.3 * inch
+        else:
+            cell_size = 0.6 * inch
+            qr_size = 0.6 * inch
+            logo_height = 0
+
+        grid_size = cell_size * 5
 
         # Calculate positions within card area
         card_center_x = x + width / 2
         grid_x = card_center_x - grid_size / 2
-        title_y = y + height - 0.3 * inch
-        grid_y = title_y - 0.3 * inch - grid_size
-        qr_y = grid_y - 0.15 * inch - qr_size
+
+        # Track current y position (start from top)
+        current_y = y + height - 0.1 * inch
+
+        # Draw mini logo at top (centered)
+        if self.venue_logo_path and self.venue_logo_path.exists():
+            try:
+                from PIL import Image as PILImage
+                from reportlab.lib.utils import ImageReader
+
+                with PILImage.open(self.venue_logo_path) as img:
+                    if img.mode != 'RGB':
+                        img = img.convert('RGB')
+
+                    img_width, img_height = img.size
+                    aspect_ratio = img_width / img_height
+
+                    # Scale to max 0.3 inch height
+                    scaled_logo_height = logo_height
+                    scaled_logo_width = scaled_logo_height * aspect_ratio
+                    if scaled_logo_width > 1.0 * inch:
+                        scaled_logo_width = 1.0 * inch
+                        scaled_logo_height = scaled_logo_width / aspect_ratio
+
+                    # Save to buffer
+                    img_buffer = io.BytesIO()
+                    img.save(img_buffer, format='PNG')
+                    img_buffer.seek(0)
+
+                logo_x = card_center_x - scaled_logo_width / 2
+                logo_y = current_y - scaled_logo_height
+                canvas.drawImage(
+                    ImageReader(img_buffer),
+                    logo_x,
+                    logo_y,
+                    width=scaled_logo_width,
+                    height=scaled_logo_height,
+                )
+                current_y = logo_y - 0.05 * inch
+            except Exception:
+                pass  # Skip logo on error
 
         # Draw card title
+        title_y = current_y - 0.2 * inch
         canvas.setFont("Helvetica-Bold", 10)
         title_text = f"Music Bingo #{card_number}"
         title_width = canvas.stringWidth(title_text, "Helvetica-Bold", 10)
         canvas.drawString(card_center_x - title_width / 2, title_y, title_text)
+
+        # Calculate grid and QR positions
+        grid_y = title_y - 0.15 * inch - grid_size
+        qr_y = grid_y - 0.1 * inch - qr_size
 
         # Draw 5x5 grid
         canvas.setStrokeColor(colors.black)
@@ -747,3 +807,9 @@ class PDFCardGenerator:
         card_id_text = f"Card ID: {str(card.card_id)[:8]}..."
         id_width = canvas.stringWidth(card_id_text, "Helvetica", 6)
         canvas.drawString(card_center_x - id_width / 2, qr_y - 10, card_id_text)
+
+        # Draw DJ contact at bottom (centered, below card ID)
+        if self.dj_contact:
+            canvas.setFont("Helvetica", 5)
+            dj_width = canvas.stringWidth(self.dj_contact, "Helvetica", 5)
+            canvas.drawString(card_center_x - dj_width / 2, qr_y - 18, self.dj_contact)
