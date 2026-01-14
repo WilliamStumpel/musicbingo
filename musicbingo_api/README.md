@@ -57,6 +57,45 @@ ruff check src tests
 uvicorn musicbingo_api.main:app --reload
 ```
 
+## Deployment
+
+### Railway (Recommended)
+
+1. Install Railway CLI:
+```bash
+npm install -g @railway/cli
+```
+
+2. Login and initialize:
+```bash
+railway login
+cd musicbingo_api
+railway init
+```
+
+3. Deploy:
+```bash
+railway up
+```
+
+4. Get your deployment URL:
+```bash
+railway domain
+```
+
+The API will be available at `https://your-app.railway.app`
+
+### Alternative Platforms
+
+The API can be deployed to any platform supporting Python web apps:
+- **Render**: Connect GitHub repo, select "Web Service", use `uvicorn musicbingo_api.main:app --host 0.0.0.0 --port $PORT`
+- **Fly.io**: Run `flyctl launch` and follow prompts
+- **Heroku**: Use `git push heroku main` (Procfile included)
+
+### Environment Variables
+
+No environment variables required for basic deployment. The API uses in-memory storage by default.
+
 ## Tech Stack
 
 - **Framework**: FastAPI
