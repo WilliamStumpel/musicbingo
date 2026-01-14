@@ -400,6 +400,108 @@ class PDFCardGenerator:
             footer_text,
         )
 
+    def _wrap_text(
+        self,
+        canvas,
+        text: str,
+        max_width: float,
+        font_name: str,
+        font_size: int,
+    ) -> List[str]:
+        """Word-wrap text to fit within a maximum width.
+
+        Args:
+            canvas: ReportLab canvas (for measuring text width)
+            text: Text to wrap
+            max_width: Maximum width in points
+            font_name: Font name to use
+            font_size: Font size in points
+
+        Returns:
+            List of lines that fit within max_width
+        """
+        words = text.split()
+        if not words:
+            return []
+
+        lines = []
+        current_line = ""
+
+        for word in words:
+            test_line = f"{current_line} {word}".strip()
+            if canvas.stringWidth(test_line, font_name, font_size) <= max_width:
+                current_line = test_line
+            else:
+                if current_line:
+                    lines.append(current_line)
+                # Check if the word itself is too long and needs character-level wrap
+                if canvas.stringWidth(word, font_name, font_size) > max_width:
+                    # Character-level wrapping for very long words
+                    chars = ""
+                    for char in word:
+                        test_chars = chars + char
+                        if canvas.stringWidth(test_chars, font_name, font_size) <= max_width:
+                            chars = test_chars
+                        else:
+                            if chars:
+                                lines.append(chars)
+                            chars = char
+                    current_line = chars
+                else:
+                    current_line = word
+
+        if current_line:
+            lines.append(current_line)
+
+        return lines
+
+    def _fit_text_in_cell(
+        self,
+        canvas,
+        text: str,
+        max_width: float,
+        max_height: float,
+        font_name: str,
+        base_size: int,
+        min_size: int = 4,
+        max_lines: int = 2,
+    ) -> tuple:
+        """Fit text within a cell by wrapping and shrinking font if needed.
+
+        Args:
+            canvas: ReportLab canvas
+            text: Text to fit
+            max_width: Maximum width in points
+            max_height: Maximum height in points
+            font_name: Font name to use
+            base_size: Starting font size
+            min_size: Minimum font size to try
+            max_lines: Maximum number of lines allowed
+
+        Returns:
+            Tuple of (lines_list, final_font_size)
+        """
+        for font_size in range(base_size, min_size - 1, -1):
+            lines = self._wrap_text(canvas, text, max_width, font_name, font_size)
+            line_height = font_size * 1.2
+            total_height = len(lines) * line_height
+
+            if total_height <= max_height and len(lines) <= max_lines:
+                return lines, font_size
+
+        # If still doesn't fit at min size, truncate to max_lines
+        lines = self._wrap_text(canvas, text, max_width, font_name, min_size)
+        if len(lines) > max_lines:
+            lines = lines[:max_lines]
+            # Add ellipsis to last line if truncated
+            if lines:
+                last_line = lines[-1]
+                while canvas.stringWidth(last_line + "...", font_name, min_size) > max_width and len(last_line) > 1:
+                    last_line = last_line[:-1]
+                lines[-1] = last_line + "..."
+
+        return lines, min_size
+
     def _draw_mini_card(
         self,
         canvas,
@@ -443,6 +545,12 @@ class PDFCardGenerator:
         canvas.setStrokeColor(colors.black)
         canvas.setLineWidth(1)
 
+        # Cell content sizing
+        cell_padding = 2  # points of padding inside cell
+        usable_width = cell_size - 2 * cell_padding
+        title_area_height = 20  # points for title (top half)
+        artist_area_height = 18  # points for artist (bottom half)
+
         for row in range(5):
             for col in range(5):
                 cell_x = grid_x + col * cell_size
@@ -468,26 +576,52 @@ class PDFCardGenerator:
                         "SPACE"
                     )
                 else:
-                    # Draw song info
+                    # Draw song info with word wrapping
                     song = card.grid.get_song(row, col)
                     if song:
                         canvas.setFillColor(colors.black)
-                        # Truncate long titles/artists
-                        title = song.title[:12] + "..." if len(song.title) > 14 else song.title
-                        artist = song.artist[:10] + "..." if len(song.artist) > 12 else song.artist
 
-                        canvas.setFont("Helvetica-Bold", 6)
-                        canvas.drawCentredString(
-                            cell_x + cell_size / 2,
-                            cell_y + cell_size / 2 + 6,
-                            title
+                        # Fit title with word wrapping and dynamic sizing
+                        title_lines, title_font = self._fit_text_in_cell(
+                            canvas, song.title, usable_width, title_area_height,
+                            "Helvetica-Bold", base_size=6, min_size=4, max_lines=2
                         )
-                        canvas.setFont("Helvetica", 5)
-                        canvas.drawCentredString(
-                            cell_x + cell_size / 2,
-                            cell_y + cell_size / 2 - 4,
-                            artist
+
+                        # Fit artist with word wrapping and dynamic sizing
+                        artist_lines, artist_font = self._fit_text_in_cell(
+                            canvas, song.artist, usable_width, artist_area_height,
+                            "Helvetica", base_size=5, min_size=4, max_lines=2
                         )
+
+                        # Calculate vertical positions
+                        cell_center_x = cell_x + cell_size / 2
+                        cell_center_y = cell_y + cell_size / 2
+
+                        # Draw title lines (centered in top half of cell)
+                        title_line_height = title_font * 1.2
+                        title_total_height = len(title_lines) * title_line_height
+                        title_start_y = cell_center_y + 2 + (title_area_height - title_total_height) / 2 + title_total_height - title_font
+
+                        canvas.setFont("Helvetica-Bold", title_font)
+                        for i, line in enumerate(title_lines):
+                            canvas.drawCentredString(
+                                cell_center_x,
+                                title_start_y - i * title_line_height,
+                                line
+                            )
+
+                        # Draw artist lines (centered in bottom half of cell)
+                        artist_line_height = artist_font * 1.2
+                        artist_total_height = len(artist_lines) * artist_line_height
+                        artist_start_y = cell_center_y - 2 - (artist_area_height - artist_total_height) / 2 - artist_font
+
+                        canvas.setFont("Helvetica", artist_font)
+                        for i, line in enumerate(artist_lines):
+                            canvas.drawCentredString(
+                                cell_center_x,
+                                artist_start_y - i * artist_line_height,
+                                line
+                            )
 
         # Draw QR code
         qr_bytes = self.qr_generator.get_qr_bytes(card, format="PNG")
