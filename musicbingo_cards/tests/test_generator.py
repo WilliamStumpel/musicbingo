@@ -138,10 +138,10 @@ class TestCardGenerator:
             generator.generate_cards(0)
 
     def test_invalid_card_count_too_large(self, medium_playlist):
-        """Test that card count > 200 raises error."""
+        """Test that card count > 1000 raises error."""
         generator = CardGenerator(medium_playlist)
         with pytest.raises(CardGenerationError, match="Invalid card count"):
-            generator.generate_cards(201)
+            generator.generate_cards(1001)
 
     def test_playlist_too_small(self):
         """Test that playlist < 48 songs raises error."""

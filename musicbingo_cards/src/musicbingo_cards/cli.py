@@ -28,7 +28,7 @@ def main():
     "-n",
     type=int,
     default=50,
-    help="Number of unique cards to generate (50-200)",
+    help="Number of unique cards to generate (1-1000)",
 )
 @click.option(
     "--output",
@@ -46,12 +46,18 @@ def main():
 @click.option("--venue-logo", type=click.Path(exists=True), help="Venue logo image file")
 @click.option("--dj-contact", type=str, help="DJ contact information")
 @click.option(
+    "--layout",
+    type=click.Choice(["single", "4up"]),
+    default="single",
+    help="Card layout: 'single' (1 per page) or '4up' (4 per page, saves paper)",
+)
+@click.option(
     "--export-json",
     "-j",
     type=click.Path(),
     help="Export card data to JSON file (for API integration)",
 )
-def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact, export_json):
+def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact, layout, export_json):
     """Generate bingo cards from a playlist.
 
     PLAYLIST_FILE: Path to playlist file (CSV, JSON, or TXT format)
@@ -78,13 +84,21 @@ def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact, exp
         sys.exit(1)
 
     # Validate card count
-    if num_cards < 50 or num_cards > 200:
+    if num_cards < 1 or num_cards > 1000:
         click.secho(
-            f"✗ Invalid card count: {num_cards}. Must be between 50-200",
+            f"✗ Invalid card count: {num_cards}. Must be between 1-1000",
             fg="red",
             err=True
         )
         sys.exit(1)
+
+    # Warning for large batches
+    if num_cards > 500:
+        click.secho(
+            "⚠ Large batch detected. For very large batches (500+), "
+            "consider generating in multiple runs.",
+            fg="yellow"
+        )
 
     if seed is not None:
         click.echo(f"🎲 Random seed: {seed}")
@@ -129,6 +143,12 @@ def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact, exp
 
     # Generate PDF
     click.echo(f"\n📄 Creating PDF: {output}")
+    if layout == "4up":
+        import math
+        pages = math.ceil(num_cards / 4)
+        click.echo(f"  Layout: 4-up ({pages} pages for {num_cards} cards)")
+    else:
+        click.echo(f"  Layout: single ({num_cards} pages)")
 
     try:
         pdf_generator = PDFCardGenerator(
@@ -140,8 +160,8 @@ def generate(playlist_file, num_cards, output, seed, venue_logo, dj_contact, exp
         # Create parent directory if needed
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Generate PDF
-        pdf_generator.generate_pdf(cards, output_path)
+        # Generate PDF with selected layout
+        pdf_generator.generate_pdf(cards, output_path, layout=layout)
 
         # Check file size
         file_size_mb = output_path.stat().st_size / (1024 * 1024)

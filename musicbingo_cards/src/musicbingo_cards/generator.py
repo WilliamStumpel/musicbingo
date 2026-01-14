@@ -42,7 +42,7 @@ class CardGenerator:
         """Generate a set of unique bingo cards.
 
         Args:
-            num_cards: Number of cards to generate (50-200)
+            num_cards: Number of cards to generate (1-1000)
             game_id: Optional game identifier (auto-generated if not provided)
 
         Returns:
@@ -52,8 +52,8 @@ class CardGenerator:
             CardGenerationError: If generation fails
         """
         # Validate inputs
-        if num_cards < 1 or num_cards > 200:
-            raise CardGenerationError(f"Invalid card count: {num_cards}. Must be 1-200.")
+        if num_cards < 1 or num_cards > 1000:
+            raise CardGenerationError(f"Invalid card count: {num_cards}. Must be 1-1000.")
 
         # Warn if outside recommended range (for production use)
         if num_cards < 50:

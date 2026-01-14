@@ -126,8 +126,9 @@ def test_generate_with_seed(sample_playlist_file):
 def test_generate_invalid_card_count(sample_playlist_file):
     """Test generate command with invalid card count."""
     runner = CliRunner()
+    # Test count > 1000 (the new max)
     result = runner.invoke(
-        main, ["generate", sample_playlist_file, "-n", "10", "-o", "output.pdf"]
+        main, ["generate", sample_playlist_file, "-n", "1001", "-o", "output.pdf"]
     )
 
     assert result.exit_code != 0

@@ -60,9 +60,9 @@ class Playlist:
             raise PlaylistValidationError(
                 f"Playlist too small: {len(self.songs)} songs (minimum 48 for quick game)"
             )
-        if len(self.songs) > 200:
+        if len(self.songs) > 1000:
             raise PlaylistValidationError(
-                f"Playlist too large: {len(self.songs)} songs (maximum 200)"
+                f"Playlist too large: {len(self.songs)} songs (maximum 1000)"
             )
 
         # Check for duplicate songs (by title + artist)
@@ -336,9 +336,9 @@ def validate_playlist_size(num_songs: int) -> str:
         raise PlaylistValidationError(
             f"Playlist too small ({num_songs} songs). Minimum: 48 songs for quick game"
         )
-    if num_songs > 200:
+    if num_songs > 1000:
         raise PlaylistValidationError(
-            f"Playlist too large ({num_songs} songs). Maximum: 200 songs"
+            f"Playlist too large ({num_songs} songs). Maximum: 1000 songs"
         )
 
     if num_songs < 60:

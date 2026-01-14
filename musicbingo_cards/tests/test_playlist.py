@@ -33,9 +33,9 @@ class TestPlaylist:
             Playlist(songs)
 
     def test_playlist_too_large(self):
-        """Test that playlist with > 200 songs raises error."""
-        songs = [Song(title=f"Song {i}", artist=f"Artist {i}") for i in range(201)]
-        with pytest.raises(PlaylistValidationError, match="too large.*maximum 200"):
+        """Test that playlist with > 1000 songs raises error."""
+        songs = [Song(title=f"Song {i}", artist=f"Artist {i}") for i in range(1001)]
+        with pytest.raises(PlaylistValidationError, match="too large.*maximum 1000"):
             Playlist(songs)
 
     def test_playlist_with_duplicates(self):
@@ -331,6 +331,6 @@ class TestValidatePlaylistSize:
             validate_playlist_size(47)
 
     def test_too_large(self):
-        """Test that > 200 songs raises error."""
+        """Test that > 1000 songs raises error."""
         with pytest.raises(PlaylistValidationError, match="too large"):
-            validate_playlist_size(201)
+            validate_playlist_size(1001)
