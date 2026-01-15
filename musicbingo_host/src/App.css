@@ -29,3 +29,21 @@
   color: #b3b3b3;
   font-size: 18px;
 }
+
+.ready-message {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.ready-message p {
+  color: #1DB954;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.ready-message .hint {
+  color: #666;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 8px;
+}
