@@ -56,7 +56,7 @@ Plans:
 
 Plans:
 - [x] 03-01: CSV playlist import (Exportify format)
-- [ ] 03-02: Host checklist view (sort, search, mark played)
+- [x] 03-02: Host checklist view (sort, search, mark played)
 - [ ] 03-03: Scanner checklist view (same features, mobile-optimized)
 - [ ] 03-04: API sync endpoints (mark-song toggle, game state polling)
 
@@ -128,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Local Backend Infrastructure | 3/3 | Complete | 2026-01-14 |
 | 2. Card Printing System | 1/1 | Complete | 2026-01-14 |
-| 3. Manual Playback Mode | 1/4 | In progress | - |
+| 3. Manual Playback Mode | 2/4 | In progress | - |
 | 4. Host View | 0/4 | Not started | - |
 | 5. Player View | 0/4 | Not started | - |
 | 6. Game Modes & Patterns | 0/3 | Not started | - |
