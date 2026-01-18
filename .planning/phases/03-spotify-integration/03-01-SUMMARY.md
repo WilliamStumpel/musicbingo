@@ -1,80 +1,101 @@
-# Plan 03-01 Summary: Spotify OAuth PKCE Authentication
+---
+phase: 03-manual-playback
+plan: 01
+subsystem: cli
+tags: [csv, exportify, playlist-import, python]
 
-**Status:** Complete
-**Duration:** ~10 minutes
-**Date:** 2026-01-14
+# Dependency graph
+requires:
+  - phase: 02-card-printing-system
+    provides: Card generation CLI and PDF export
+provides:
+  - CSV playlist import from Exportify format
+  - Game JSON generation from CSV
+  - New import-csv CLI command
+affects: [03-02, 03-03, 03-04, card-generation]
 
-## What Was Built
+# Tech tracking
+tech-stack:
+  added: []
+  patterns:
+    - "Hash-based song ID generation for consistent identifiers"
+    - "Case-insensitive header matching for CSV robustness"
 
-Created the `musicbingo_host` React application with complete Spotify OAuth PKCE authentication.
+key-files:
+  created:
+    - musicbingo_cards/src/musicbingo_cards/csv_import.py
+    - musicbingo_cards/tests/test_csv_import.py
+  modified:
+    - musicbingo_cards/src/musicbingo_cards/cli.py
 
-### Files Created
+key-decisions:
+  - "SHA256 hash of title+artist (lowercase) for song IDs"
+  - "24 minimum songs requirement matches bingo card needs (5x5 - 1 free)"
+  - "Default output to games/ directory for organization"
 
-| File | Purpose |
-|------|---------|
-| `musicbingo_host/package.json` | React 19 app configuration |
-| `musicbingo_host/src/App.js` | Main app component with auth integration |
-| `musicbingo_host/src/App.css` | App styling (Spotify green theme) |
-| `musicbingo_host/src/index.js` | React entry point |
-| `musicbingo_host/src/index.css` | Global styles (dark theme) |
-| `musicbingo_host/public/index.html` | HTML template |
-| `musicbingo_host/.gitignore` | Git ignore for node_modules/build |
-| `musicbingo_host/.env.example` | Environment variable template |
-| `musicbingo_host/src/services/spotifyAuth.js` | PKCE OAuth service |
-| `musicbingo_host/src/hooks/useSpotifyAuth.js` | React auth hook |
-| `musicbingo_host/src/components/SpotifyLogin.jsx` | Login/logout UI component |
+patterns-established:
+  - "CSV import module pattern for future file format support"
 
-## Commits
+issues-created: []
 
-1. `cb0e07c5` - feat(03-01): create musicbingo_host React app skeleton
-2. `f1831bc0` - feat(03-01): implement Spotify PKCE auth service
-3. `6a7fca14` - feat(03-01): add Spotify login UI with useSpotifyAuth hook
+# Metrics
+duration: 2min
+completed: 2026-01-18
+---
 
-## Implementation Details
+# Phase 3 Plan 01: CSV Playlist Import Summary
 
-### PKCE OAuth Flow
+**Exportify CSV import with hash-based song IDs and new `import-csv` CLI command**
 
-The implementation follows Spotify's Authorization Code with PKCE flow (no client secret needed):
+## Performance
 
-1. **Code Verifier Generation** - 64-character random string stored in localStorage
-2. **Code Challenge** - SHA256 hash of verifier, base64url encoded
-3. **Authorization Redirect** - Redirect to Spotify with challenge
-4. **Token Exchange** - Exchange code + verifier for access/refresh tokens
-5. **Token Refresh** - Auto-refresh 5 minutes before expiry
+- **Duration:** 2 min 12 sec
+- **Started:** 2026-01-18T21:05:56Z
+- **Completed:** 2026-01-18T21:08:08Z
+- **Tasks:** 3
+- **Files modified:** 3
 
-### Required Scopes
+## Accomplishments
 
-```
-streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state
-```
+- Created csv_import.py module with Exportify format parsing
+- Added `import-csv` CLI command for easy playlist import
+- Implemented hash-based song ID generation for consistent identifiers
+- Added comprehensive test suite with 11 passing tests
 
-### Token Storage
+## Task Commits
 
-All tokens stored in localStorage:
-- `spotify_access_token` - Current access token
-- `spotify_refresh_token` - Long-lived refresh token
-- `spotify_token_expiry` - Timestamp of token expiry
+Each task was committed atomically:
 
-## Verification Checklist
+1. **Task 1: Create CSV import module** - `a3b44c6c` (feat)
+2. **Task 2: Add import-csv CLI command** - `7d9435b0` (feat)
+3. **Task 3: Add tests for CSV import** - `a89e681c` (test)
 
-- [x] `npm install` succeeds
-- [x] `npm run build` compiles without errors
-- [x] Login redirects to Spotify authorization (requires .env setup)
-- [x] Callback handles code exchange correctly
-- [x] Token stored in localStorage
-- [x] Page refresh maintains logged-in state
-- [x] Logout clears tokens and shows login button
-- [x] No ESLint errors
+## Files Created/Modified
 
-## User Setup Required
+- `musicbingo_cards/src/musicbingo_cards/csv_import.py` - CSV parsing and game JSON creation
+- `musicbingo_cards/src/musicbingo_cards/cli.py` - Added import-csv command
+- `musicbingo_cards/tests/test_csv_import.py` - 11 tests for CSV import functionality
 
-To use the app, the user must:
+## Decisions Made
 
-1. Create app at https://developer.spotify.com/dashboard
-2. Add redirect URI: `http://127.0.0.1:3000/callback`
-3. Copy `.env.example` to `.env` and add Client ID
-4. Run `npm install && npm start`
+- **Song ID generation:** SHA256 hash of lowercase title+artist, truncated to 12 chars
+- **Minimum songs:** 24 required (matches 5x5 bingo grid minus free space)
+- **Default output:** games/<sanitized-name>.json for organization
 
-## Next Steps
+## Deviations from Plan
 
-Plan 03-02 will add the Spotify Web Playback SDK for actual music playback.
+None - plan executed exactly as written.
+
+## Issues Encountered
+
+None
+
+## Next Phase Readiness
+
+- CSV import ready for use with Exportify exports
+- Game JSON format compatible with existing card generator
+- Ready for Plan 03-02: Host Checklist View
+
+---
+*Phase: 03-manual-playback*
+*Completed: 2026-01-18*

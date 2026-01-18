@@ -2,7 +2,7 @@
 
 ## Overview
 
-Transform the existing card generator, verification API, and scanner PWA into a complete DJ system for running music bingo at venues. Starting with local deployment infrastructure, we'll add professional card printing, Spotify playback integration, host controls, player display, multiple game modes, and prize tracking. The journey goes from three disconnected tools to one smooth workflow.
+Transform the existing card generator, verification API, and scanner PWA into a complete DJ system for running music bingo at venues. Starting with local deployment infrastructure, we'll add professional card printing, manual song tracking (DJ plays music in any player), host controls, player display, multiple game modes, and prize tracking. The journey goes from three disconnected tools to one smooth workflow.
 
 ## Domain Expertise
 
@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Local Backend Infrastructure** - Run backend on laptop, phone scanner connects via WiFi
 - [ ] **Phase 2: Card Printing System** - 4 cards per page with custom branding for venues
-- [ ] **Phase 3: Spotify Integration** - OAuth authentication and Web Playback SDK for song clips
+- [ ] **Phase 3: Manual Playback Mode** - CSV playlist import, song checklist for marking played songs
 - [ ] **Phase 4: Host View** - Laptop interface with playback controls, call board, game management
 - [ ] **Phase 5: Player View** - HDMI output with call board, delayed song reveal, pattern display
 - [ ] **Phase 6: Game Modes & Patterns** - Multiple patterns, pattern selection, lightning rounds
@@ -47,18 +47,18 @@ Plans:
 Plans:
 - [x] 02-01: Professional card printing (4-up layout, branding, flexible counts)
 
-### Phase 3: Spotify Integration
-**Goal**: Authenticate with Spotify Premium and play song clips via Web Playback SDK
+### Phase 3: Manual Playback Mode
+**Goal**: Import playlists via CSV, mark songs as played from host or scanner, sync state via API
 **Depends on**: Phase 1
-**Research**: Likely (external API integration)
-**Research topics**: Spotify Web Playback SDK current docs, OAuth PKCE flow for desktop/local apps, SDK browser requirements, clip start/duration controls
-**Plans**: TBD
+**Research**: Complete (pivoted from streaming APIs due to registration/setup blockers)
+**Research topics**: Exportify CSV format, polling vs WebSocket, mobile-friendly sortable lists
+**Plans**: 4
 
 Plans:
-- [ ] 03-01: Spotify OAuth authentication flow
-- [ ] 03-02: Web Playback SDK integration
-- [ ] 03-03: Song clip configuration (start point, duration)
-- [ ] 03-04: Random song order per game
+- [x] 03-01: CSV playlist import (Exportify format)
+- [ ] 03-02: Host checklist view (sort, search, mark played)
+- [ ] 03-03: Scanner checklist view (same features, mobile-optimized)
+- [ ] 03-04: API sync endpoints (mark-song toggle, game state polling)
 
 ### Phase 4: Host View
 **Goal**: Laptop interface for DJ with playback controls, current song, call board, and game management
@@ -128,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Local Backend Infrastructure | 3/3 | Complete | 2026-01-14 |
 | 2. Card Printing System | 1/1 | Complete | 2026-01-14 |
-| 3. Spotify Integration | 0/4 | Not started | - |
+| 3. Manual Playback Mode | 1/4 | In progress | - |
 | 4. Host View | 0/4 | Not started | - |
 | 5. Player View | 0/4 | Not started | - |
 | 6. Game Modes & Patterns | 0/3 | Not started | - |

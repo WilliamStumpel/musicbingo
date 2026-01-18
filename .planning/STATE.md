@@ -5,23 +5,51 @@
 See: .planning/PROJECT.md (updated 2026-01-14)
 
 **Core value:** Smooth host experience — the DJ can focus on the crowd and the energy, not on fighting software.
-**Current focus:** Phase 3 — Spotify Integration
+**Current focus:** Phase 3 — Manual Playback Mode (pivoted from streaming APIs)
 
 ## Current Position
 
-Phase: 3 of 8 (Spotify Integration)
-Plan: 03-01 complete (Spotify OAuth PKCE authentication)
-Status: Ready for plan 03-02
-Last activity: 2026-01-14 — Completed 03-01-PLAN.md
+Phase: 3 of 8 (Manual Playback Mode)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-01-18 — Completed 03-01-PLAN.md (CSV playlist import)
 
-Progress: ████░░░░░░ 35%
+Progress: ███░░░░░░░ 28%
+
+## Pivot Notes
+
+**Apple Music → Manual Playback (2026-01-18)**
+
+Apple Developer Program setup blocked progress. User proposed simpler approach:
+- DJ plays music directly in Spotify/Apple Music/any player with shuffle on
+- App provides sortable/searchable song checklist to mark songs as played
+- No streaming API integration required
+
+**Decision:** Pivot to Manual Playback Mode
+- Works with ANY music source (service-agnostic)
+- No developer accounts or API keys needed
+- Import playlists via Exportify CSV export
+- Both host and scanner apps can mark songs
+- Real-time sync via API polling (2 second interval)
+
+---
+
+**Spotify → Apple Music (2026-01-14)**
+
+Spotify paused new app registrations, blocking Phase 3 implementation. After researching alternatives:
+- Tidal: 30-second limit for third-party apps
+- Amazon Music: Closed beta
+- Deezer: 30-second limit
+- YouTube Music: No official playback API
+
+**Decision:** Pivot to Apple Music via MusicKit JS (subsequently pivoted to Manual Playback)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 5.7 min
-- Total execution time: 43 min
+- Total plans completed: 7 (Phases 1-2, 3 partial)
+- Average duration: 5.0 min
+- Total execution time: 35 min
 
 **By Phase:**
 
@@ -29,11 +57,7 @@ Progress: ████░░░░░░ 35%
 |-------|-------|-------|----------|
 | 1 | 3/3 | 7 min | 2.3 min |
 | 2 | 3/3 | 26 min | 8.7 min |
-| 3 | 1/? | 10 min | 10.0 min |
-
-**Recent Trend:**
-- Last 5 plans: 02-01 (15 min), 02-01-FIX (8 min), 02-01-FIX2 (3 min), 03-01 (10 min)
-- Trend: stable
+| 3 | 1/4 | 2 min | 2.0 min |
 
 ## Accumulated Context
 
@@ -53,9 +77,10 @@ Recent decisions affecting current work:
 - Canvas-based PDF rendering for complex multi-card layouts
 - Word wrap + dynamic font sizing for 4-up cells (min 4pt, max 2 lines each for title/artist)
 - Image conversion to RGB PNG buffer for reliable rendering (supports JPEG, PNG, etc.)
-- Build custom Spotify integration (not react-spotify-web-playback) for music bingo controls
-- Use PKCE OAuth flow (no client secret needed for browser app)
-- Store Spotify tokens in localStorage with auto-refresh
+- **Manual Playback Mode** - DJ uses existing music player, marks songs in app (service-agnostic)
+- **Exportify CSV import** - Standard format for playlist import from Spotify exports
+- **2-second polling** - Simple sync mechanism between host and scanner apps
+- **Song ID generation** - SHA256 hash of lowercase title+artist, truncated to 12 chars
 
 ### Deferred Issues
 
@@ -67,11 +92,11 @@ None yet.
 
 ### Blockers/Concerns
 
-None yet.
+None - Manual Playback Mode removes all streaming API dependencies.
 
 ## Session Continuity
 
-Last session: 2026-01-14
-Stopped at: Completed 03-01-PLAN.md (Spotify OAuth PKCE)
+Last session: 2026-01-18
+Stopped at: Completed 03-01-PLAN.md (CSV playlist import)
 Resume file: None
-Next action: Execute plan 03-02 (Web Playback SDK integration)
+Next action: Execute plan 03-02 (Host Checklist View)
