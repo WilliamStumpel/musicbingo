@@ -1,0 +1,35 @@
+.tab-bar {
+  display: flex;
+  background: #16162b;
+  border-top: 1px solid #2d2d44;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab-button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.tab-button.active {
+  color: #00d26a;
+}
+
+.tab-icon {
+  font-size: 20px;
+}
+
+.tab-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

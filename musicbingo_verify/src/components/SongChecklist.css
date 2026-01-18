@@ -1,0 +1,162 @@
+.song-checklist {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1a1a2e;
+  overflow: hidden;
+}
+
+.checklist-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #2d2d44;
+}
+
+.stats {
+  font-size: 16px;
+}
+
+.played-count {
+  font-weight: bold;
+  color: #00d26a;
+  font-size: 22px;
+}
+
+.total-count {
+  color: #888;
+}
+
+.checklist-controls {
+  padding: 10px 12px;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #2d2d44;
+  background: #16162b;
+}
+
+.search-box {
+  flex: 1;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 32px 10px 12px;
+  background: #2d2d44;
+  border: 1px solid #3d3d5c;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #00d26a;
+}
+
+.search-input::placeholder {
+  color: #666;
+}
+
+.clear-search {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 20px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.sort-select {
+  padding: 10px 8px;
+  background: #2d2d44;
+  border: 1px solid #3d3d5c;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  min-width: 100px;
+  -webkit-appearance: none;
+}
+
+.song-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.song-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #2d2d44;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: rgba(0, 210, 106, 0.1);
+}
+
+.song-row:active {
+  background: #2d2d44;
+}
+
+.song-row.played {
+  opacity: 0.55;
+}
+
+.song-row.played .song-title {
+  text-decoration: line-through;
+  color: #666;
+}
+
+.played-indicator {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #555;
+  border: 2px solid #3d3d5c;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.song-row.played .played-indicator {
+  background: #00d26a;
+  border-color: #00d26a;
+  color: #fff;
+}
+
+.song-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-title {
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  font-size: 13px;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.no-results,
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+}
