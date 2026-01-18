@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+from typing import Optional
 
 import click
 
@@ -250,6 +251,46 @@ def validate(playlist_file):
         click.echo("  • Verify playlist has 48-200 songs")
         click.echo("  • Remove any duplicate songs")
         sys.exit(1)
+
+
+@main.command()
+@click.argument('csv_file', type=click.Path(exists=True, path_type=Path))
+@click.option('-n', '--name', required=True, help='Name for the game')
+@click.option('-o', '--output', type=click.Path(path_type=Path),
+              help='Output JSON file path (default: games/<name>.json)')
+def import_csv(csv_file: Path, name: str, output: Optional[Path]):
+    """
+    Import a Spotify playlist from Exportify CSV format.
+
+    Export your playlist at https://exportify.net, then import it here
+    to generate bingo cards.
+
+    Example:
+        musicbingo import-csv my_playlist.csv -n "80s Hits Night"
+    """
+    from .csv_import import create_game_from_csv
+
+    # Default output path
+    if output is None:
+        games_dir = Path('games')
+        games_dir.mkdir(exist_ok=True)
+        # Sanitize name for filename
+        safe_name = "".join(c if c.isalnum() or c in ' -_' else '_' for c in name)
+        safe_name = safe_name.replace(' ', '-').lower()
+        output = games_dir / f"{safe_name}.json"
+
+    try:
+        game = create_game_from_csv(csv_file, name, output)
+        click.echo(f"Imported {game['song_count']} songs from {csv_file.name}")
+        click.echo(f"Game saved to {output}")
+        click.echo(f"\nNext: Generate cards with:")
+        click.echo(f"  musicbingo generate {output} -n 50 -o cards.pdf")
+    except ValueError as e:
+        click.echo(f"Error: {e}", err=True)
+        raise SystemExit(1)
+    except FileNotFoundError as e:
+        click.echo(f"Error: {e}", err=True)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
