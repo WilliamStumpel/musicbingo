@@ -1,5 +1,6 @@
 """Game state management service."""
 
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -152,6 +153,40 @@ class GameService:
         """
         game = self.get_game_or_raise(game_id)
         return game.verify_card(card_id)
+
+    def toggle_song_played(self, game_id: UUID, song_id: str, played: bool) -> GameState:
+        """Mark a song as played or unplayed.
+
+        Args:
+            game_id: The game ID
+            song_id: The song ID to toggle (as string, converted to UUID)
+            played: True to mark as played, False to unmark
+
+        Returns:
+            Updated Game object
+
+        Raises:
+            ValueError: If game not found or invalid song_id
+        """
+        game = self.get_game_or_raise(game_id)
+
+        # Convert string song_id to UUID
+        try:
+            song_uuid = UUID(song_id)
+        except ValueError:
+            raise ValueError(f"Invalid song_id format: {song_id}")
+
+        if played:
+            # Add to played songs if not already there
+            if song_uuid not in game.played_songs:
+                game.played_songs.append(song_uuid)
+        else:
+            # Remove from played songs if present
+            if song_uuid in game.played_songs:
+                game.played_songs.remove(song_uuid)
+
+        game.updated_at = datetime.now()
+        return game
 
     def set_pattern(self, game_id: UUID, pattern: PatternType) -> GameState:
         """Change the winning pattern for a game.

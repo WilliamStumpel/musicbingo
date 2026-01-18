@@ -158,6 +158,32 @@ class GameListResponse(BaseModel):
     games: list[GameListItem]
 
 
+class MarkSongRequest(BaseModel):
+    """Request to mark a song as played or unplayed."""
+
+    song_id: str
+    played: bool = True  # True to mark played, False to unmark
+
+
+class MarkSongResponse(BaseModel):
+    """Response after marking a song."""
+
+    game_id: UUID
+    song_id: str
+    played: bool
+    total_played: int
+    updated_at: datetime
+
+
+class SongInfo(BaseModel):
+    """Song information for checklist display."""
+
+    song_id: str
+    title: str
+    artist: str
+    album: Optional[str] = None
+
+
 class LoadGameResponse(BaseModel):
     """Response from loading a game file."""
 
@@ -165,3 +191,4 @@ class LoadGameResponse(BaseModel):
     name: str
     status: GameStatus
     card_count: int
+    songs: list[SongInfo] = []

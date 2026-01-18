@@ -23,8 +23,11 @@ from .schemas import (
     GameListResponse,
     GameStateResponse,
     LoadGameResponse,
+    MarkSongRequest,
+    MarkSongResponse,
     RecordSongRequest,
     RecordSongResponse,
+    SongInfo,
     StartGameRequest,
     StartGameResponse,
     VerifyCardResponse,
@@ -135,11 +138,23 @@ async def load_game(filename: str):
         # Re-register the game
         service._games[game.game_id] = game
 
+        # Build songs list for checklist display
+        songs = [
+            SongInfo(
+                song_id=str(s.song_id),
+                title=s.title,
+                artist=s.artist,
+                album=s.album
+            )
+            for s in game.playlist
+        ]
+
         return LoadGameResponse(
             game_id=game.game_id,
             name=filename.replace(".json", "").replace("-", " ").title(),
             status=game.status,
             card_count=len(game.cards),
+            songs=songs,
         )
 
     except FileNotFoundError as e:
@@ -314,6 +329,39 @@ async def record_played_song(game_id: UUID, request: RecordSongRequest):
         return RecordSongResponse(
             game_id=game.game_id,
             song_id=request.song_id,
+            total_played=len(game.played_songs),
+            updated_at=game.updated_at,
+        )
+
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post(
+    "/api/game/{game_id}/mark-song",
+    response_model=MarkSongResponse,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+async def mark_song(game_id: UUID, request: MarkSongRequest):
+    """Mark a song as played or unplayed.
+
+    This endpoint supports toggling - send played=true to mark as played,
+    played=false to unmark. Useful for manual song tracking in both
+    host and scanner apps.
+
+    The played_songs array in game state is updated and can be polled
+    via GET /api/game/{game_id}/state.
+    """
+    try:
+        service = get_game_service()
+        game = service.toggle_song_played(game_id, request.song_id, request.played)
+
+        return MarkSongResponse(
+            game_id=game.game_id,
+            song_id=request.song_id,
+            played=request.played,
             total_played=len(game.played_songs),
             updated_at=game.updated_at,
         )
