@@ -212,6 +212,52 @@
   margin-top: 2px;
 }
 
+/* Reveal Button */
+.reveal-button {
+  padding: 6px 12px;
+  background: #ffc107;
+  border: none;
+  border-radius: 6px;
+  color: #000;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.reveal-button:hover {
+  background: #ffcd39;
+  transform: scale(1.05);
+}
+
+.reveal-button:active {
+  transform: scale(0.98);
+}
+
+/* Revealed Indicator */
+.revealed-indicator {
+  padding: 4px 8px;
+  background: rgba(29, 185, 84, 0.2);
+  border-radius: 4px;
+  color: #1DB954;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* Hidden Indicator (for played but not revealed songs) */
+.hidden-indicator {
+  color: #ffc107;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+/* Revealed song row */
+.song-row.revealed .song-title {
+  color: #1DB954;
+}
+
 /* Empty States */
 .no-results,
 .empty-state {

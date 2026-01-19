@@ -16,6 +16,8 @@ export function SongChecklist({
   playedCount,
   totalCount,
   nowPlaying,
+  revealedSongs = new Set(),
+  onRevealSong,
   onSongClick,
 }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -103,19 +105,39 @@ export function SongChecklist({
         {displayedSongs.map(song => {
           const isPlayed = playedSongs.has(song.song_id);
           const isNowPlaying = nowPlaying === song.song_id;
+          const isRevealed = revealedSongs.has(song.song_id);
+          const showRevealButton = isNowPlaying && !isRevealed;
           return (
             <div
               key={song.song_id}
-              className={`song-row ${isPlayed ? 'played' : ''} ${isNowPlaying ? 'now-playing' : ''}`}
+              className={`song-row ${isPlayed ? 'played' : ''} ${isNowPlaying ? 'now-playing' : ''} ${isRevealed ? 'revealed' : ''}`}
               onClick={() => onSongClick ? onSongClick(song.song_id) : onTogglePlayed(song.song_id)}
             >
               <div className={`played-indicator ${isNowPlaying ? 'now-playing' : ''}`}>
                 {isNowPlaying ? '♪' : (isPlayed ? '✓' : '○')}
               </div>
               <div className="song-info">
-                <div className="song-title">{song.title}</div>
+                <div className="song-title">
+                  {song.title}
+                  {isPlayed && !isRevealed && <span className="hidden-indicator" title="Title hidden on player view"> ?</span>}
+                </div>
                 <div className="song-artist">{song.artist}</div>
               </div>
+              {showRevealButton && onRevealSong && (
+                <button
+                  className="reveal-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRevealSong(song.song_id);
+                  }}
+                  title="Reveal song title on player view"
+                >
+                  Reveal
+                </button>
+              )}
+              {isRevealed && isPlayed && (
+                <span className="revealed-indicator" title="Title visible on player view">Revealed</span>
+              )}
             </div>
           );
         })}

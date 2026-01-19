@@ -16,6 +16,7 @@ function HostView() {
     playedSongs,
     playedOrder,
     nowPlaying,
+    revealedSongs,
     currentPattern,
     playedCount,
     totalCount,
@@ -24,6 +25,7 @@ function HostView() {
     loadGame,
     toggleSongPlayed,
     setNowPlaying,
+    revealSong,
     setPattern,
     resetRound,
   } = useGameState();
@@ -162,6 +164,8 @@ function HostView() {
               playedCount={playedCount}
               totalCount={totalCount}
               nowPlaying={nowPlaying}
+              revealedSongs={revealedSongs}
+              onRevealSong={revealSong}
               onSongClick={handleSongClick}
             />
           </div>
