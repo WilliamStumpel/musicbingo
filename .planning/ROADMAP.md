@@ -68,7 +68,7 @@ Plans:
 
 Plans:
 - [x] 04-01: Now Playing, Call Board & Pattern Selection
-- [ ] 04-02: Game Controls & Reset API
+- [x] 04-02: Game Controls & Reset API
 
 ### Phase 5: Player View
 **Goal**: Separate window for venue TV/projector with call board and delayed song title reveal
@@ -127,7 +127,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Local Backend Infrastructure | 3/3 | Complete | 2026-01-14 |
 | 2. Card Printing System | 1/1 | Complete | 2026-01-14 |
 | 3. Manual Playback Mode | 4/4 | Complete | 2026-01-18 |
-| 4. Host View | 1/2 | In progress | - |
+| 4. Host View | 2/2 | Complete | 2026-01-18 |
 | 5. Player View | 0/4 | Not started | - |
 | 6. Game Modes & Patterns | 0/3 | Not started | - |
 | 7. Prize & Winner Tracking | 0/3 | Not started | - |
