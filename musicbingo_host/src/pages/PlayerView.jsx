@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './PlayerView.css';
 import * as gameApi from '../services/gameApi';
 import { PlayerCallBoard } from '../components/PlayerCallBoard';
+import { PatternDisplay } from '../components/PatternDisplay';
 
 const POLL_INTERVAL = 2000; // 2 seconds
 
@@ -11,6 +12,7 @@ function PlayerView() {
   const [playedSongs, setPlayedSongs] = useState(new Set());
   const [playedOrder, setPlayedOrder] = useState([]); // Array of song_ids in play order
   const [nowPlaying, setNowPlaying] = useState(null); // song_id of currently playing song
+  const [currentPattern, setCurrentPattern] = useState('five_in_a_row'); // Current winning pattern
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -43,6 +45,10 @@ function PlayerView() {
       // Get now playing from localStorage
       const storedNowPlaying = localStorage.getItem('musicbingo_now_playing');
       setNowPlaying(storedNowPlaying || null);
+
+      // Get pattern from localStorage, fallback to game state
+      const storedPattern = localStorage.getItem('musicbingo_current_pattern');
+      setCurrentPattern(storedPattern || state.current_pattern || 'five_in_a_row');
     } catch (e) {
       setError(e.message);
     } finally {
@@ -76,13 +82,15 @@ function PlayerView() {
     loadGameFromStorage();
   }, [loadGameFromStorage]);
 
-  // Listen for storage changes (game change or now playing change)
+  // Listen for storage changes (game change, now playing, or pattern change)
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === 'musicbingo_current_game') {
         loadGameFromStorage();
       } else if (e.key === 'musicbingo_now_playing') {
         setNowPlaying(e.newValue || null);
+      } else if (e.key === 'musicbingo_current_pattern') {
+        setCurrentPattern(e.newValue || 'five_in_a_row');
       }
     };
 
@@ -128,9 +136,9 @@ function PlayerView() {
       </main>
 
       <footer className="player-footer">
-        {/* Pattern display area - placeholder for 05-03 */}
         <div className="player-pattern">
-          Pattern display coming soon
+          <span className="pattern-title">Current Pattern:</span>
+          <PatternDisplay pattern={currentPattern} size="large" />
         </div>
       </footer>
 

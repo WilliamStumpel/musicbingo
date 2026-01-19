@@ -139,11 +139,15 @@ export function useGameState() {
     const previousPattern = currentPattern;
     setCurrentPatternState(pattern);
 
+    // Sync pattern to localStorage for player view
+    localStorage.setItem('musicbingo_current_pattern', pattern);
+
     try {
       await gameApi.setPattern(gameId, pattern);
     } catch (e) {
       // Revert on error
       setCurrentPatternState(previousPattern);
+      localStorage.setItem('musicbingo_current_pattern', previousPattern);
       setError(e.message);
     }
   }, [currentPattern]);
