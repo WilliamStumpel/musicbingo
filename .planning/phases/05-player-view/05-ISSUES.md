@@ -12,8 +12,8 @@
 
 ### UAT-004: Call board grid text still clips/cuts off
 **Resolved:** 2026-01-19
-**Fix:** Added max-height constraints to grid cells, reduced clamp() font sizes, improved word breaking with overflow-wrap:anywhere, forced single line for artist
-**Commit:** bb4148af
+**Fix:** Fixed row heights with grid-auto-rows, grid scrolls if needed, fixed font sizes instead of clamp(), min-height on cells
+**Commit:** bb4148af, 3e5ddb5c
 
 ### UAT-001: Player view popup window doesn't load game
 **Resolved:** 2026-01-19

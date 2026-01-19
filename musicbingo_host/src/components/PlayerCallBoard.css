@@ -131,9 +131,12 @@
   flex: 1;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  overflow: hidden;
+  grid-auto-rows: minmax(80px, 90px); /* Fixed row height */
+  gap: 12px;
+  overflow-y: auto; /* Scroll if too many songs */
+  overflow-x: hidden;
   align-content: start;
+  padding-right: 8px; /* Space for scrollbar */
 }
 
 /* Responsive - fewer columns on smaller screens */
@@ -168,13 +171,14 @@
 /* Grid Cell - card-based design */
 .grid-cell {
   background: #1a1a1a;
-  border-radius: 12px;
-  padding: 16px 20px;
+  border-radius: 10px;
+  padding: 12px 16px;
   border-left: 4px solid #4caf50;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   overflow: hidden;
   min-width: 0; /* Enable proper grid overflow handling */
-  max-height: 100px; /* Constrain cell height to prevent overflow */
+  min-height: 70px; /* Minimum cell height */
+  height: 100%; /* Fill grid row */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -187,35 +191,27 @@
 }
 
 .grid-cell-title {
-  font-size: clamp(14px, 1.8vw, 22px);
+  font-size: 16px;
   font-weight: 600;
   color: #fff;
-  margin-bottom: 4px;
-  line-height: 1.3;
-  max-height: 2.6em; /* 2 lines * 1.3 line-height */
+  margin-bottom: 2px;
+  line-height: 1.25;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
-  overflow-wrap: anywhere;
 }
 
 .grid-cell-artist {
-  font-size: clamp(11px, 1.3vw, 16px);
+  font-size: 13px;
   font-weight: 400;
   color: #888;
-  line-height: 1.3;
-  max-height: 1.3em; /* 1 line * 1.3 line-height */
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
+  line-height: 1.25;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  white-space: nowrap; /* Force single line for artist */
 }
 
 /* Empty state */
@@ -239,15 +235,24 @@
     font-size: 40px;
   }
 
-  /* Grid cells use clamp() at all sizes - no override needed */
-  /* The clamp() max values handle large screens appropriately */
-
   .now-playing-label {
     font-size: 20px;
   }
 
+  .played-songs-grid {
+    grid-auto-rows: minmax(90px, 100px);
+    gap: 16px;
+  }
+
   .grid-cell {
-    max-height: 110px; /* Slightly taller cells on large TVs */
-    padding: 18px 24px;
+    padding: 14px 20px;
+  }
+
+  .grid-cell-title {
+    font-size: 20px;
+  }
+
+  .grid-cell-artist {
+    font-size: 15px;
   }
 }

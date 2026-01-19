@@ -48,14 +48,14 @@ completed: 2026-01-19
 
 ## Accomplishments
 
-- Grid cell text now truncates cleanly with ellipsis instead of clipping abruptly
-- Added max-height constraints to cells for predictable overflow behavior
-- Reduced clamp() font sizes for better fit within cells
-- Improved word breaking with overflow-wrap: anywhere
+- Grid cells now have fixed row heights (80-90px) that don't shrink
+- Grid scrolls if too many songs instead of shrinking cells
+- Fixed font sizes (16px/13px) for predictable text layout
+- Text truncates cleanly with ellipsis
 
 ## Task Commits
 
-1. **Task 1: Fix UAT-004 - Grid cell text clipping** - `bb4148af` (fix)
+1. **Task 1: Fix UAT-004 - Grid cell text clipping** - `bb4148af` + `3e5ddb5c` (fix)
 
 ## Files Created/Modified
 
@@ -78,8 +78,8 @@ None.
 ## UAT Issues Resolved
 
 ### UAT-004: Call board grid text still clips/cuts off
-- **Root cause:** Fixed font sizes in 1920px+ media query bypassed clamp() limits; no max-height on cells
-- **Fix:** Added max-height to grid cells, reduced clamp() max values, improved word breaking, removed problematic overrides
+- **Root cause:** Cells were shrinking to fit container; no minimum/fixed heights; clamp() font sizes unpredictable
+- **Fix:** Fixed row heights with grid-auto-rows, grid scrolls if needed, fixed font sizes, min-height on cells
 
 ## Next Phase Readiness
 
