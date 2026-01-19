@@ -205,6 +205,25 @@ class GameService:
         game.current_pattern = pattern
         return game
 
+    def reset_round(self, game_id: UUID) -> GameState:
+        """Reset played songs for a new round.
+
+        Clears played_songs list but keeps cards and pattern.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            Updated GameState
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+        game.played_songs = []
+        game.updated_at = datetime.now()
+        return game
+
     def pause_game(self, game_id: UUID) -> GameState:
         """Pause an active game.
 

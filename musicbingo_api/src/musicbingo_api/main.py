@@ -461,6 +461,36 @@ async def set_pattern(game_id: UUID, pattern: PatternType):
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@app.post(
+    "/api/game/{game_id}/reset",
+    response_model=GameStateResponse,
+    responses={404: {"model": ErrorResponse}},
+)
+async def reset_round(game_id: UUID):
+    """Reset played songs for a new round.
+
+    Clears all played songs but preserves cards and pattern.
+    Use when starting a new round with the same game.
+    """
+    try:
+        service = get_game_service()
+        game = service.reset_round(game_id)
+
+        return GameStateResponse(
+            game_id=game.game_id,
+            status=game.status,
+            playlist_size=len(game.playlist),
+            played_songs=game.played_songs,
+            played_count=len(game.played_songs),
+            current_pattern=game.current_pattern,
+            card_count=len(game.cards),
+            created_at=game.created_at,
+            updated_at=game.updated_at,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     """Global exception handler for unhandled errors."""
