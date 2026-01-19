@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-14)
 
 **Core value:** Smooth host experience — the DJ can focus on the crowd and the energy, not on fighting software.
-**Current focus:** Phase 3 — Manual Playback Mode (pivoted from streaming APIs)
+**Current focus:** Phase 4 — Host View (laptop interface with call board, pattern selection)
 
 ## Current Position
 
-Phase: 3 of 8 (Manual Playback Mode)
-Plan: 4 of 4 in current phase
-Status: Complete
-Last activity: 2026-01-18 — Completed 03-03 and 03-04 (Scanner Checklist + API Sync)
+Phase: 4 of 8 (Host View)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-18 — Completed 04-01 (Now Playing, Call Board & Pattern Selection)
 
-Progress: █████░░░░░ 40%
+Progress: ██████░░░░ 48%
 
 ## Pivot Notes
 
@@ -47,9 +47,9 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10 (Phases 1-3 complete)
+- Total plans completed: 11 (Phases 1-3 complete, Phase 4 in progress)
 - Average duration: 4.4 min
-- Total execution time: 44 min
+- Total execution time: 48 min
 
 **By Phase:**
 
@@ -58,6 +58,7 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 | 1 | 3/3 | 7 min | 2.3 min |
 | 2 | 3/3 | 26 min | 8.7 min |
 | 3 | 4/4 | 11 min | 2.8 min |
+| 4 | 1/2 | 4 min | 4.0 min |
 
 ## Accumulated Context
 
@@ -83,6 +84,10 @@ Recent decisions affecting current work:
 - **Song ID generation** - SHA256 hash of lowercase title+artist, truncated to 12 chars
 - **Optimistic updates** - Toggle song played status immediately, rollback on API error
 - **Game API service pattern** - All backend calls go through gameApi.js
+- **30/70 column split** - Call Board 30%, Song Checklist 70% for desktop host view
+- **Amber (#ffc107) for now playing** - Distinct from green (played) with pulsing animation
+- **Combined click action** - Clicking song sets as now playing AND marks played
+- **playedOrder array** - Track play order separate from playedSongs Set for Call Board history
 
 ### Deferred Issues
 
@@ -99,6 +104,6 @@ None - Manual Playback Mode removes all streaming API dependencies.
 ## Session Continuity
 
 Last session: 2026-01-18
-Stopped at: Completed Phase 3 (Manual Playback Mode)
+Stopped at: Completed 04-01-PLAN.md (Now Playing, Call Board & Pattern Selection)
 Resume file: None
-Next action: Plan Phase 4 (Host View)
+Next action: Execute 04-02-PLAN.md (Game Controls & Reset API)
