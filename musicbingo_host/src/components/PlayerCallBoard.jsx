@@ -10,6 +10,7 @@ export function PlayerCallBoard({
   playedSongs,
   playedOrder,
   nowPlaying,
+  revealedSongs = new Set(),
 }) {
   // Build a map of song_id -> song for quick lookup
   const songMap = React.useMemo(() => {
@@ -40,6 +41,9 @@ export function PlayerCallBoard({
     return songMap.get(nowPlaying) || null;
   }, [nowPlaying, songMap]);
 
+  // Check if now playing song is revealed
+  const isNowPlayingRevealed = nowPlaying && revealedSongs.has(nowPlaying);
+
   return (
     <div className="player-call-board-container">
       {/* Now Playing Hero Section */}
@@ -47,8 +51,17 @@ export function PlayerCallBoard({
         <div className="now-playing-label">NOW PLAYING</div>
         {nowPlayingSong ? (
           <div className="now-playing-content">
-            <div className="now-playing-title">{nowPlayingSong.title}</div>
-            <div className="now-playing-artist">{nowPlayingSong.artist}</div>
+            {isNowPlayingRevealed ? (
+              <>
+                <div className="now-playing-title">{nowPlayingSong.title}</div>
+                <div className="now-playing-artist">{nowPlayingSong.artist}</div>
+              </>
+            ) : (
+              <>
+                <div className="now-playing-title hidden-title">?</div>
+                <div className="now-playing-artist hidden-artist">Listen carefully...</div>
+              </>
+            )}
           </div>
         ) : (
           <div className="now-playing-content">

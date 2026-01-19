@@ -103,6 +103,29 @@
   color: #444 !important;
 }
 
+/* Hidden state text (before song reveal) */
+.hidden-title {
+  font-size: 72px !important;
+  color: #ffc107 !important;
+  animation: pulse-question 1.5s ease-in-out infinite;
+}
+
+.hidden-artist {
+  color: #888 !important;
+  font-style: italic !important;
+}
+
+@keyframes pulse-question {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
 /* Played Songs Grid */
 .played-songs-grid {
   flex: 1;

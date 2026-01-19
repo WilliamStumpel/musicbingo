@@ -12,6 +12,7 @@ function PlayerView() {
   const [playedSongs, setPlayedSongs] = useState(new Set());
   const [playedOrder, setPlayedOrder] = useState([]); // Array of song_ids in play order
   const [nowPlaying, setNowPlaying] = useState(null); // song_id of currently playing song
+  const [revealedSongs, setRevealedSongs] = useState(new Set()); // Songs with titles revealed
   const [currentPattern, setCurrentPattern] = useState('five_in_a_row'); // Current winning pattern
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,6 +53,11 @@ function PlayerView() {
       const storedNowPlaying = localStorage.getItem('musicbingo_now_playing');
       setNowPlaying(storedNowPlaying || null);
 
+      // Get revealed songs from localStorage, fallback to game state
+      const storedRevealed = localStorage.getItem('musicbingo_revealed_songs');
+      const revealedSongIds = storedRevealed ? JSON.parse(storedRevealed) : (state.revealed_songs || []);
+      setRevealedSongs(new Set(revealedSongIds));
+
       // Get pattern from localStorage, fallback to game state
       const storedPattern = localStorage.getItem('musicbingo_current_pattern');
       setCurrentPattern(storedPattern || state.current_pattern || 'five_in_a_row');
@@ -88,13 +94,20 @@ function PlayerView() {
     loadGameFromStorage();
   }, [loadGameFromStorage]);
 
-  // Listen for storage changes (game change, now playing, or pattern change)
+  // Listen for storage changes (game change, now playing, revealed songs, or pattern change)
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === 'musicbingo_current_game') {
         loadGameFromStorage();
       } else if (e.key === 'musicbingo_now_playing') {
         setNowPlaying(e.newValue || null);
+      } else if (e.key === 'musicbingo_revealed_songs') {
+        try {
+          const revealedArray = e.newValue ? JSON.parse(e.newValue) : [];
+          setRevealedSongs(new Set(revealedArray));
+        } catch {
+          setRevealedSongs(new Set());
+        }
       } else if (e.key === 'musicbingo_current_pattern') {
         setCurrentPattern(e.newValue || 'five_in_a_row');
       }
@@ -138,6 +151,7 @@ function PlayerView() {
           playedSongs={playedSongs}
           playedOrder={playedOrder}
           nowPlaying={nowPlaying}
+          revealedSongs={revealedSongs}
         />
       </main>
 
