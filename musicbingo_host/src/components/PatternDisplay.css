@@ -1,0 +1,136 @@
+/* PatternDisplay component styles */
+
+.pattern-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Pattern label */
+.pattern-label {
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* 5x5 grid */
+.pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3px;
+  background: #1a1a1a;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+/* Individual cells */
+.pattern-cell {
+  background: #333;
+  border-radius: 2px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Highlighted cells (part of pattern) */
+.pattern-cell.highlighted {
+  background: #1DB954;
+  box-shadow: 0 0 4px rgba(29, 185, 84, 0.4);
+}
+
+/* Center cell (free space) - always marked */
+.pattern-cell.center {
+  background: #1DB954;
+  box-shadow: 0 0 4px rgba(29, 185, 84, 0.4);
+}
+
+/* Size variants */
+
+/* Small size (host view) */
+.pattern-display.small .pattern-label {
+  font-size: 12px;
+}
+
+.pattern-display.small .pattern-grid {
+  gap: 2px;
+  padding: 3px;
+}
+
+.pattern-display.small .pattern-cell {
+  width: 16px;
+  height: 16px;
+}
+
+/* Large size (player/TV view) */
+.pattern-display.large .pattern-label {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.pattern-display.large .pattern-grid {
+  gap: 4px;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.pattern-display.large .pattern-cell {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+}
+
+/* Pattern change animation */
+.pattern-display.pattern-changed {
+  animation: patternPulse 0.4s ease-out;
+}
+
+.pattern-display.pattern-changed .pattern-cell.highlighted {
+  animation: cellGlow 0.4s ease-out;
+}
+
+@keyframes patternPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes cellGlow {
+  0% {
+    box-shadow: 0 0 4px rgba(29, 185, 84, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(29, 185, 84, 0.8), 0 0 30px rgba(29, 185, 84, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 4px rgba(29, 185, 84, 0.4);
+  }
+}
+
+/* Responsive adjustments for large size */
+@media (max-width: 1280px) {
+  .pattern-display.large .pattern-cell {
+    width: 32px;
+    height: 32px;
+  }
+
+  .pattern-display.large .pattern-label {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 960px) {
+  .pattern-display.large .pattern-cell {
+    width: 28px;
+    height: 28px;
+  }
+
+  .pattern-display.large .pattern-label {
+    font-size: 18px;
+  }
+}
