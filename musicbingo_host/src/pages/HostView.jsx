@@ -76,11 +76,16 @@ function HostView() {
 
   const handleOpenPlayerView = () => {
     // Store current game_id in localStorage for player view
-    if (currentGame) {
-      localStorage.setItem('musicbingo_current_game', currentGame.filename || games.find(g => g.name === currentGame.name)?.filename);
+    const filename = currentGame?.filename || games.find(g => g.name === currentGame?.name)?.filename;
+    if (currentGame && filename) {
+      localStorage.setItem('musicbingo_current_game', filename);
       localStorage.setItem('musicbingo_game_id', currentGame.game_id);
+      // Pass game filename as URL parameter as fallback (popup may read before localStorage event fires)
+      const params = new URLSearchParams({ game: filename });
+      window.open(`/player?${params.toString()}`, 'player-view', 'width=1920,height=1080');
+    } else {
+      window.open('/player', 'player-view', 'width=1920,height=1080');
     }
-    window.open('/player', 'player-view', 'width=1920,height=1080');
   };
 
   return (

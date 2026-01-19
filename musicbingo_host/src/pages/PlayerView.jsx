@@ -19,16 +19,22 @@ function PlayerView() {
   const pollRef = useRef(null);
   const gameIdRef = useRef(null);
 
-  // Load game from localStorage (set by host view)
+  // Load game from URL params or localStorage (set by host view)
   const loadGameFromStorage = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const filename = localStorage.getItem('musicbingo_current_game');
+      // Check URL params first (for popup window), then fall back to localStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      let filename = urlParams.get('game') || localStorage.getItem('musicbingo_current_game');
       if (!filename) {
         setIsLoading(false);
         return;
+      }
+      // If we got filename from URL, also store in localStorage for consistency
+      if (urlParams.get('game')) {
+        localStorage.setItem('musicbingo_current_game', filename);
       }
 
       const game = await gameApi.loadGame(filename);
