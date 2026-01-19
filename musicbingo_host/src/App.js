@@ -35,14 +35,18 @@ function App() {
 
   // When clicking a song in the checklist:
   // - If not played: set as now playing (which also marks it played)
-  // - If already played: unmark it (toggle off)
+  // - If already played: confirm then unmark it (toggle off)
   const handleSongClick = (songId) => {
     if (playedSongs.has(songId)) {
-      // Already played - unmark it
-      toggleSongPlayed(songId);
-      // Clear now playing if this was the now-playing song
-      if (nowPlaying === songId) {
-        setNowPlaying(null);
+      // Already played - confirm before unmarking
+      const song = songs.find(s => s.song_id === songId);
+      const songName = song ? `"${song.title}"` : 'this song';
+      if (window.confirm(`Remove ${songName} from played songs?`)) {
+        toggleSongPlayed(songId);
+        // Clear now playing if this was the now-playing song
+        if (nowPlaying === songId) {
+          setNowPlaying(null);
+        }
       }
     } else {
       // Not played - set as now playing (which marks it played)
