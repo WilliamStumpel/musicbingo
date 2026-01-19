@@ -61,16 +61,14 @@ Plans:
 - [x] 03-04: API sync endpoints (mark-song toggle, game state polling)
 
 ### Phase 4: Host View
-**Goal**: Laptop interface for DJ with playback controls, current song, call board, and game management
+**Goal**: Laptop interface for DJ with now playing tracking, call board, pattern selection, and game controls
 **Depends on**: Phase 3
 **Research**: Unlikely (React patterns, internal UI)
-**Plans**: TBD
+**Plans**: 2
 
 Plans:
-- [ ] 04-01: Playback controls (play, pause, skip, replay)
-- [ ] 04-02: Current song and call board display
-- [ ] 04-03: Game management (select game, select pattern, start/end)
-- [ ] 04-04: Background music on pause/resume
+- [ ] 04-01: Now Playing, Call Board & Pattern Selection
+- [ ] 04-02: Game Controls & Reset API
 
 ### Phase 5: Player View
 **Goal**: Separate window for venue TV/projector with call board and delayed song title reveal
@@ -129,7 +127,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Local Backend Infrastructure | 3/3 | Complete | 2026-01-14 |
 | 2. Card Printing System | 1/1 | Complete | 2026-01-14 |
 | 3. Manual Playback Mode | 4/4 | Complete | 2026-01-18 |
-| 4. Host View | 0/4 | Not started | - |
+| 4. Host View | 0/2 | Not started | - |
 | 5. Player View | 0/4 | Not started | - |
 | 6. Game Modes & Patterns | 0/3 | Not started | - |
 | 7. Prize & Winner Tracking | 0/3 | Not started | - |
