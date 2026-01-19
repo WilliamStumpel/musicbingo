@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-14)
 ## Current Position
 
 Phase: 5 of 8 (Player View)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-01-19 — Completed 05-01 (Player Window Route & Layout)
+Last activity: 2026-01-19 — Completed 05-02 (TV-Optimized Call Board)
 
-Progress: ██████░░░░ 57%
+Progress: ██████░░░░ 60%
 
 ## Pivot Notes
 
@@ -47,9 +47,9 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13 (Phases 1-4 + 05-01)
-- Average duration: 4.2 min
-- Total execution time: 54 min
+- Total plans completed: 14 (Phases 1-4 + 05-01, 05-02)
+- Average duration: 4.0 min
+- Total execution time: 56 min
 
 **By Phase:**
 
@@ -59,7 +59,7 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 | 2 | 3/3 | 26 min | 8.7 min |
 | 3 | 4/4 | 11 min | 2.8 min |
 | 4 | 2/2 | 7 min | 3.5 min |
-| 5 | 1/4 | 3 min | 3.0 min |
+| 5 | 2/4 | 5 min | 2.5 min |
 
 ## Accumulated Context
 
@@ -94,6 +94,9 @@ Recent decisions affecting current work:
 - **localStorage for cross-window game sharing** - Host stores game filename, player view reads it
 - **Full viewport player layout** - 100vw x 100vh with overflow:hidden for TV display
 - **30-second song timer default** - Amber flash animation when target reached
+- **localStorage for nowPlaying sync** - Host broadcasts nowPlaying to player view via localStorage
+- **4-column responsive grid** - PlayerCallBoard uses 4 columns, responsive down to 2
+- **Max 20 visible played songs** - Prevent grid overflow in player view
 
 ### Deferred Issues
 
@@ -110,6 +113,6 @@ None - Manual Playback Mode removes all streaming API dependencies.
 ## Session Continuity
 
 Last session: 2026-01-19
-Stopped at: Completed 05-01-PLAN.md (Player Window Route & Layout)
+Stopped at: Completed 05-02-PLAN.md (TV-Optimized Call Board)
 Resume file: None
-Next action: Execute 05-02-PLAN.md (TV-Optimized Call Board)
+Next action: Execute 05-03-PLAN.md (Delayed Reveal)
