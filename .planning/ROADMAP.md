@@ -74,13 +74,13 @@ Plans:
 **Goal**: Separate window for venue TV/projector with call board and delayed song title reveal
 **Depends on**: Phase 4
 **Research**: Unlikely (React patterns, multi-window is standard)
-**Plans**: TBD
+**Plans**: 4
 
 Plans:
-- [ ] 05-01: Separate window for HDMI output
-- [ ] 05-02: Call board showing played songs
-- [ ] 05-03: Delayed song title reveal (halfway through clip)
-- [ ] 05-04: Current winning pattern display
+- [ ] 05-01: Player Window Route & Layout (React Router, PlayerView page, open button)
+- [ ] 05-02: TV-Optimized Call Board (PlayerCallBoard, now playing hero, song grid)
+- [ ] 05-03: Delayed Song Reveal (revealed_songs API, auto-reveal timer, manual reveal)
+- [ ] 05-04: Pattern Display (PatternDisplay component, footer integration, animation)
 
 ### Phase 6: Game Modes & Patterns
 **Goal**: Support multiple bingo patterns and lightning rounds with shorter clips
