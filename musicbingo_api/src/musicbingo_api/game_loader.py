@@ -34,8 +34,8 @@ def list_available_games() -> list[dict]:
                 "song_count": len(data.get("playlist", [])),
                 "card_count": len(data.get("cards", [])),
             })
-        except (json.JSONDecodeError, IOError):
-            # Skip invalid JSON files
+        except (json.JSONDecodeError, IOError, AttributeError, TypeError):
+            # Skip invalid JSON files (including non-dict structures)
             continue
 
     return sorted(games, key=lambda g: g["name"])

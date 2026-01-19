@@ -123,20 +123,22 @@ async def load_game(filename: str):
     Loads game from JSON file in games/ directory, registers it in
     GameService, and sets status to SETUP (needs activation).
 
-    If a game with the same game_id already exists, it will be replaced.
+    If a game with the same game_id already exists, returns the existing
+    game state to preserve runtime data (played_songs, etc.) for cross-app sync.
     """
     try:
         # Load game from file
         game = load_game_from_file(filename)
 
-        # Register in GameService (delete existing if present)
+        # Check if game already registered (preserve runtime state for sync)
         service = get_game_service()
         existing = service.get_game(game.game_id)
         if existing is not None:
-            service.delete_game(game.game_id)
-
-        # Re-register the game
-        service._games[game.game_id] = game
+            # Use existing game to preserve played_songs state
+            game = existing
+        else:
+            # New game - register it
+            service._games[game.game_id] = game
 
         # Build songs list for checklist display
         songs = [
