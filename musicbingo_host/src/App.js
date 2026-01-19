@@ -33,9 +33,21 @@ function App() {
     }
   };
 
-  // When clicking a song in the checklist, set it as now playing (which also marks it played)
+  // When clicking a song in the checklist:
+  // - If not played: set as now playing (which also marks it played)
+  // - If already played: unmark it (toggle off)
   const handleSongClick = (songId) => {
-    setNowPlaying(songId);
+    if (playedSongs.has(songId)) {
+      // Already played - unmark it
+      toggleSongPlayed(songId);
+      // Clear now playing if this was the now-playing song
+      if (nowPlaying === songId) {
+        setNowPlaying(null);
+      }
+    } else {
+      // Not played - set as now playing (which marks it played)
+      setNowPlaying(songId);
+    }
   };
 
   return (
