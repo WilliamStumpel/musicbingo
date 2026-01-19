@@ -6,7 +6,6 @@
 
 ```
 musicbingo/
-├── .beads/                          # Beads issue tracking (git-native)
 ├── .planning/                       # GSD planning documents
 │   └── codebase/                    # Codebase analysis (this folder)
 ├── musicbingo_api/                  # FastAPI backend service
@@ -133,11 +132,6 @@ musicbingo/
 - JavaScript: `musicbingo_verify/src/services/`
 
 ## Special Directories
-
-**.beads/**
-- Purpose: Git-native issue tracking
-- Source: Beads CLI (`bd` commands)
-- Committed: Yes (issues.jsonl tracked in git)
 
 **.planning/**
 - Purpose: GSD planning and codebase documentation

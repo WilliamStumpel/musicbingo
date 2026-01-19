@@ -52,15 +52,6 @@ ruff check src tests
 pytest --cov
 ```
 
-## Project Status
-
-Currently implementing:
-- Task musicbingo-73a.1: Project setup ✅
-- Task musicbingo-73a.2: Card data model (next)
-- Task musicbingo-73a.3: Playlist input handler (next)
-
-See `.beads/issues.jsonl` for full task breakdown and dependencies.
-
 ## Tech Stack
 
 - Python 3.9+

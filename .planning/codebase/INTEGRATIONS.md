@@ -133,13 +133,6 @@
   - Orientation: portrait
   - Theme: #2196F3
 
-## Issue Tracking
-
-**Beads:**
-- Git-native issue tracking in `.beads/` directory
-- Issues in `.beads/issues.jsonl` (JSON Lines format)
-- CLI: `bd list`, `bd create`, `bd update`, `bd sync`
-
 ---
 
 *Integration audit: 2026-01-14*
