@@ -17,6 +17,7 @@ class PatternType(str, Enum):
     FOUR_CORNERS = "four_corners"
     FULL_CARD = "full_card"
     X_PATTERN = "x_pattern"
+    FRAME = "frame"
 
 
 class GameStatus(str, Enum):
@@ -110,6 +111,16 @@ class BingoPattern:
             all_positions = {(r, c) for r in range(5) for c in range(5) if not (r == 2 and c == 2)}
             return all_positions.issubset(marked_positions)
 
+        elif self.pattern_type == PatternType.FRAME:
+            # All edge cells (top row, bottom row, left column, right column)
+            frame_positions = set()
+            for i in range(5):
+                frame_positions.add((0, i))  # Top row
+                frame_positions.add((4, i))  # Bottom row
+                frame_positions.add((i, 0))  # Left column
+                frame_positions.add((i, 4))  # Right column
+            return frame_positions.issubset(marked_positions)
+
         return False
 
 
@@ -133,6 +144,9 @@ DEFAULT_PATTERNS = {
     PatternType.X_PATTERN: BingoPattern(PatternType.X_PATTERN, "X", "Complete both diagonals"),
     PatternType.FULL_CARD: BingoPattern(
         PatternType.FULL_CARD, "Blackout", "Mark all 24 squares"
+    ),
+    PatternType.FRAME: BingoPattern(
+        PatternType.FRAME, "Frame", "Complete the outer border"
     ),
 }
 
