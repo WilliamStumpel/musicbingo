@@ -4,6 +4,7 @@ import { useGameState } from './hooks/useGameState';
 import { SongChecklist } from './components/SongChecklist';
 import { CallBoard } from './components/CallBoard';
 import { PatternSelector } from './components/PatternSelector';
+import { GameControls } from './components/GameControls';
 
 function App() {
   const {
@@ -22,6 +23,7 @@ function App() {
     toggleSongPlayed,
     setNowPlaying,
     setPattern,
+    resetRound,
   } = useGameState();
 
   const handleGameChange = (e) => {
@@ -58,11 +60,18 @@ function App() {
           </div>
 
           {currentGame && (
-            <PatternSelector
-              currentPattern={currentPattern}
-              onPatternChange={setPattern}
-              disabled={isLoading}
-            />
+            <>
+              <PatternSelector
+                currentPattern={currentPattern}
+                onPatternChange={setPattern}
+                disabled={isLoading}
+              />
+              <GameControls
+                onReset={resetRound}
+                playedCount={playedCount}
+                disabled={isLoading || !currentGame}
+              />
+            </>
           )}
         </div>
       </header>
