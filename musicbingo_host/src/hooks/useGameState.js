@@ -117,6 +117,13 @@ export function useGameState() {
 
     setNowPlayingState(songId);
 
+    // Sync nowPlaying to localStorage for player view
+    if (songId) {
+      localStorage.setItem('musicbingo_now_playing', songId);
+    } else {
+      localStorage.removeItem('musicbingo_now_playing');
+    }
+
     // If song is not already played, mark it as played
     if (songId && !playedSongs.has(songId)) {
       await toggleSongPlayed(songId);
@@ -155,6 +162,7 @@ export function useGameState() {
     setPlayedSongs(new Set());
     setPlayedOrder([]);
     setNowPlayingState(null);
+    localStorage.removeItem('musicbingo_now_playing'); // Clear nowPlaying for player view
 
     try {
       await gameApi.resetRound(gameId);

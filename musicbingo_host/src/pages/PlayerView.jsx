@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './PlayerView.css';
 import * as gameApi from '../services/gameApi';
+import { PlayerCallBoard } from '../components/PlayerCallBoard';
 
 const POLL_INTERVAL = 2000; // 2 seconds
 
@@ -8,6 +9,8 @@ function PlayerView() {
   const [currentGame, setCurrentGame] = useState(null);
   const [songs, setSongs] = useState([]);
   const [playedSongs, setPlayedSongs] = useState(new Set());
+  const [playedOrder, setPlayedOrder] = useState([]); // Array of song_ids in play order
+  const [nowPlaying, setNowPlaying] = useState(null); // song_id of currently playing song
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -35,6 +38,11 @@ function PlayerView() {
       const state = await gameApi.getGameState(game.game_id);
       const playedSongIds = state.played_songs || [];
       setPlayedSongs(new Set(playedSongIds));
+      setPlayedOrder(playedSongIds); // played_songs is already ordered
+
+      // Get now playing from localStorage
+      const storedNowPlaying = localStorage.getItem('musicbingo_now_playing');
+      setNowPlaying(storedNowPlaying || null);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -50,6 +58,7 @@ function PlayerView() {
       const played = await gameApi.pollGameState(gameIdRef.current);
       if (played !== null) {
         setPlayedSongs(new Set(played));
+        setPlayedOrder(played); // Update playedOrder from API
       }
     };
 
@@ -67,11 +76,13 @@ function PlayerView() {
     loadGameFromStorage();
   }, [loadGameFromStorage]);
 
-  // Listen for storage changes (if host changes game)
+  // Listen for storage changes (game change or now playing change)
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === 'musicbingo_current_game') {
         loadGameFromStorage();
+      } else if (e.key === 'musicbingo_now_playing') {
+        setNowPlaying(e.newValue || null);
       }
     };
 
@@ -108,14 +119,16 @@ function PlayerView() {
       </header>
 
       <main className="player-main">
-        {/* Call board area - placeholder for now, will be implemented in 05-02 */}
-        <div className="player-call-board">
-          <p className="placeholder-text">Call Board Coming Soon</p>
-        </div>
+        <PlayerCallBoard
+          songs={songs}
+          playedSongs={playedSongs}
+          playedOrder={playedOrder}
+          nowPlaying={nowPlaying}
+        />
       </main>
 
       <footer className="player-footer">
-        {/* Pattern display area - placeholder */}
+        {/* Pattern display area - placeholder for 05-03 */}
         <div className="player-pattern">
           Pattern display coming soon
         </div>
