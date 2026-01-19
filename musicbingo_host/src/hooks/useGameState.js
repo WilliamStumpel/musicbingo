@@ -8,6 +8,9 @@ export function useGameState() {
   const [currentGame, setCurrentGame] = useState(null);
   const [songs, setSongs] = useState([]);
   const [playedSongs, setPlayedSongs] = useState(new Set());
+  const [playedOrder, setPlayedOrder] = useState([]); // Array of song_ids in order played
+  const [nowPlaying, setNowPlayingState] = useState(null); // song_id of currently playing song
+  const [currentPattern, setCurrentPatternState] = useState('five_in_a_row');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -37,7 +40,11 @@ export function useGameState() {
 
       // Get initial state
       const state = await gameApi.getGameState(game.game_id);
-      setPlayedSongs(new Set(state.played_songs || []));
+      const playedSongIds = state.played_songs || [];
+      setPlayedSongs(new Set(playedSongIds));
+      setPlayedOrder(playedSongIds); // Initialize playedOrder from state
+      setCurrentPatternState(state.current_pattern || 'five_in_a_row');
+      setNowPlayingState(null); // Reset now playing when loading new game
     } catch (e) {
       setError(e.message);
     } finally {
@@ -53,7 +60,7 @@ export function useGameState() {
     const isPlayed = playedSongs.has(songId);
     const newPlayed = !isPlayed;
 
-    // Optimistic update
+    // Optimistic update for playedSongs
     setPlayedSongs(prev => {
       const next = new Set(prev);
       if (newPlayed) {
@@ -62,6 +69,20 @@ export function useGameState() {
         next.delete(songId);
       }
       return next;
+    });
+
+    // Optimistic update for playedOrder
+    setPlayedOrder(prev => {
+      if (newPlayed) {
+        // Only add if not already in the list
+        if (!prev.includes(songId)) {
+          return [...prev, songId];
+        }
+        return prev;
+      } else {
+        // Remove from the list
+        return prev.filter(id => id !== songId);
+      }
     });
 
     // Sync to API
@@ -78,9 +99,47 @@ export function useGameState() {
         }
         return next;
       });
+      setPlayedOrder(prev => {
+        if (newPlayed) {
+          return prev.filter(id => id !== songId);
+        } else {
+          return [...prev, songId];
+        }
+      });
       setError(e.message);
     }
   }, [playedSongs]);
+
+  // Set a song as "now playing" (and mark as played if not already)
+  const setNowPlaying = useCallback(async (songId) => {
+    const gameId = gameIdRef.current;
+    if (!gameId) return;
+
+    setNowPlayingState(songId);
+
+    // If song is not already played, mark it as played
+    if (songId && !playedSongs.has(songId)) {
+      await toggleSongPlayed(songId);
+    }
+  }, [playedSongs, toggleSongPlayed]);
+
+  // Set the winning pattern
+  const setPattern = useCallback(async (pattern) => {
+    const gameId = gameIdRef.current;
+    if (!gameId) return;
+
+    // Optimistic update
+    const previousPattern = currentPattern;
+    setCurrentPatternState(pattern);
+
+    try {
+      await gameApi.setPattern(gameId, pattern);
+    } catch (e) {
+      // Revert on error
+      setCurrentPatternState(previousPattern);
+      setError(e.message);
+    }
+  }, [currentPattern]);
 
   // Start polling for updates
   useEffect(() => {
@@ -117,6 +176,9 @@ export function useGameState() {
     currentGame,
     songs,
     playedSongs,
+    playedOrder,
+    nowPlaying,
+    currentPattern,
     playedCount,
     totalCount,
     isLoading,
@@ -125,6 +187,8 @@ export function useGameState() {
     // Actions
     loadGame,
     toggleSongPlayed,
+    setNowPlaying,
+    setPattern,
     refreshGames: loadGames,
   };
 }

@@ -66,3 +66,14 @@ export async function pollGameState(gameId) {
     return null; // Return null on error, don't throw
   }
 }
+
+/**
+ * Set the winning pattern for a game.
+ */
+export async function setPattern(gameId, pattern) {
+  const response = await fetch(`${API_BASE}/api/game/${gameId}/pattern?pattern=${pattern}`, {
+    method: 'POST',
+  });
+  if (!response.ok) throw new Error('Failed to set pattern');
+  return response.json();
+}
