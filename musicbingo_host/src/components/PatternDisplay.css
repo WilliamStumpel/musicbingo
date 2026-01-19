@@ -81,11 +81,12 @@
 
 /* Pattern change animation */
 .pattern-display.pattern-changed {
-  animation: patternPulse 0.4s ease-out;
+  animation: patternPulse 0.3s ease;
 }
 
-.pattern-display.pattern-changed .pattern-cell.highlighted {
-  animation: cellGlow 0.4s ease-out;
+.pattern-display.pattern-changed .pattern-cell.highlighted,
+.pattern-display.pattern-changed .pattern-cell.center {
+  animation: cellGlow 0.3s ease;
 }
 
 @keyframes patternPulse {

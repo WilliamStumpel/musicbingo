@@ -79,7 +79,8 @@ export function PatternDisplay({ pattern = 'five_in_a_row', size = 'small' }) {
   useEffect(() => {
     if (prevPatternRef.current !== pattern) {
       setAnimating(true);
-      const timer = setTimeout(() => setAnimating(false), 400);
+      // Match CSS animation duration (0.3s = 300ms)
+      const timer = setTimeout(() => setAnimating(false), 300);
       prevPatternRef.current = pattern;
       return () => clearTimeout(timer);
     }
