@@ -15,6 +15,8 @@ export function SongChecklist({
   onTogglePlayed,
   playedCount,
   totalCount,
+  nowPlaying,
+  onSongClick,
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState('TITLE_ASC');
@@ -100,14 +102,15 @@ export function SongChecklist({
       <div className="song-list">
         {displayedSongs.map(song => {
           const isPlayed = playedSongs.has(song.song_id);
+          const isNowPlaying = nowPlaying === song.song_id;
           return (
             <div
               key={song.song_id}
-              className={`song-row ${isPlayed ? 'played' : ''}`}
-              onClick={() => onTogglePlayed(song.song_id)}
+              className={`song-row ${isPlayed ? 'played' : ''} ${isNowPlaying ? 'now-playing' : ''}`}
+              onClick={() => onSongClick ? onSongClick(song.song_id) : onTogglePlayed(song.song_id)}
             >
-              <div className="played-indicator">
-                {isPlayed ? '✓' : '○'}
+              <div className={`played-indicator ${isNowPlaying ? 'now-playing' : ''}`}>
+                {isNowPlaying ? '♪' : (isPlayed ? '✓' : '○')}
               </div>
               <div className="song-info">
                 <div className="song-title">{song.title}</div>

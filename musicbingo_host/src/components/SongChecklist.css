@@ -142,6 +142,36 @@
   color: #fff;
 }
 
+/* Now Playing state */
+.song-row.now-playing {
+  background: rgba(255, 193, 7, 0.12);
+  border-left: 3px solid #ffc107;
+  opacity: 1;
+  animation: now-playing-pulse 2s ease-in-out infinite;
+}
+
+.song-row.now-playing .song-title {
+  color: #ffc107;
+  text-decoration: none;
+}
+
+.song-row.now-playing .played-indicator {
+  background: #ffc107;
+  border-color: #ffc107;
+  color: #000;
+  animation: indicator-pulse 1s ease-in-out infinite;
+}
+
+@keyframes now-playing-pulse {
+  0%, 100% { background: rgba(255, 193, 7, 0.12); }
+  50% { background: rgba(255, 193, 7, 0.2); }
+}
+
+@keyframes indicator-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
 .song-info {
   flex: 1;
   min-width: 0;
