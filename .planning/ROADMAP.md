@@ -91,7 +91,7 @@ Plans:
 Note: Lightning rounds removed - obsolete after Manual Playback pivot (DJ controls music externally).
 
 Plans:
-- [ ] 06-01: Complete pattern support (add Frame to backend, expose all 8 patterns in UI)
+- [x] 06-01: Complete pattern support (add Frame to backend, expose all 8 patterns in UI)
 
 ### Phase 7: Prize & Winner Tracking
 **Goal**: Track winners, handle multiple winners on same song, configure prizes per game
@@ -129,6 +129,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 3. Manual Playback Mode | 4/4 | Complete | 2026-01-18 |
 | 4. Host View | 2/2 | Complete | 2026-01-18 |
 | 5. Player View | 4/4 | Complete | 2026-01-19 |
-| 6. Game Modes & Patterns | 0/1 | Not started | - |
+| 6. Game Modes & Patterns | 1/1 | Complete | 2026-01-19 |
 | 7. Prize & Winner Tracking | 0/3 | Not started | - |
 | 8. Testing & Quality | 0/5 | Not started | - |
