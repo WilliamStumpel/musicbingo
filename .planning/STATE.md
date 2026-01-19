@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-14)
 
 **Core value:** Smooth host experience — the DJ can focus on the crowd and the energy, not on fighting software.
-**Current focus:** Phase 4 — Host View (laptop interface with call board, pattern selection)
+**Current focus:** Phase 5 — Player View (HDMI output with call board and pattern display)
 
 ## Current Position
 
-Phase: 4 of 8 (Host View)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-01-18 — Completed 04-02 (Game Controls & Reset API)
+Phase: 5 of 8 (Player View)
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-01-19 — Completed 05-01 (Player Window Route & Layout)
 
-Progress: ██████░░░░ 52%
+Progress: ██████░░░░ 57%
 
 ## Pivot Notes
 
@@ -47,9 +47,9 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12 (Phases 1-4 complete)
-- Average duration: 4.3 min
-- Total execution time: 51 min
+- Total plans completed: 13 (Phases 1-4 + 05-01)
+- Average duration: 4.2 min
+- Total execution time: 54 min
 
 **By Phase:**
 
@@ -59,6 +59,7 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 | 2 | 3/3 | 26 min | 8.7 min |
 | 3 | 4/4 | 11 min | 2.8 min |
 | 4 | 2/2 | 7 min | 3.5 min |
+| 5 | 1/4 | 3 min | 3.0 min |
 
 ## Accumulated Context
 
@@ -90,6 +91,9 @@ Recent decisions affecting current work:
 - **playedOrder array** - Track play order separate from playedSongs Set for Call Board history
 - **window.confirm for reset** - Simple native dialog for destructive action confirmation
 - **Red danger color for reset** - Using #dc3545 to indicate destructive action
+- **localStorage for cross-window game sharing** - Host stores game filename, player view reads it
+- **Full viewport player layout** - 100vw x 100vh with overflow:hidden for TV display
+- **30-second song timer default** - Amber flash animation when target reached
 
 ### Deferred Issues
 
@@ -105,7 +109,7 @@ None - Manual Playback Mode removes all streaming API dependencies.
 
 ## Session Continuity
 
-Last session: 2026-01-18
-Stopped at: Completed 04-02-PLAN.md (Game Controls & Reset API)
+Last session: 2026-01-19
+Stopped at: Completed 05-01-PLAN.md (Player Window Route & Layout)
 Resume file: None
-Next action: Plan Phase 5 (Player View)
+Next action: Execute 05-02-PLAN.md (TV-Optimized Call Board)

@@ -77,7 +77,7 @@ Plans:
 **Plans**: 4
 
 Plans:
-- [ ] 05-01: Player Window Route & Layout (React Router, PlayerView page, open button)
+- [x] 05-01: Player Window Route & Layout (React Router, PlayerView page, open button)
 - [ ] 05-02: TV-Optimized Call Board (PlayerCallBoard, now playing hero, song grid)
 - [ ] 05-03: Delayed Song Reveal (revealed_songs API, auto-reveal timer, manual reveal)
 - [ ] 05-04: Pattern Display (PatternDisplay component, footer integration, animation)
@@ -128,7 +128,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Card Printing System | 1/1 | Complete | 2026-01-14 |
 | 3. Manual Playback Mode | 4/4 | Complete | 2026-01-18 |
 | 4. Host View | 2/2 | Complete | 2026-01-18 |
-| 5. Player View | 0/4 | Not started | - |
+| 5. Player View | 1/4 | In progress | - |
 | 6. Game Modes & Patterns | 0/3 | Not started | - |
 | 7. Prize & Winner Tracking | 0/3 | Not started | - |
 | 8. Testing & Quality | 0/5 | Not started | - |
