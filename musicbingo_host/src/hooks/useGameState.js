@@ -141,6 +141,32 @@ export function useGameState() {
     }
   }, [currentPattern]);
 
+  // Reset round - clear all played songs
+  const resetRound = useCallback(async () => {
+    const gameId = gameIdRef.current;
+    if (!gameId) return;
+
+    // Store previous state for rollback
+    const previousPlayedSongs = playedSongs;
+    const previousPlayedOrder = playedOrder;
+    const previousNowPlaying = nowPlaying;
+
+    // Optimistic update - clear all play state
+    setPlayedSongs(new Set());
+    setPlayedOrder([]);
+    setNowPlayingState(null);
+
+    try {
+      await gameApi.resetRound(gameId);
+    } catch (e) {
+      // Revert on error
+      setPlayedSongs(previousPlayedSongs);
+      setPlayedOrder(previousPlayedOrder);
+      setNowPlayingState(previousNowPlaying);
+      setError(e.message);
+    }
+  }, [playedSongs, playedOrder, nowPlaying]);
+
   // Start polling for updates
   useEffect(() => {
     if (!gameIdRef.current) return;
@@ -189,6 +215,7 @@ export function useGameState() {
     toggleSongPlayed,
     setNowPlaying,
     setPattern,
+    resetRound,
     refreshGames: loadGames,
   };
 }

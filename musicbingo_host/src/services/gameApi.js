@@ -77,3 +77,14 @@ export async function setPattern(gameId, pattern) {
   if (!response.ok) throw new Error('Failed to set pattern');
   return response.json();
 }
+
+/**
+ * Reset round - clear all played songs for a new round.
+ */
+export async function resetRound(gameId) {
+  const response = await fetch(`${API_BASE}/api/game/${gameId}/reset`, {
+    method: 'POST',
+  });
+  if (!response.ok) throw new Error('Failed to reset round');
+  return response.json();
+}
