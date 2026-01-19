@@ -11,6 +11,21 @@ const PATTERNS = {
     // Example: middle row
     cells: [[0, 2], [1, 2], [2, 2], [3, 2], [4, 2]]
   },
+  row: {
+    label: 'Any Row',
+    // Example: middle row
+    cells: [[0, 2], [1, 2], [2, 2], [3, 2], [4, 2]]
+  },
+  column: {
+    label: 'Any Column',
+    // Example: middle column
+    cells: [[2, 0], [2, 1], [2, 2], [2, 3], [2, 4]]
+  },
+  diagonal: {
+    label: 'Diagonal',
+    // Example: main diagonal
+    cells: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
+  },
   four_corners: {
     label: '4 Corners',
     cells: [[0, 0], [4, 0], [0, 4], [4, 4]]
@@ -20,13 +35,13 @@ const PATTERNS = {
     // Both diagonals
     cells: [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [4, 0], [3, 1], [1, 3], [0, 4]]
   },
-  full_card: {
-    label: 'Blackout',
-    cells: 'all'
-  },
   frame: {
     label: 'Frame',
     cells: 'border'
+  },
+  full_card: {
+    label: 'Blackout',
+    cells: 'all'
   }
 };
 
