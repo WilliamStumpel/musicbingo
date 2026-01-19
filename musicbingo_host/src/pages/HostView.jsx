@@ -6,6 +6,7 @@ import { CallBoard } from '../components/CallBoard';
 import { PatternSelector } from '../components/PatternSelector';
 import { GameControls } from '../components/GameControls';
 import { ConfirmModal } from '../components/ConfirmModal';
+import { SongTimer } from '../components/SongTimer';
 
 function HostView() {
   const {
@@ -112,6 +113,10 @@ function HostView() {
                 onReset={resetRound}
                 playedCount={playedCount}
                 disabled={isLoading || !currentGame}
+              />
+              <SongTimer
+                nowPlaying={nowPlaying}
+                targetSeconds={30}
               />
               <button
                 className="player-view-button"
