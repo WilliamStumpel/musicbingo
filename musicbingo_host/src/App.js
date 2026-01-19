@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import { useGameState } from './hooks/useGameState';
 import { SongChecklist } from './components/SongChecklist';
 import { CallBoard } from './components/CallBoard';
 import { PatternSelector } from './components/PatternSelector';
 import { GameControls } from './components/GameControls';
+import { ConfirmModal } from './components/ConfirmModal';
 
 function App() {
   const {
@@ -26,6 +27,9 @@ function App() {
     resetRound,
   } = useGameState();
 
+  // State for remove song confirmation modal
+  const [removeConfirm, setRemoveConfirm] = useState({ isOpen: false, songId: null, songTitle: '' });
+
   const handleGameChange = (e) => {
     const filename = e.target.value;
     if (filename) {
@@ -35,23 +39,34 @@ function App() {
 
   // When clicking a song in the checklist:
   // - If not played: set as now playing (which also marks it played)
-  // - If already played: confirm then unmark it (toggle off)
+  // - If already played: show confirmation modal to unmark
   const handleSongClick = (songId) => {
     if (playedSongs.has(songId)) {
-      // Already played - confirm before unmarking
+      // Already played - show confirmation modal
       const song = songs.find(s => s.song_id === songId);
-      const songName = song ? `"${song.title}"` : 'this song';
-      if (window.confirm(`Remove ${songName} from played songs?`)) {
-        toggleSongPlayed(songId);
-        // Clear now playing if this was the now-playing song
-        if (nowPlaying === songId) {
-          setNowPlaying(null);
-        }
-      }
+      setRemoveConfirm({
+        isOpen: true,
+        songId,
+        songTitle: song?.title || 'this song'
+      });
     } else {
       // Not played - set as now playing (which marks it played)
       setNowPlaying(songId);
     }
+  };
+
+  const handleConfirmRemove = () => {
+    const { songId } = removeConfirm;
+    toggleSongPlayed(songId);
+    // Clear now playing if this was the now-playing song
+    if (nowPlaying === songId) {
+      setNowPlaying(null);
+    }
+    setRemoveConfirm({ isOpen: false, songId: null, songTitle: '' });
+  };
+
+  const handleCancelRemove = () => {
+    setRemoveConfirm({ isOpen: false, songId: null, songTitle: '' });
   };
 
   return (
@@ -135,6 +150,16 @@ function App() {
           Click songs to mark as "now playing".
         </p>
       </footer>
+
+      <ConfirmModal
+        isOpen={removeConfirm.isOpen}
+        title="Remove Song"
+        message={`Remove "${removeConfirm.songTitle}" from played songs?`}
+        confirmText="Remove"
+        cancelText="Cancel"
+        onConfirm={handleConfirmRemove}
+        onCancel={handleCancelRemove}
+      />
     </div>
   );
 }
