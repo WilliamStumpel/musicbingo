@@ -176,6 +176,7 @@ class GameState:
     status: GameStatus
     playlist: list[Song]  # All songs in the game
     played_songs: list[UUID] = field(default_factory=list)  # Songs played so far (in order)
+    revealed_songs: list[UUID] = field(default_factory=list)  # Songs with titles revealed on player view
     current_pattern: PatternType = PatternType.FIVE_IN_A_ROW
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)

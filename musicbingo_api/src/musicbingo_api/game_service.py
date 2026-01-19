@@ -208,7 +208,7 @@ class GameService:
     def reset_round(self, game_id: UUID) -> GameState:
         """Reset played songs for a new round.
 
-        Clears played_songs list but keeps cards and pattern.
+        Clears played_songs and revealed_songs lists but keeps cards and pattern.
 
         Args:
             game_id: Game identifier
@@ -221,7 +221,33 @@ class GameService:
         """
         game = self.get_game_or_raise(game_id)
         game.played_songs = []
+        game.revealed_songs = []
         game.updated_at = datetime.now()
+        return game
+
+    def reveal_song(self, game_id: UUID, song_id: str) -> GameState:
+        """Mark a song as revealed (title can be shown on player view).
+
+        Args:
+            game_id: Game identifier
+            song_id: Song identifier (as string, converted to UUID)
+
+        Returns:
+            Updated GameState
+
+        Raises:
+            ValueError: If game not found or invalid song_id
+        """
+        game = self.get_game_or_raise(game_id)
+
+        try:
+            song_uuid = UUID(song_id)
+        except ValueError:
+            raise ValueError(f"Invalid song_id format: {song_id}")
+
+        if song_uuid not in game.revealed_songs:
+            game.revealed_songs.append(song_uuid)
+            game.updated_at = datetime.now()
         return game
 
     def pause_game(self, game_id: UUID) -> GameState:

@@ -119,6 +119,7 @@ class GameStateResponse(BaseModel):
     playlist_size: int
     played_songs: list[UUID]
     played_count: int
+    revealed_songs: list[UUID] = []
     current_pattern: PatternType
     card_count: int
     created_at: datetime

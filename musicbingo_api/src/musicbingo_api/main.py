@@ -396,6 +396,7 @@ async def get_game_state(game_id: UUID):
         playlist_size=len(game.playlist),
         played_songs=game.played_songs,
         played_count=len(game.played_songs),
+        revealed_songs=game.revealed_songs,
         current_pattern=game.current_pattern,
         card_count=len(game.cards),
         created_at=game.created_at,
@@ -449,6 +450,7 @@ async def set_pattern(game_id: UUID, pattern: PatternType):
             playlist_size=len(game.playlist),
             played_songs=game.played_songs,
             played_count=len(game.played_songs),
+            revealed_songs=game.revealed_songs,
             current_pattern=game.current_pattern,
             card_count=len(game.cards),
             created_at=game.created_at,
@@ -482,6 +484,7 @@ async def reset_round(game_id: UUID):
             playlist_size=len(game.playlist),
             played_songs=game.played_songs,
             played_count=len(game.played_songs),
+            revealed_songs=game.revealed_songs,
             current_pattern=game.current_pattern,
             card_count=len(game.cards),
             created_at=game.created_at,
@@ -489,6 +492,40 @@ async def reset_round(game_id: UUID):
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.post(
+    "/api/game/{game_id}/reveal/{song_id}",
+    response_model=GameStateResponse,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+async def reveal_song(game_id: UUID, song_id: str):
+    """Reveal a song title on the player view.
+
+    Marks the song as revealed so its title can be displayed on the player view.
+    Used after the song has been playing for a while and players have had a
+    chance to recognize it by ear.
+    """
+    try:
+        service = get_game_service()
+        game = service.reveal_song(game_id, song_id)
+
+        return GameStateResponse(
+            game_id=game.game_id,
+            status=game.status,
+            playlist_size=len(game.playlist),
+            played_songs=game.played_songs,
+            played_count=len(game.played_songs),
+            revealed_songs=game.revealed_songs,
+            current_pattern=game.current_pattern,
+            card_count=len(game.cards),
+            created_at=game.created_at,
+            updated_at=game.updated_at,
+        )
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.exception_handler(Exception)
