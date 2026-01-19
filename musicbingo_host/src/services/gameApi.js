@@ -88,3 +88,14 @@ export async function resetRound(gameId) {
   if (!response.ok) throw new Error('Failed to reset round');
   return response.json();
 }
+
+/**
+ * Reveal a song title on the player view.
+ */
+export async function revealSong(gameId, songId) {
+  const response = await fetch(`${API_BASE}/api/game/${gameId}/reveal/${songId}`, {
+    method: 'POST',
+  });
+  if (!response.ok) throw new Error('Failed to reveal song');
+  return response.json();
+}

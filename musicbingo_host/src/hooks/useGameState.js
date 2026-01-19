@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import * as gameApi from '../services/gameApi';
 
 const POLL_INTERVAL = 2000; // 2 seconds
+const REVEAL_DELAY = 15000; // 15 seconds before auto-reveal
 
 export function useGameState() {
   const [games, setGames] = useState([]);
@@ -10,12 +11,14 @@ export function useGameState() {
   const [playedSongs, setPlayedSongs] = useState(new Set());
   const [playedOrder, setPlayedOrder] = useState([]); // Array of song_ids in order played
   const [nowPlaying, setNowPlayingState] = useState(null); // song_id of currently playing song
+  const [revealedSongs, setRevealedSongs] = useState(new Set()); // Songs with titles revealed
   const [currentPattern, setCurrentPatternState] = useState('five_in_a_row');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const pollRef = useRef(null);
   const gameIdRef = useRef(null);
+  const revealTimerRef = useRef(null); // Timer for auto-reveal
 
   // Load available games
   const loadGames = useCallback(async () => {
@@ -41,8 +44,10 @@ export function useGameState() {
       // Get initial state
       const state = await gameApi.getGameState(game.game_id);
       const playedSongIds = state.played_songs || [];
+      const revealedSongIds = state.revealed_songs || [];
       setPlayedSongs(new Set(playedSongIds));
       setPlayedOrder(playedSongIds); // Initialize playedOrder from state
+      setRevealedSongs(new Set(revealedSongIds)); // Initialize revealedSongs from state
       setCurrentPatternState(state.current_pattern || 'five_in_a_row');
       setNowPlayingState(null); // Reset now playing when loading new game
     } catch (e) {
@@ -115,11 +120,30 @@ export function useGameState() {
     const gameId = gameIdRef.current;
     if (!gameId) return;
 
+    // Clear any existing reveal timer
+    if (revealTimerRef.current) {
+      clearTimeout(revealTimerRef.current);
+      revealTimerRef.current = null;
+    }
+
     setNowPlayingState(songId);
 
     // Sync nowPlaying to localStorage for player view
     if (songId) {
       localStorage.setItem('musicbingo_now_playing', songId);
+
+      // Start auto-reveal timer if song is not already revealed
+      if (!revealedSongs.has(songId)) {
+        revealTimerRef.current = setTimeout(async () => {
+          await gameApi.revealSong(gameId, songId);
+          setRevealedSongs(prev => {
+            const next = new Set(prev);
+            next.add(songId);
+            localStorage.setItem('musicbingo_revealed_songs', JSON.stringify([...next]));
+            return next;
+          });
+        }, REVEAL_DELAY);
+      }
     } else {
       localStorage.removeItem('musicbingo_now_playing');
     }
@@ -128,7 +152,7 @@ export function useGameState() {
     if (songId && !playedSongs.has(songId)) {
       await toggleSongPlayed(songId);
     }
-  }, [playedSongs, toggleSongPlayed]);
+  }, [playedSongs, revealedSongs, toggleSongPlayed]);
 
   // Set the winning pattern
   const setPattern = useCallback(async (pattern) => {
@@ -152,21 +176,61 @@ export function useGameState() {
     }
   }, [currentPattern]);
 
+  // Reveal a song (call API and update local state)
+  const revealSong = useCallback(async (songId) => {
+    const gameId = gameIdRef.current;
+    if (!gameId || !songId) return;
+
+    // Optimistic update
+    setRevealedSongs(prev => {
+      const next = new Set(prev);
+      next.add(songId);
+      return next;
+    });
+
+    // Sync revealed songs to localStorage for player view
+    setRevealedSongs(prev => {
+      localStorage.setItem('musicbingo_revealed_songs', JSON.stringify([...prev, songId]));
+      return prev;
+    });
+
+    try {
+      await gameApi.revealSong(gameId, songId);
+    } catch (e) {
+      // Revert on error
+      setRevealedSongs(prev => {
+        const next = new Set(prev);
+        next.delete(songId);
+        return next;
+      });
+      setError(e.message);
+    }
+  }, []);
+
   // Reset round - clear all played songs
   const resetRound = useCallback(async () => {
     const gameId = gameIdRef.current;
     if (!gameId) return;
 
+    // Clear reveal timer if running
+    if (revealTimerRef.current) {
+      clearTimeout(revealTimerRef.current);
+      revealTimerRef.current = null;
+    }
+
     // Store previous state for rollback
     const previousPlayedSongs = playedSongs;
     const previousPlayedOrder = playedOrder;
     const previousNowPlaying = nowPlaying;
+    const previousRevealedSongs = revealedSongs;
 
     // Optimistic update - clear all play state
     setPlayedSongs(new Set());
     setPlayedOrder([]);
     setNowPlayingState(null);
+    setRevealedSongs(new Set());
     localStorage.removeItem('musicbingo_now_playing'); // Clear nowPlaying for player view
+    localStorage.removeItem('musicbingo_revealed_songs'); // Clear revealedSongs for player view
 
     try {
       await gameApi.resetRound(gameId);
@@ -175,18 +239,29 @@ export function useGameState() {
       setPlayedSongs(previousPlayedSongs);
       setPlayedOrder(previousPlayedOrder);
       setNowPlayingState(previousNowPlaying);
+      setRevealedSongs(previousRevealedSongs);
       setError(e.message);
     }
-  }, [playedSongs, playedOrder, nowPlaying]);
+  }, [playedSongs, playedOrder, nowPlaying, revealedSongs]);
 
   // Start polling for updates
   useEffect(() => {
     if (!gameIdRef.current) return;
 
     const poll = async () => {
-      const played = await gameApi.pollGameState(gameIdRef.current);
-      if (played !== null) {
-        setPlayedSongs(new Set(played));
+      try {
+        const state = await gameApi.getGameState(gameIdRef.current);
+        if (state) {
+          if (state.played_songs) {
+            setPlayedSongs(new Set(state.played_songs));
+          }
+          if (state.revealed_songs) {
+            setRevealedSongs(new Set(state.revealed_songs));
+            localStorage.setItem('musicbingo_revealed_songs', JSON.stringify(state.revealed_songs));
+          }
+        }
+      } catch (e) {
+        console.error('Poll failed:', e);
       }
     };
 
@@ -198,6 +273,15 @@ export function useGameState() {
       }
     };
   }, [currentGame]);
+
+  // Cleanup reveal timer on unmount
+  useEffect(() => {
+    return () => {
+      if (revealTimerRef.current) {
+        clearTimeout(revealTimerRef.current);
+      }
+    };
+  }, []);
 
   // Load games on mount
   useEffect(() => {
@@ -216,6 +300,7 @@ export function useGameState() {
     playedSongs,
     playedOrder,
     nowPlaying,
+    revealedSongs,
     currentPattern,
     playedCount,
     totalCount,
@@ -226,6 +311,7 @@ export function useGameState() {
     loadGame,
     toggleSongPlayed,
     setNowPlaying,
+    revealSong,
     setPattern,
     resetRound,
     refreshGames: loadGames,
