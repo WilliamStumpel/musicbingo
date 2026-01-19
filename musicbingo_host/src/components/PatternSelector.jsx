@@ -3,12 +3,17 @@ import './PatternSelector.css';
 
 /**
  * Pattern options with user-friendly labels.
- * Pattern types from backend: five_in_a_row, row, column, diagonal, four_corners, x_pattern, full_card
+ * Pattern types from backend: five_in_a_row, row, column, diagonal, four_corners, x_pattern, frame, full_card
+ * Order: easiest to hardest
  */
 const PATTERN_OPTIONS = [
   { value: 'five_in_a_row', label: '5 in a Row', description: 'Row, column, or diagonal' },
+  { value: 'row', label: 'Any Row', description: 'Any horizontal row' },
+  { value: 'column', label: 'Any Column', description: 'Any vertical column' },
+  { value: 'diagonal', label: 'Diagonal', description: 'Either diagonal' },
   { value: 'four_corners', label: '4 Corners', description: 'All four corners' },
   { value: 'x_pattern', label: 'X Pattern', description: 'Both diagonals' },
+  { value: 'frame', label: 'Frame', description: 'Outer border' },
   { value: 'full_card', label: 'Blackout', description: 'All 24 squares' },
 ];
 
