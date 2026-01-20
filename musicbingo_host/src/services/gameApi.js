@@ -99,3 +99,13 @@ export async function revealSong(gameId, songId) {
   if (!response.ok) throw new Error('Failed to reveal song');
   return response.json();
 }
+
+/**
+ * Get server network info (IP, port, URL).
+ * Used for QR code display to show the actual network URL.
+ */
+export async function getServerInfo() {
+  const response = await fetch(`${API_BASE}/api/server-info`);
+  if (!response.ok) throw new Error('Failed to get server info');
+  return response.json();
+}
