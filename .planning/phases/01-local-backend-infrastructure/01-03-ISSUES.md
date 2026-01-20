@@ -6,9 +6,32 @@
 
 ## Open Issues
 
-[None]
+None
 
 ## Resolved Issues
+
+### UAT-002: Scanner QR detection not triggering verification
+
+**Discovered:** 2026-01-19
+**Phase/Plan:** 01-03
+**Severity:** Blocker
+**Feature:** Scanner QR code detection
+**Description:** When positioning a printed bingo card QR code within the scanner camera frame, the scanner shows an outline around the QR code but nothing happens. No verification is triggered.
+**Expected:** Scanner should detect the QR code and automatically send it for verification, showing win/lose result
+**Actual:** QR code is outlined but no verification occurs. No manual code entry option visible as fallback.
+**Repro:**
+1. Open scanner PWA at localhost:3001
+2. Connect to backend
+3. Load a game
+4. Point camera at a printed bingo card QR code
+5. QR code gets outlined but nothing happens
+
+**Addressed:** 2026-01-20 - Fixed in 01-03-FIX2.md
+**Commits:** 4d0b5caf, ded65945
+**Fix:**
+1. Added debug logging to trace QR scanner callback flow
+2. Fixed isScanning initialization (was false, blocking initial scans)
+3. Added manual code entry fallback UI for verification when QR detection fails
 
 ### UAT-001: Scanner shows "Oops" error immediately on load
 
