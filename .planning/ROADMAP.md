@@ -37,6 +37,7 @@ Plans:
 - [x] 01-01: Local server startup and network discovery
 - [x] 01-02: Game selector with 8 pre-loaded games
 - [x] 01-03: Scanner PWA connection to local backend (UAT fix applied)
+- [x] 01-04: Connection QR code for scanner app
 
 ### Phase 2: Card Printing System
 **Goal**: Generate professional print-ready PDFs with 4 cards per letter page and venue branding
@@ -124,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Local Backend Infrastructure | 3/3 | Complete | 2026-01-14 |
+| 1. Local Backend Infrastructure | 4/4 | Complete | 2026-01-19 |
 | 2. Card Printing System | 1/1 | Complete | 2026-01-14 |
 | 3. Manual Playback Mode | 4/4 | Complete | 2026-01-18 |
 | 4. Host View | 2/2 | Complete | 2026-01-18 |

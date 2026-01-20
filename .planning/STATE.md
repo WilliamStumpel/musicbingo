@@ -55,7 +55,7 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 3/3 | 7 min | 2.3 min |
+| 1 | 4/4 | 12 min | 3.0 min |
 | 2 | 3/3 | 26 min | 8.7 min |
 | 3 | 4/4 | 11 min | 2.8 min |
 | 4 | 2/2 | 7 min | 3.5 min |
@@ -100,6 +100,7 @@ Recent decisions affecting current work:
 - **localStorage for pattern sync** - Host broadcasts currentPattern to player view
 - **PatternDisplay 5x5 grid** - CSS Grid with green (#1DB954) highlighted cells
 - **Pattern change animation** - Scale 1.1x + glow pulse on change (0.3s ease)
+- **Connection QR code** - Host app displays server URL as QR code for easy scanner connection
 
 ### Deferred Issues
 
@@ -116,6 +117,6 @@ None - Manual Playback Mode removes all streaming API dependencies.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 01-03-FIX2 (Scanner QR detection fix)
+Stopped at: Completed 01-04 (Connection QR Code for Scanner App)
 Resume file: None
-Next action: UAT re-test scanner, then plan phase 7 (Prize & Winner Tracking)
+Next action: Commit 01-04 changes, then plan phase 7 (Prize & Winner Tracking)

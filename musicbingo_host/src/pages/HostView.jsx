@@ -7,6 +7,7 @@ import { PatternSelector } from '../components/PatternSelector';
 import { GameControls } from '../components/GameControls';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { SongTimer } from '../components/SongTimer';
+import { ConnectionInfo } from '../components/ConnectionInfo';
 
 function HostView() {
   const {
@@ -32,6 +33,8 @@ function HostView() {
 
   // State for remove song confirmation modal
   const [removeConfirm, setRemoveConfirm] = useState({ isOpen: false, songId: null, songTitle: '' });
+  // State for connection info modal
+  const [showConnectionInfo, setShowConnectionInfo] = useState(false);
 
   const handleGameChange = (e) => {
     const filename = e.target.value;
@@ -93,6 +96,15 @@ function HostView() {
       <header className="host-header">
         <div className="header-left">
           <h1>Music Bingo Host</h1>
+          <button
+            className="qr-button"
+            onClick={() => setShowConnectionInfo(true)}
+            title="Show connection QR code"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v3h-3v-3zm-3 3h3v3h-3v-3zm3 3h3v3h-3v-3zm-3 3h3v3h-3v-3zm3 0h3v3h-3v-3z"/>
+            </svg>
+          </button>
         </div>
 
         <div className="header-controls">
@@ -192,6 +204,11 @@ function HostView() {
         cancelText="Cancel"
         onConfirm={handleConfirmRemove}
         onCancel={handleCancelRemove}
+      />
+
+      <ConnectionInfo
+        isOpen={showConnectionInfo}
+        onClose={() => setShowConnectionInfo(false)}
       />
     </div>
   );
