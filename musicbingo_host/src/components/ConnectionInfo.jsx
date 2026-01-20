@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { API_BASE } from '../services/gameApi';
+import { API_BASE, getServerInfo } from '../services/gameApi';
 import './ConnectionInfo.css';
 
 export function ConnectionInfo({ isOpen, onClose }) {
+  const [serverUrl, setServerUrl] = useState(API_BASE);
+
+  useEffect(() => {
+    if (isOpen) {
+      getServerInfo()
+        .then((data) => setServerUrl(data.url))
+        .catch(() => setServerUrl(API_BASE)); // Fallback to localhost
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
@@ -13,7 +23,7 @@ export function ConnectionInfo({ isOpen, onClose }) {
 
         <div className="qr-container">
           <QRCodeSVG
-            value={API_BASE}
+            value={serverUrl}
             size={200}
             bgColor="#2a2a2a"
             fgColor="#1DB954"
@@ -26,7 +36,7 @@ export function ConnectionInfo({ isOpen, onClose }) {
         </p>
 
         <div className="server-url">
-          <code>{API_BASE}</code>
+          <code>{serverUrl}</code>
         </div>
 
         <button className="connection-close-btn" onClick={onClose}>
