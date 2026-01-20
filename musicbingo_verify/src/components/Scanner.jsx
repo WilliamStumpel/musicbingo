@@ -12,6 +12,7 @@ export default function Scanner({ onScan, onError }) {
   const scannerRef = useRef(null);
   const [isScanning, setIsScanning] = useState(true); // Initialize to true to not block initial scans
   const [hasPermission, setHasPermission] = useState(null);
+  const [manualCode, setManualCode] = useState('');
   const lastScanTime = useRef(0);
 
   useEffect(() => {
@@ -116,6 +117,30 @@ export default function Scanner({ onScan, onError }) {
           <div className="spinner" />
         </div>
       )}
+      <div className="manual-entry">
+        <p className="manual-label">Or enter code manually:</p>
+        <div className="manual-input-group">
+          <input
+            type="text"
+            value={manualCode}
+            onChange={(e) => setManualCode(e.target.value)}
+            placeholder="card_id|game_id|checksum"
+            className="manual-input"
+          />
+          <button
+            onClick={() => {
+              if (manualCode.trim()) {
+                onScan(manualCode.trim());
+                setManualCode('');
+              }
+            }}
+            disabled={!manualCode.trim()}
+            className="manual-submit"
+          >
+            Verify
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
