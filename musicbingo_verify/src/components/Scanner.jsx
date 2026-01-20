@@ -10,7 +10,7 @@ import './Scanner.css';
 export default function Scanner({ onScan, onError }) {
   const videoRef = useRef(null);
   const scannerRef = useRef(null);
-  const [isScanning, setIsScanning] = useState(false);
+  const [isScanning, setIsScanning] = useState(true); // Initialize to true to not block initial scans
   const [hasPermission, setHasPermission] = useState(null);
   const lastScanTime = useRef(0);
 
@@ -23,7 +23,10 @@ export default function Scanner({ onScan, onError }) {
       try {
         scanner = new QrScanner(
           videoRef.current,
-          (result) => handleScan(result.data),
+          (result) => {
+            console.log('QrScanner detected:', result);
+            handleScan(result.data);
+          },
           {
             returnDetailedScanResult: true,
             highlightScanRegion: true,
@@ -36,6 +39,7 @@ export default function Scanner({ onScan, onError }) {
         scannerRef.current = scanner;
 
         await scanner.start();
+        console.log('Scanner started successfully, isScanning will remain:', true);
         setIsScanning(true);
         setHasPermission(true);
 
@@ -67,6 +71,7 @@ export default function Scanner({ onScan, onError }) {
   }, [onError]);
 
   const handleScan = (data) => {
+    console.log('handleScan called, isScanning:', isScanning, 'data:', data);
     if (!isScanning) return;
 
     // Debounce scans to prevent rapid duplicates
