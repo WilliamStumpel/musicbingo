@@ -9,6 +9,8 @@ import { ConfirmModal } from '../components/ConfirmModal';
 import { SongTimer } from '../components/SongTimer';
 import { ConnectionInfo } from '../components/ConnectionInfo';
 import { WinnerToast } from '../components/WinnerToast';
+import { PrizeInput } from '../components/PrizeInput';
+import { CardStatusPanel } from '../components/CardStatusPanel';
 
 function HostView() {
   const {
@@ -25,6 +27,8 @@ function HostView() {
     isLoading,
     error,
     newWinners,
+    detectedWinners,
+    currentPrize,
     loadGame,
     toggleSongPlayed,
     setNowPlaying,
@@ -32,12 +36,15 @@ function HostView() {
     setPattern,
     resetRound,
     dismissWinner,
+    setPrize,
   } = useGameState();
 
   // State for remove song confirmation modal
   const [removeConfirm, setRemoveConfirm] = useState({ isOpen: false, songId: null, songTitle: '' });
   // State for connection info modal
   const [showConnectionInfo, setShowConnectionInfo] = useState(false);
+  // State for card status panel
+  const [isCardPanelOpen, setIsCardPanelOpen] = useState(false);
 
   const handleGameChange = (e) => {
     const filename = e.target.value;
@@ -131,6 +138,11 @@ function HostView() {
                 onPatternChange={setPattern}
                 disabled={isLoading}
               />
+              <PrizeInput
+                currentPrize={currentPrize}
+                onSetPrize={setPrize}
+                disabled={isLoading}
+              />
               <GameControls
                 onReset={resetRound}
                 playedCount={playedCount}
@@ -140,6 +152,16 @@ function HostView() {
                 nowPlaying={nowPlaying}
                 targetSeconds={30}
               />
+              <button
+                className="cards-button"
+                onClick={() => setIsCardPanelOpen(true)}
+                title="Show registered cards"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/>
+                </svg>
+                Cards
+              </button>
               <button
                 className="player-view-button"
                 onClick={handleOpenPlayerView}
@@ -217,6 +239,14 @@ function HostView() {
       <WinnerToast
         winners={newWinners}
         onDismiss={dismissWinner}
+      />
+
+      <CardStatusPanel
+        isOpen={isCardPanelOpen}
+        onClose={() => setIsCardPanelOpen(false)}
+        gameId={currentGame?.game_id}
+        winners={detectedWinners}
+        currentPrize={currentPrize}
       />
     </div>
   );
