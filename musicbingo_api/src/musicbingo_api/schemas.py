@@ -136,6 +136,7 @@ class VerifyCardResponse(BaseModel):
     card_number: int
     card_id: UUID
     game_id: UUID
+    player_name: Optional[str] = None  # Included if card is registered
 
 
 class ErrorResponse(BaseModel):

@@ -38,6 +38,19 @@ export function useScanner() {
       const verifyResult = await apiClient.verifyCard(gameId, cardId);
       console.log('Verification result:', verifyResult);
 
+      // If this is a winner, trigger announcement on PlayerView
+      if (verifyResult.winner) {
+        const announcement = {
+          card_number: verifyResult.card_number,
+          player_name: verifyResult.player_name || 'Unknown Player',
+          pattern: verifyResult.pattern,
+          prize: localStorage.getItem('musicbingo_current_prize') || null,
+          timestamp: new Date().toISOString(),
+        };
+        localStorage.setItem('musicbingo_winner_announcement', JSON.stringify(announcement));
+        console.log('Winner announcement triggered:', announcement);
+      }
+
       setResult(verifyResult);
 
     } catch (err) {

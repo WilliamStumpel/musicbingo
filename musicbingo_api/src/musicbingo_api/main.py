@@ -439,13 +439,14 @@ async def verify_card(game_id: UUID, card_id: UUID):
     """Verify if a card is a winner.
 
     Checks the card's songs against played songs and current winning pattern.
-    Returns winner status, pattern (if winner), and card number.
+    Returns winner status, pattern (if winner), card number, and player name
+    (if card is registered).
 
     This is the main endpoint used by the QR verification app.
     """
     try:
         service = get_game_service()
-        is_winner, pattern, card_number = service.verify_card(game_id, card_id)
+        is_winner, pattern, card_number, player_name = service.verify_card(game_id, card_id)
 
         return VerifyCardResponse(
             winner=is_winner,
@@ -453,6 +454,7 @@ async def verify_card(game_id: UUID, card_id: UUID):
             card_number=card_number,
             card_id=card_id,
             game_id=game_id,
+            player_name=player_name,
         )
 
     except ValueError as e:

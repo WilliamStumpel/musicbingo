@@ -138,7 +138,7 @@ class GameService:
         game.add_played_song(song_id)
         return game
 
-    def verify_card(self, game_id: UUID, card_id: UUID) -> tuple[bool, Optional[PatternType], int]:
+    def verify_card(self, game_id: UUID, card_id: UUID) -> tuple[bool, Optional[PatternType], int, Optional[str]]:
         """Verify if a card is a winner.
 
         Args:
@@ -146,13 +146,21 @@ class GameService:
             card_id: Card identifier
 
         Returns:
-            Tuple of (is_winner, pattern_type, card_number)
+            Tuple of (is_winner, pattern_type, card_number, player_name)
+            player_name is None if card is not registered
 
         Raises:
             ValueError: If game or card not found
         """
         game = self.get_game_or_raise(game_id)
-        return game.verify_card(card_id)
+        is_winner, pattern, card_number = game.verify_card(card_id)
+
+        # Get player name if card is registered
+        player_name = None
+        if card_id in game.registered_cards:
+            player_name = game.registered_cards[card_id].get("player_name")
+
+        return (is_winner, pattern, card_number, player_name)
 
     def toggle_song_played(self, game_id: UUID, song_id: str, played: bool) -> GameState:
         """Mark a song as played or unplayed.
