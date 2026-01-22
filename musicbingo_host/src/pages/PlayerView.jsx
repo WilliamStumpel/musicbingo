@@ -3,6 +3,8 @@ import './PlayerView.css';
 import * as gameApi from '../services/gameApi';
 import { PlayerCallBoard } from '../components/PlayerCallBoard';
 import { PatternDisplay } from '../components/PatternDisplay';
+import { PrizeDisplay } from '../components/PrizeDisplay';
+import { WinnerAnnouncement } from '../components/WinnerAnnouncement';
 
 const POLL_INTERVAL = 2000; // 2 seconds
 
@@ -16,6 +18,10 @@ function PlayerView() {
   const [currentPattern, setCurrentPattern] = useState('five_in_a_row'); // Current winning pattern
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Prize and winner announcement state
+  const [currentPrize, setCurrentPrize] = useState(null);
+  const [winnerAnnouncement, setWinnerAnnouncement] = useState(null);
 
   const pollRef = useRef(null);
   const gameIdRef = useRef(null);
@@ -61,6 +67,10 @@ function PlayerView() {
       // Get pattern from localStorage, fallback to game state
       const storedPattern = localStorage.getItem('musicbingo_current_pattern');
       setCurrentPattern(storedPattern || state.current_pattern || 'five_in_a_row');
+
+      // Get current prize from localStorage
+      const storedPrize = localStorage.getItem('musicbingo_current_prize');
+      setCurrentPrize(storedPrize || null);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -110,12 +120,30 @@ function PlayerView() {
         }
       } else if (e.key === 'musicbingo_current_pattern') {
         setCurrentPattern(e.newValue || 'five_in_a_row');
+      } else if (e.key === 'musicbingo_current_prize') {
+        setCurrentPrize(e.newValue || null);
+      } else if (e.key === 'musicbingo_winner_announcement') {
+        try {
+          const announcement = e.newValue ? JSON.parse(e.newValue) : null;
+          if (announcement) {
+            setWinnerAnnouncement(announcement);
+          }
+        } catch {
+          // Ignore parse errors
+        }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [loadGameFromStorage]);
+
+  // Handle winner announcement dismiss
+  const handleDismissAnnouncement = useCallback(() => {
+    setWinnerAnnouncement(null);
+    // Clear the localStorage key
+    localStorage.removeItem('musicbingo_winner_announcement');
+  }, []);
 
   if (isLoading) {
     return (
@@ -135,6 +163,10 @@ function PlayerView() {
       </div>
     );
   }
+
+  // Determine if we should show the prize display
+  // Show when there's a now playing song that hasn't been revealed yet
+  const showPrize = nowPlaying && !revealedSongs.has(nowPlaying) && currentPrize;
 
   return (
     <div className="player-view">
@@ -156,10 +188,18 @@ function PlayerView() {
       </main>
 
       <footer className="player-footer">
-        <div className="player-pattern">
-          <span className="pattern-title">Current Pattern:</span>
-          <PatternDisplay pattern={currentPattern} size="large" />
-        </div>
+        {/* Show prize when title is hidden, otherwise show pattern */}
+        {showPrize ? (
+          <PrizeDisplay
+            prize={currentPrize}
+            isVisible={true}
+          />
+        ) : (
+          <div className="player-pattern">
+            <span className="pattern-title">Current Pattern:</span>
+            <PatternDisplay pattern={currentPattern} size="large" />
+          </div>
+        )}
       </footer>
 
       {error && (
@@ -167,6 +207,12 @@ function PlayerView() {
           {error}
         </div>
       )}
+
+      {/* Winner Announcement Overlay */}
+      <WinnerAnnouncement
+        winner={winnerAnnouncement}
+        onDismiss={handleDismissAnnouncement}
+      />
     </div>
   );
 }
