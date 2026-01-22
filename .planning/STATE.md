@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-14)
 
 ## Current Position
 
-Phase: 6 of 8 (Game Modes & Patterns)
-Plan: 1/1 complete
-Status: Phase complete
-Last activity: 2026-01-19 — Completed 06-01-PLAN.md
+Phase: 7 of 8 (Prize & Winner Tracking)
+Plan: 1/3 complete
+Status: Plan 01 complete
+Last activity: 2026-01-22 — Completed 07-01-PLAN.md (Card Registration System)
 
-Progress: █████████░ 85%
+Progress: █████████░ 88%
 
 ## Pivot Notes
 
@@ -47,19 +47,21 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16 (Phases 1-5)
-- Average duration: 3.9 min
-- Total execution time: 62 min
+- Total plans completed: 19 (Phases 1-7)
+- Average duration: 6.7 min
+- Total execution time: 128 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 4/4 | 12 min | 3.0 min |
+| 1 | 5/5 | 57 min | 11.4 min |
 | 2 | 3/3 | 26 min | 8.7 min |
 | 3 | 4/4 | 11 min | 2.8 min |
 | 4 | 2/2 | 7 min | 3.5 min |
 | 5 | 4/4 | 11 min | 2.8 min |
+| 6 | 1/1 | 8 min | 8.0 min |
+| 7 | 1/3 | 8 min | 8.0 min |
 
 ## Accumulated Context
 
@@ -101,6 +103,14 @@ Recent decisions affecting current work:
 - **PatternDisplay 5x5 grid** - CSS Grid with green (#1DB954) highlighted cells
 - **Pattern change animation** - Scale 1.1x + glow pulse on change (0.3s ease)
 - **Connection QR code** - Host app displays server URL as QR code for easy scanner connection
+- **Vercel for scanner PWA** - Deployed to https://musicbingo-verify.vercel.app for permanent HTTPS
+- **ngrok for venue API** - HTTPS tunnel works at any venue regardless of IP
+- **ngrok auto-detection** - Host app queries localhost:4040/api/tunnels to find ngrok URL
+- **URL param auto-connect** - Scanner reads ?server= param and connects automatically
+- **100dvh for iOS Safari** - Dynamic viewport height fixes mobile Safari layout issues
+- **One-click venue startup** - ./start-venue.sh starts API + ngrok + host app
+- **Card registration flow** - Show registration modal after closing non-winner result
+- **registered_cards dict** - Store {player_name, registered_at} per card_id on GameState
 
 ### Deferred Issues
 
@@ -116,7 +126,7 @@ None - Manual Playback Mode removes all streaming API dependencies.
 
 ## Session Continuity
 
-Last session: 2026-01-19
-Stopped at: Completed 01-04-FIX (QR Code Network URL Fix)
+Last session: 2026-01-22
+Stopped at: Completed 07-01 (Card Registration System)
 Resume file: None
-Next action: Re-verify 01-04 fix, then plan phase 7 (Prize & Winner Tracking)
+Next action: Execute 07-02-PLAN.md (Winner Detection)
