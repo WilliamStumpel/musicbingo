@@ -8,6 +8,7 @@ import { GameControls } from '../components/GameControls';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { SongTimer } from '../components/SongTimer';
 import { ConnectionInfo } from '../components/ConnectionInfo';
+import { WinnerToast } from '../components/WinnerToast';
 
 function HostView() {
   const {
@@ -23,12 +24,14 @@ function HostView() {
     totalCount,
     isLoading,
     error,
+    newWinners,
     loadGame,
     toggleSongPlayed,
     setNowPlaying,
     revealSong,
     setPattern,
     resetRound,
+    dismissWinner,
   } = useGameState();
 
   // State for remove song confirmation modal
@@ -209,6 +212,11 @@ function HostView() {
       <ConnectionInfo
         isOpen={showConnectionInfo}
         onClose={() => setShowConnectionInfo(false)}
+      />
+
+      <WinnerToast
+        winners={newWinners}
+        onDismiss={dismissWinner}
       />
     </div>
   );
