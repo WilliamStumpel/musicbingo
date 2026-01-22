@@ -198,6 +198,9 @@ class GameState:
     # Cards in this game (card_id -> CardData)
     cards: dict[UUID, CardData] = field(default_factory=dict)
 
+    # Registered cards (card_id -> registration dict with player_name and registered_at)
+    registered_cards: dict[UUID, dict] = field(default_factory=dict)
+
     def add_played_song(self, song_id: UUID) -> None:
         """Record a song as played.
 
@@ -246,3 +249,27 @@ class GameState:
         if card.game_id != self.game_id:
             raise ValueError("Card game_id does not match this game")
         self.cards[card.card_id] = card
+
+    def register_card(self, card_id: UUID, player_name: str) -> dict:
+        """Register a card to a player.
+
+        Args:
+            card_id: UUID of the card to register
+            player_name: Name of the player
+
+        Returns:
+            Registration dict with player_name and registered_at
+
+        Raises:
+            ValueError: If card_id is not in this game
+        """
+        if card_id not in self.cards:
+            raise ValueError(f"Card {card_id} not found in game")
+
+        registration = {
+            "player_name": player_name,
+            "registered_at": datetime.now(),
+        }
+        self.registered_cards[card_id] = registration
+        self.updated_at = datetime.now()
+        return registration
