@@ -105,7 +105,29 @@ export async function revealSong(gameId, songId) {
  * Used for QR code display to show the actual network URL.
  */
 export async function getServerInfo() {
-  const response = await fetch(`${API_BASE}/api/server-info`);
+  const response = await fetch(`${API_BASE}/api/network/info`);
   if (!response.ok) throw new Error('Failed to get server info');
+  return response.json();
+}
+
+/**
+ * Get status of all registered cards (progress toward winning).
+ */
+export async function getCardStatuses(gameId) {
+  const response = await fetch(`${API_BASE}/api/game/${gameId}/card-statuses`);
+  if (!response.ok) throw new Error('Failed to get card statuses');
+  return response.json();
+}
+
+/**
+ * Set the prize for the current game.
+ */
+export async function setPrize(gameId, prize) {
+  const response = await fetch(`${API_BASE}/api/game/${gameId}/prize`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prize }),
+  });
+  if (!response.ok) throw new Error('Failed to set prize');
   return response.json();
 }
