@@ -124,6 +124,8 @@ class GameStateResponse(BaseModel):
     card_count: int
     created_at: datetime
     updated_at: datetime
+    current_prize: Optional[str] = None
+    detected_winners: list["DetectedWinner"] = []
 
 
 class VerifyCardResponse(BaseModel):
@@ -226,3 +228,48 @@ class RegisteredCardsResponse(BaseModel):
     game_id: UUID
     cards: list[RegisteredCardInfo]
     total_registered: int
+
+
+class CardStatusInfo(BaseModel):
+    """Status info for a registered card."""
+
+    card_id: UUID
+    card_number: int
+    player_name: str
+    matches: int
+    total_needed: int
+    is_winner: bool
+    progress: str  # e.g., "4/5" or "WINNER"
+
+
+class CardStatusesResponse(BaseModel):
+    """Response with status of all registered cards."""
+
+    game_id: UUID
+    current_pattern: PatternType
+    cards: list[CardStatusInfo]
+    winners: list[CardStatusInfo]  # Just the winners for easy access
+
+
+class DetectedWinner(BaseModel):
+    """A detected winner."""
+
+    card_id: UUID
+    card_number: int
+    player_name: str
+    pattern: PatternType
+    detected_at: datetime
+    song_id: Optional[UUID] = None
+
+
+class SetPrizeRequest(BaseModel):
+    """Request to set the prize for current game."""
+
+    prize: str = Field(..., min_length=1, max_length=200)
+
+
+class SetPrizeResponse(BaseModel):
+    """Response after setting prize."""
+
+    game_id: UUID
+    prize: str
