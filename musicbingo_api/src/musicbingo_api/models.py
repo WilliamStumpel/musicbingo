@@ -201,6 +201,12 @@ class GameState:
     # Registered cards (card_id -> registration dict with player_name and registered_at)
     registered_cards: dict[UUID, dict] = field(default_factory=dict)
 
+    # Prize for current game/round
+    current_prize: Optional[str] = None
+
+    # Detected winners (list of winner dicts)
+    detected_winners: list[dict] = field(default_factory=list)
+
     def add_played_song(self, song_id: UUID) -> None:
         """Record a song as played.
 
@@ -273,3 +279,89 @@ class GameState:
         self.registered_cards[card_id] = registration
         self.updated_at = datetime.now()
         return registration
+
+    def check_registered_cards_for_winners(self) -> list[dict]:
+        """Check all registered cards for new winners.
+
+        Returns:
+            List of NEW winners (not already in detected_winners).
+            Each winner dict includes: card_id, card_number, player_name, pattern, detected_at
+        """
+        new_winners = []
+        existing_winner_ids = {w["card_id"] for w in self.detected_winners}
+
+        for card_id, registration in self.registered_cards.items():
+            # Skip if already a detected winner
+            if card_id in existing_winner_ids:
+                continue
+
+            # Get card and check for win
+            card = self.cards.get(card_id)
+            if card is None:
+                continue
+
+            is_winner, pattern, card_number = self.verify_card(card_id)
+            if is_winner:
+                new_winners.append({
+                    "card_id": card_id,
+                    "card_number": card_number,
+                    "player_name": registration["player_name"],
+                    "pattern": pattern,
+                    "detected_at": datetime.now(),
+                })
+
+        return new_winners
+
+    def get_card_statuses(self) -> list[dict]:
+        """Get status info for all registered cards.
+
+        Returns:
+            List of status dicts with card progress info.
+        """
+        statuses = []
+        played_song_ids = self.get_played_song_ids()
+        pattern = DEFAULT_PATTERNS[self.current_pattern]
+
+        # Calculate total needed based on pattern
+        total_needed = self._get_total_needed_for_pattern(self.current_pattern)
+
+        for card_id, registration in self.registered_cards.items():
+            card = self.cards.get(card_id)
+            if card is None:
+                continue
+
+            # Count matches
+            marked_positions = card.get_marked_positions(played_song_ids)
+            # Don't count free space as a "match" for progress display
+            matches_without_free = len(marked_positions) - 1  # Subtract 1 for free space
+
+            # Check if winner
+            is_winner = pattern.check_win(marked_positions)
+
+            progress = "WINNER" if is_winner else f"{matches_without_free}/{total_needed}"
+
+            statuses.append({
+                "card_id": card_id,
+                "card_number": card.card_number,
+                "player_name": registration["player_name"],
+                "matches": matches_without_free,
+                "total_needed": total_needed,
+                "is_winner": is_winner,
+                "progress": progress,
+            })
+
+        return statuses
+
+    def _get_total_needed_for_pattern(self, pattern_type: PatternType) -> int:
+        """Get the number of matches needed to complete a pattern."""
+        if pattern_type in (PatternType.FIVE_IN_A_ROW, PatternType.ROW, PatternType.COLUMN, PatternType.DIAGONAL):
+            return 5
+        elif pattern_type == PatternType.FOUR_CORNERS:
+            return 4
+        elif pattern_type == PatternType.X_PATTERN:
+            return 9  # Both diagonals share center
+        elif pattern_type == PatternType.FULL_CARD:
+            return 24  # All squares except free space
+        elif pattern_type == PatternType.FRAME:
+            return 16  # All edge cells
+        return 5  # Default
