@@ -3,7 +3,7 @@
 import json
 from uuid import UUID
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -27,6 +27,10 @@ from .schemas import (
     MarkSongResponse,
     RecordSongRequest,
     RecordSongResponse,
+    RegisterCardRequest,
+    RegisterCardResponse,
+    RegisteredCardInfo,
+    RegisteredCardsResponse,
     SongInfo,
     StartGameRequest,
     StartGameResponse,
@@ -81,7 +85,7 @@ DEFAULT_PORT = 8000
 
 
 @app.get("/api/network/info")
-async def network_info():
+async def network_info(request: Request):
     """Get network information for connecting from other devices.
 
     Returns the local IP address and URL that other devices on the same
@@ -89,10 +93,12 @@ async def network_info():
     to discover the server URL.
     """
     ip = get_local_ip()
+    # Detect protocol from request (handles both HTTP and HTTPS)
+    protocol = "https" if request.url.scheme == "https" else "http"
     return {
         "ip": ip,
         "port": DEFAULT_PORT,
-        "url": f"http://{ip}:{DEFAULT_PORT}",
+        "url": f"{protocol}://{ip}:{DEFAULT_PORT}",
     }
 
 
@@ -522,6 +528,61 @@ async def reveal_song(game_id: UUID, song_id: str):
             created_at=game.created_at,
             updated_at=game.updated_at,
         )
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post(
+    "/api/game/{game_id}/register-card",
+    response_model=RegisterCardResponse,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+async def register_card(game_id: UUID, request: RegisterCardRequest):
+    """Register a card to a player.
+
+    Assigns a player name to a card for winner tracking. Called when
+    distributing cards to players at the start of a game.
+    """
+    try:
+        service = get_game_service()
+        result = service.register_card(game_id, request.card_id, request.player_name)
+
+        return RegisterCardResponse(
+            card_id=result["card_id"],
+            card_number=result["card_number"],
+            player_name=result["player_name"],
+            registered_at=result["registered_at"],
+        )
+
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get(
+    "/api/game/{game_id}/registered-cards",
+    response_model=RegisteredCardsResponse,
+    responses={404: {"model": ErrorResponse}},
+)
+async def get_registered_cards(game_id: UUID):
+    """Get all registered cards for a game.
+
+    Returns a list of all cards that have been assigned to players,
+    including player names and registration timestamps.
+    """
+    try:
+        service = get_game_service()
+        cards = service.get_registered_cards(game_id)
+
+        return RegisteredCardsResponse(
+            game_id=game_id,
+            cards=[RegisteredCardInfo(**card) for card in cards],
+            total_registered=len(cards),
+        )
+
     except ValueError as e:
         if "not found" in str(e).lower():
             raise HTTPException(status_code=404, detail=str(e))
