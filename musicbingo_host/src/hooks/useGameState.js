@@ -16,9 +16,15 @@ export function useGameState() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Winner detection state
+  const [detectedWinners, setDetectedWinners] = useState([]); // All detected winners from API
+  const [newWinners, setNewWinners] = useState([]); // Newly detected winners to show in toast
+  const [currentPrize, setCurrentPrizeState] = useState(null); // Current prize text
+
   const pollRef = useRef(null);
   const gameIdRef = useRef(null);
   const revealTimerRef = useRef(null); // Timer for auto-reveal
+  const prevWinnerIdsRef = useRef(new Set()); // Track previously detected winner card_ids
 
   // Load available games
   const loadGames = useCallback(async () => {
@@ -50,6 +56,12 @@ export function useGameState() {
       setRevealedSongs(new Set(revealedSongIds)); // Initialize revealedSongs from state
       setCurrentPatternState(state.current_pattern || 'five_in_a_row');
       setNowPlayingState(null); // Reset now playing when loading new game
+
+      // Initialize winner detection state
+      setCurrentPrizeState(state.current_prize || null);
+      setDetectedWinners(state.detected_winners || []);
+      setNewWinners([]); // Clear new winners toast
+      prevWinnerIdsRef.current = new Set((state.detected_winners || []).map(w => w.card_id));
     } catch (e) {
       setError(e.message);
     } finally {
@@ -223,12 +235,17 @@ export function useGameState() {
     const previousPlayedOrder = playedOrder;
     const previousNowPlaying = nowPlaying;
     const previousRevealedSongs = revealedSongs;
+    const previousDetectedWinners = detectedWinners;
+    const previousNewWinners = newWinners;
 
     // Optimistic update - clear all play state
     setPlayedSongs(new Set());
     setPlayedOrder([]);
     setNowPlayingState(null);
     setRevealedSongs(new Set());
+    setDetectedWinners([]); // Clear detected winners for new round
+    setNewWinners([]); // Clear new winners toast
+    prevWinnerIdsRef.current = new Set(); // Reset winner tracking
     localStorage.removeItem('musicbingo_now_playing'); // Clear nowPlaying for player view
     localStorage.removeItem('musicbingo_revealed_songs'); // Clear revealedSongs for player view
 
@@ -240,9 +257,43 @@ export function useGameState() {
       setPlayedOrder(previousPlayedOrder);
       setNowPlayingState(previousNowPlaying);
       setRevealedSongs(previousRevealedSongs);
+      setDetectedWinners(previousDetectedWinners);
+      setNewWinners(previousNewWinners);
+      prevWinnerIdsRef.current = new Set(previousDetectedWinners.map(w => w.card_id));
       setError(e.message);
     }
-  }, [playedSongs, playedOrder, nowPlaying, revealedSongs]);
+  }, [playedSongs, playedOrder, nowPlaying, revealedSongs, detectedWinners, newWinners]);
+
+  // Dismiss a winner from the toast (removes from newWinners, keeps in detectedWinners)
+  const dismissWinner = useCallback((cardId) => {
+    setNewWinners(prev => prev.filter(w => w.card_id !== cardId));
+  }, []);
+
+  // Set the prize for the current game
+  const setPrize = useCallback(async (prize) => {
+    const gameId = gameIdRef.current;
+    if (!gameId) return;
+
+    // Optimistic update
+    const previousPrize = currentPrize;
+    setCurrentPrizeState(prize);
+
+    // Sync prize to localStorage for player view
+    localStorage.setItem('musicbingo_current_prize', prize);
+
+    try {
+      await gameApi.setPrize(gameId, prize);
+    } catch (e) {
+      // Revert on error
+      setCurrentPrizeState(previousPrize);
+      if (previousPrize) {
+        localStorage.setItem('musicbingo_current_prize', previousPrize);
+      } else {
+        localStorage.removeItem('musicbingo_current_prize');
+      }
+      setError(e.message);
+    }
+  }, [currentPrize]);
 
   // Start polling for updates
   useEffect(() => {
@@ -258,6 +309,31 @@ export function useGameState() {
           if (state.revealed_songs) {
             setRevealedSongs(new Set(state.revealed_songs));
             localStorage.setItem('musicbingo_revealed_songs', JSON.stringify(state.revealed_songs));
+          }
+
+          // Check for new winners
+          if (state.detected_winners) {
+            setDetectedWinners(state.detected_winners);
+
+            // Find truly new winners (not in previous set)
+            const newlyDetected = state.detected_winners.filter(
+              w => !prevWinnerIdsRef.current.has(w.card_id)
+            );
+
+            // Add new winners to toast list
+            if (newlyDetected.length > 0) {
+              setNewWinners(prev => [...prev, ...newlyDetected]);
+              // Update the ref with all current winner IDs
+              prevWinnerIdsRef.current = new Set(state.detected_winners.map(w => w.card_id));
+            }
+          }
+
+          // Update prize if changed
+          if (state.current_prize !== undefined) {
+            setCurrentPrizeState(state.current_prize);
+            if (state.current_prize) {
+              localStorage.setItem('musicbingo_current_prize', state.current_prize);
+            }
           }
         }
       } catch (e) {
@@ -307,6 +383,11 @@ export function useGameState() {
     isLoading,
     error,
 
+    // Winner detection state
+    detectedWinners,
+    newWinners,
+    currentPrize,
+
     // Actions
     loadGame,
     toggleSongPlayed,
@@ -315,5 +396,9 @@ export function useGameState() {
     setPattern,
     resetRound,
     refreshGames: loadGames,
+
+    // Winner detection actions
+    dismissWinner,
+    setPrize,
   };
 }
