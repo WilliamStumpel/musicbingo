@@ -180,6 +180,8 @@ class GameService:
             # Add to played songs if not already there
             if song_uuid not in game.played_songs:
                 game.played_songs.append(song_uuid)
+                # Check for new winners after adding a played song
+                self.check_for_new_winners(game_id, song_uuid)
         else:
             # Remove from played songs if present
             if song_uuid in game.played_songs:
@@ -208,7 +210,8 @@ class GameService:
     def reset_round(self, game_id: UUID) -> GameState:
         """Reset played songs for a new round.
 
-        Clears played_songs and revealed_songs lists but keeps cards and pattern.
+        Clears played_songs, revealed_songs, and detected_winners but keeps
+        cards, pattern, and current_prize.
 
         Args:
             game_id: Game identifier
@@ -222,6 +225,7 @@ class GameService:
         game = self.get_game_or_raise(game_id)
         game.played_songs = []
         game.revealed_songs = []
+        game.detected_winners = []  # Clear winners for new round
         game.updated_at = datetime.now()
         return game
 
@@ -385,6 +389,72 @@ class GameService:
             })
 
         return registered
+
+    def check_for_new_winners(self, game_id: UUID, triggering_song_id: UUID) -> list[dict]:
+        """Check all registered cards for new winners.
+
+        Args:
+            game_id: Game identifier
+            triggering_song_id: The song that was just played
+
+        Returns:
+            List of newly detected winners
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+
+        new_winners = game.check_registered_cards_for_winners()
+
+        # Add triggering song_id and store in game state
+        for winner in new_winners:
+            winner["song_id"] = triggering_song_id
+            game.detected_winners.append(winner)
+
+        return new_winners
+
+    def get_card_statuses(self, game_id: UUID) -> dict:
+        """Get status info for all registered cards.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            Dict with game_id, current_pattern, cards list, winners list
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+
+        statuses = game.get_card_statuses()
+        winners = [s for s in statuses if s["is_winner"]]
+
+        return {
+            "game_id": game_id,
+            "current_pattern": game.current_pattern,
+            "cards": statuses,
+            "winners": winners,
+        }
+
+    def set_prize(self, game_id: UUID, prize: str) -> GameState:
+        """Set the prize for the current game.
+
+        Args:
+            game_id: Game identifier
+            prize: Prize text
+
+        Returns:
+            Updated GameState
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+        game.current_prize = prize
+        game.updated_at = datetime.now()
+        return game
 
 
 # Global service instance
