@@ -327,6 +327,65 @@ class GameService:
             raise ValueError(f"Game {game_id} not found")
         del self._games[game_id]
 
+    def register_card(self, game_id: UUID, card_id: UUID, player_name: str) -> dict:
+        """Register a card to a player.
+
+        Args:
+            game_id: Game identifier
+            card_id: Card identifier
+            player_name: Name of the player
+
+        Returns:
+            Dict with card_id, card_number, player_name, registered_at
+
+        Raises:
+            ValueError: If game or card not found
+        """
+        game = self.get_game_or_raise(game_id)
+
+        # Validate card exists
+        if card_id not in game.cards:
+            raise ValueError(f"Card {card_id} not found in game")
+
+        # Register the card
+        registration = game.register_card(card_id, player_name)
+
+        # Get card number
+        card = game.cards[card_id]
+
+        return {
+            "card_id": card_id,
+            "card_number": card.card_number,
+            "player_name": registration["player_name"],
+            "registered_at": registration["registered_at"],
+        }
+
+    def get_registered_cards(self, game_id: UUID) -> list[dict]:
+        """Get all registered cards for a game.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            List of dicts with card_id, card_number, player_name, registered_at
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+
+        registered = []
+        for card_id, registration in game.registered_cards.items():
+            card = game.cards[card_id]
+            registered.append({
+                "card_id": card_id,
+                "card_number": card.card_number,
+                "player_name": registration["player_name"],
+                "registered_at": registration["registered_at"],
+            })
+
+        return registered
+
 
 # Global service instance
 _game_service: Optional[GameService] = None
