@@ -38,6 +38,7 @@ Plans:
 - [x] 01-02: Game selector with 8 pre-loaded games
 - [x] 01-03: Scanner PWA connection to local backend (UAT fix applied)
 - [x] 01-04: Connection QR code for scanner app
+- [x] 01-05: Venue deployment infrastructure (Vercel + ngrok + one-click startup)
 
 ### Phase 2: Card Printing System
 **Goal**: Generate professional print-ready PDFs with 4 cards per letter page and venue branding
@@ -94,16 +95,16 @@ Note: Lightning rounds removed - obsolete after Manual Playback pivot (DJ contro
 Plans:
 - [x] 06-01: Complete pattern support (add Frame to backend, expose all 8 patterns in UI)
 
-### Phase 7: Prize & Winner Tracking
-**Goal**: Track winners, handle multiple winners on same song, configure prizes per game
+### Phase 7: Card Registration & Winner Tracking
+**Goal**: Register cards to players, detect winners proactively, display prizes, celebrate winners on venue TV
 **Depends on**: Phase 4
-**Research**: Unlikely (internal data management)
-**Plans**: TBD
+**Research**: None (internal feature work)
+**Plans**: 3
 
 Plans:
-- [ ] 07-01: Winner tracking (multiple winners on same song)
-- [ ] 07-02: Prize types configuration (cash, gift cards, drink tickets, physical)
-- [ ] 07-03: Winner log for prize distribution
+- [ ] 07-01: Card Registration (backend + scanner UI for assigning player names to cards)
+- [ ] 07-02: Winner Detection & Prize Config (proactive detection, card statuses, prize setting, host toasts)
+- [ ] 07-03: Host Panel & Venue Display (card status slide-out, winner log, prize display, winner announcement)
 
 ### Phase 8: Testing & Quality
 **Goal**: Comprehensive test coverage and real device validation
@@ -125,11 +126,11 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Local Backend Infrastructure | 4/4 | Complete | 2026-01-19 |
+| 1. Local Backend Infrastructure | 5/5 | Complete | 2026-01-22 |
 | 2. Card Printing System | 1/1 | Complete | 2026-01-14 |
 | 3. Manual Playback Mode | 4/4 | Complete | 2026-01-18 |
 | 4. Host View | 2/2 | Complete | 2026-01-18 |
 | 5. Player View | 4/4 | Complete | 2026-01-19 |
 | 6. Game Modes & Patterns | 1/1 | Complete | 2026-01-19 |
-| 7. Prize & Winner Tracking | 0/3 | Not started | - |
+| 7. Card Registration & Winner Tracking | 0/3 | Not started | - |
 | 8. Testing & Quality | 0/5 | Not started | - |
