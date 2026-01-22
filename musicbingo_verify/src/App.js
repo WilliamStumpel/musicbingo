@@ -8,6 +8,7 @@ import Scanner from './components/Scanner';
 import ResultDisplay from './components/ResultDisplay';
 import ErrorMessage from './components/ErrorMessage';
 import ServerConnect from './components/ServerConnect';
+import CardRegistration from './components/CardRegistration';
 import { SongChecklist } from './components/SongChecklist';
 import { TabBar } from './components/TabBar';
 import { useScanner } from './hooks/useScanner';
@@ -19,14 +20,37 @@ import './App.css';
 function App() {
   const { result, error, isProcessing, handleScan, reset } = useScanner();
   const gameState = useGameState();
+  // eslint-disable-next-line no-unused-vars
   const [serverUrl, setServerUrl] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isCheckingConnection, setIsCheckingConnection] = useState(true);
   const [activeTab, setActiveTab] = useState('scan');
+  // Card registration state (shown after scanning non-winner cards)
+  const [registrationCard, setRegistrationCard] = useState(null);
 
-  // Check connection on mount
+  // Check connection on mount (including URL param for auto-connect)
   useEffect(() => {
     async function checkConnection() {
+      // Check for auto-connect URL param (from QR code scan)
+      const urlParams = new URLSearchParams(window.location.search);
+      const serverParam = urlParams.get('server');
+
+      if (serverParam) {
+        // Auto-connect from QR code
+        const client = new ApiClient(serverParam);
+        const healthy = await client.healthCheck();
+        if (healthy) {
+          setApiUrl(serverParam);
+          setServerUrl(serverParam);
+          setIsConnected(true);
+          // Clean up URL param after successful connection
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+        setIsCheckingConnection(false);
+        return;
+      }
+
+      // Fall back to stored URL
       if (hasStoredUrl()) {
         const url = getApiUrl();
         const client = new ApiClient(url);
@@ -84,7 +108,7 @@ function App() {
       {/* Tab Content */}
       <div className="tab-content">
         {activeTab === 'scan' && (
-          <>
+          <div className="scan-tab-content">
             {/* Header */}
             {!result && !error && (
               <header className="app-header">
@@ -114,10 +138,36 @@ function App() {
             )}
 
             {/* Result Display */}
-            {result && (
+            {result && !registrationCard && (
               <ResultDisplay
                 result={result}
-                onClose={reset}
+                onClose={() => {
+                  // If not a winner, offer to register the card
+                  if (!result.winner) {
+                    setRegistrationCard({
+                      cardId: result.card_id,
+                      cardNumber: result.card_number,
+                      gameId: result.game_id,
+                    });
+                  }
+                  reset();
+                }}
+              />
+            )}
+
+            {/* Card Registration Modal */}
+            {registrationCard && (
+              <CardRegistration
+                cardId={registrationCard.cardId}
+                cardNumber={registrationCard.cardNumber}
+                gameId={registrationCard.gameId}
+                onRegistered={(playerName) => {
+                  console.log(`Card ${registrationCard.cardNumber} registered to ${playerName}`);
+                  setRegistrationCard(null);
+                }}
+                onCancel={() => {
+                  setRegistrationCard(null);
+                }}
               />
             )}
 
@@ -128,7 +178,7 @@ function App() {
                 onClose={reset}
               />
             )}
-          </>
+          </div>
         )}
 
         {activeTab === 'checklist' && (
