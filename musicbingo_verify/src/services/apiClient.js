@@ -80,5 +80,26 @@ export class ApiClient {
   }
 }
 
+/**
+ * Register a card to a player
+ * @param {string} gameId - Game UUID
+ * @param {string} cardId - Card UUID
+ * @param {string} playerName - Player's name
+ * @returns {Promise<{card_id: string, card_number: number, player_name: string, registered_at: string}>}
+ * @throws {Error} If registration fails
+ */
+export async function registerCard(gameId, cardId, playerName) {
+  const response = await fetch(`${getApiUrl()}/api/game/${gameId}/register-card`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ card_id: cardId, player_name: playerName }),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to register card');
+  }
+  return response.json();
+}
+
 // Export singleton instance
 export const apiClient = new ApiClient();
