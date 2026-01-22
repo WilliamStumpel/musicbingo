@@ -1,0 +1,68 @@
+.prize-input {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.prize-input:hover:not(.prize-input--disabled) {
+  border-color: #ffc107;
+  background: #2a2a2a;
+}
+
+.prize-input--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prize-input--editing {
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.prize-input__field {
+  padding: 8px 14px;
+  background: #222;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  min-width: 150px;
+}
+
+.prize-input__field:focus {
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+}
+
+.prize-input__field::placeholder {
+  color: #666;
+}
+
+.prize-input__display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.prize-input__label {
+  color: #888;
+}
+
+.prize-input__value {
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.prize-input__placeholder {
+  color: #666;
+  font-size: 14px;
+  font-style: italic;
+}
