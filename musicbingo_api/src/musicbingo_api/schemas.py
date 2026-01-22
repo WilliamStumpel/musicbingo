@@ -193,3 +193,36 @@ class LoadGameResponse(BaseModel):
     status: GameStatus
     card_count: int
     songs: list[SongInfo] = []
+
+
+class RegisterCardRequest(BaseModel):
+    """Request to register a card to a player."""
+
+    card_id: UUID
+    player_name: str = Field(..., min_length=1, max_length=50)
+
+
+class RegisterCardResponse(BaseModel):
+    """Response after registering a card."""
+
+    card_id: UUID
+    card_number: int
+    player_name: str
+    registered_at: datetime
+
+
+class RegisteredCardInfo(BaseModel):
+    """Info about a registered card."""
+
+    card_id: UUID
+    card_number: int
+    player_name: str
+    registered_at: datetime
+
+
+class RegisteredCardsResponse(BaseModel):
+    """Response listing all registered cards."""
+
+    game_id: UUID
+    cards: list[RegisteredCardInfo]
+    total_registered: int
