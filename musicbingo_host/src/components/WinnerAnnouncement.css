@@ -1,0 +1,244 @@
+.winner-announcement {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  cursor: pointer;
+  overflow: hidden;
+  animation: announcementEnter 0.5s ease-out;
+}
+
+@keyframes announcementEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Confetti */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti {
+  position: absolute;
+  top: -20px;
+  left: var(--x);
+  width: 10px;
+  height: 10px;
+  background: var(--color);
+  animation: confettiFall 4s linear forwards;
+  animation-delay: var(--delay);
+  opacity: 0;
+}
+
+.confetti:nth-child(odd) {
+  width: 8px;
+  height: 14px;
+}
+
+.confetti:nth-child(3n) {
+  width: 12px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    opacity: 0.5;
+    transform: translateY(100vh) rotate(var(--rotation));
+  }
+}
+
+/* Content */
+.winner-announcement__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  z-index: 1;
+  animation: contentPop 0.6s ease-out 0.2s both;
+}
+
+@keyframes contentPop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* BINGO! */
+.winner-announcement__bingo {
+  font-size: 120px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 50%, #ffc107 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 2s linear infinite, bingoGlow 1s ease-in-out infinite alternate;
+  letter-spacing: 8px;
+  text-shadow: none;
+  filter: drop-shadow(0 0 30px rgba(255, 193, 7, 0.5));
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+@keyframes bingoGlow {
+  from {
+    filter: drop-shadow(0 0 30px rgba(255, 193, 7, 0.5));
+  }
+  to {
+    filter: drop-shadow(0 0 60px rgba(255, 193, 7, 0.8));
+  }
+}
+
+/* Winner info */
+.winner-announcement__info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.winner-announcement__card {
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.winner-announcement__player {
+  font-size: 48px;
+  font-weight: 800;
+  color: #ffc107;
+  text-shadow: 0 4px 20px rgba(255, 193, 7, 0.3);
+  animation: playerPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes playerPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.winner-announcement__pattern {
+  font-size: 24px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+}
+
+/* Prize */
+.winner-announcement__prize {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 20px 40px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.2) 0%, rgba(255, 152, 0, 0.1) 100%);
+  border: 2px solid #ffc107;
+  border-radius: 16px;
+  animation: prizeEntry 0.5s ease-out 0.5s both;
+}
+
+@keyframes prizeEntry {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.winner-announcement__prize-label {
+  font-size: 20px;
+  font-weight: 600;
+  color: #888;
+  letter-spacing: 6px;
+}
+
+.winner-announcement__prize-value {
+  font-size: 40px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Dismiss hint */
+.winner-announcement__hint {
+  position: absolute;
+  bottom: 40px;
+  font-size: 14px;
+  color: #666;
+  animation: hintFade 2s ease-in-out infinite;
+}
+
+@keyframes hintFade {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .winner-announcement__bingo {
+    font-size: 60px;
+    letter-spacing: 4px;
+  }
+
+  .winner-announcement__card {
+    font-size: 24px;
+  }
+
+  .winner-announcement__player {
+    font-size: 32px;
+  }
+
+  .winner-announcement__pattern {
+    font-size: 18px;
+  }
+
+  .winner-announcement__prize-value {
+    font-size: 28px;
+  }
+}
