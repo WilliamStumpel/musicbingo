@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-14)
 ## Current Position
 
 Phase: 7 of 8 (Prize & Winner Tracking)
-Plan: 1/3 complete
-Status: Plan 01 complete
-Last activity: 2026-01-22 — Completed 07-01-PLAN.md (Card Registration System)
+Plan: 2/3 complete
+Status: Plan 02 complete
+Last activity: 2026-01-22 — Completed 07-02-PLAN.md (Winner Detection)
 
-Progress: █████████░ 88%
+Progress: █████████░ 90%
 
 ## Pivot Notes
 
@@ -47,9 +47,9 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19 (Phases 1-7)
-- Average duration: 6.7 min
-- Total execution time: 128 min
+- Total plans completed: 20 (Phases 1-7)
+- Average duration: 7.0 min
+- Total execution time: 140 min
 
 **By Phase:**
 
@@ -61,7 +61,7 @@ Spotify paused new app registrations, blocking Phase 3 implementation. After res
 | 4 | 2/2 | 7 min | 3.5 min |
 | 5 | 4/4 | 11 min | 2.8 min |
 | 6 | 1/1 | 8 min | 8.0 min |
-| 7 | 1/3 | 8 min | 8.0 min |
+| 7 | 2/3 | 20 min | 10.0 min |
 
 ## Accumulated Context
 
@@ -111,6 +111,11 @@ Recent decisions affecting current work:
 - **One-click venue startup** - ./start-venue.sh starts API + ngrok + host app
 - **Card registration flow** - Show registration modal after closing non-winner result
 - **registered_cards dict** - Store {player_name, registered_at} per card_id on GameState
+- **Proactive winner detection** - Check all registered cards when songs marked played
+- **detected_winners list** - Track winners with card_id, player_name, pattern, detected_at
+- **current_prize persists** - Prize survives round reset, only detected_winners cleared
+- **Toast notification pattern** - newWinners separate from detectedWinners for UI control
+- **10-second auto-dismiss** - Toast notifications dismiss automatically or on click
 
 ### Deferred Issues
 
@@ -127,6 +132,6 @@ None - Manual Playback Mode removes all streaming API dependencies.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed 07-01 (Card Registration System)
+Stopped at: Completed 07-02 (Winner Detection)
 Resume file: None
-Next action: Execute 07-02-PLAN.md (Winner Detection)
+Next action: Execute 07-03-PLAN.md (Winner Display)
