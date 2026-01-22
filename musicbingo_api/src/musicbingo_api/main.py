@@ -16,8 +16,11 @@ from .schemas import (
     AddCardResponse,
     BulkAddCardsRequest,
     BulkAddCardsResponse,
+    CardStatusesResponse,
+    CardStatusInfo,
     CreateGameRequest,
     CreateGameResponse,
+    DetectedWinner,
     ErrorResponse,
     GameListItem,
     GameListResponse,
@@ -31,6 +34,8 @@ from .schemas import (
     RegisterCardResponse,
     RegisteredCardInfo,
     RegisteredCardsResponse,
+    SetPrizeRequest,
+    SetPrizeResponse,
     SongInfo,
     StartGameRequest,
     StartGameResponse,
@@ -396,6 +401,19 @@ async def get_game_state(game_id: UUID):
     if game is None:
         raise HTTPException(status_code=404, detail=f"Game {game_id} not found")
 
+    # Convert detected_winners to schema objects
+    winners = [
+        DetectedWinner(
+            card_id=w["card_id"],
+            card_number=w["card_number"],
+            player_name=w["player_name"],
+            pattern=w["pattern"],
+            detected_at=w["detected_at"],
+            song_id=w.get("song_id"),
+        )
+        for w in game.detected_winners
+    ]
+
     return GameStateResponse(
         game_id=game.game_id,
         status=game.status,
@@ -407,6 +425,8 @@ async def get_game_state(game_id: UUID):
         card_count=len(game.cards),
         created_at=game.created_at,
         updated_at=game.updated_at,
+        current_prize=game.current_prize,
+        detected_winners=winners,
     )
 
 
@@ -581,6 +601,60 @@ async def get_registered_cards(game_id: UUID):
             game_id=game_id,
             cards=[RegisteredCardInfo(**card) for card in cards],
             total_registered=len(cards),
+        )
+
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get(
+    "/api/game/{game_id}/card-statuses",
+    response_model=CardStatusesResponse,
+    responses={404: {"model": ErrorResponse}},
+)
+async def get_card_statuses(game_id: UUID):
+    """Get status of all registered cards.
+
+    Returns progress toward winning for each registered card,
+    including match counts and winner status.
+    """
+    try:
+        service = get_game_service()
+        result = service.get_card_statuses(game_id)
+
+        return CardStatusesResponse(
+            game_id=result["game_id"],
+            current_pattern=result["current_pattern"],
+            cards=[CardStatusInfo(**card) for card in result["cards"]],
+            winners=[CardStatusInfo(**w) for w in result["winners"]],
+        )
+
+    except ValueError as e:
+        if "not found" in str(e).lower():
+            raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post(
+    "/api/game/{game_id}/prize",
+    response_model=SetPrizeResponse,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+async def set_prize(game_id: UUID, request: SetPrizeRequest):
+    """Set the prize for the current game.
+
+    Sets the prize text that can be displayed to players when
+    announcing winners.
+    """
+    try:
+        service = get_game_service()
+        game = service.set_prize(game_id, request.prize)
+
+        return SetPrizeResponse(
+            game_id=game.game_id,
+            prize=game.current_prize,
         )
 
     except ValueError as e:
