@@ -3,7 +3,7 @@
  * Displays camera view and scans QR codes from bingo cards
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import QrScanner from 'qr-scanner';
 import './Scanner.css';
 
@@ -14,6 +14,33 @@ export default function Scanner({ onScan, onError }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [manualCode, setManualCode] = useState('');
   const lastScanTime = useRef(0);
+  const isScanningRef = useRef(true);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    isScanningRef.current = isScanning;
+  }, [isScanning]);
+
+  const handleScan = useCallback((data) => {
+    console.log('handleScan called, isScanning:', isScanningRef.current, 'data:', data);
+    if (!isScanningRef.current) return;
+
+    // Debounce scans to prevent rapid duplicates
+    const now = Date.now();
+    if (now - lastScanTime.current < 1000) {
+      return; // Ignore scans within 1 second of last scan
+    }
+    lastScanTime.current = now;
+
+    // Pause scanning during processing
+    setIsScanning(false);
+    onScan(data);
+
+    // Resume scanning after 3 seconds
+    setTimeout(() => {
+      setIsScanning(true);
+    }, 3000);
+  }, [onScan]);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -69,28 +96,7 @@ export default function Scanner({ onScan, onError }) {
         scanner.destroy();
       }
     };
-  }, [onError]);
-
-  const handleScan = (data) => {
-    console.log('handleScan called, isScanning:', isScanning, 'data:', data);
-    if (!isScanning) return;
-
-    // Debounce scans to prevent rapid duplicates
-    const now = Date.now();
-    if (now - lastScanTime.current < 1000) {
-      return; // Ignore scans within 1 second of last scan
-    }
-    lastScanTime.current = now;
-
-    // Pause scanning during processing
-    setIsScanning(false);
-    onScan(data);
-
-    // Resume scanning after 3 seconds
-    setTimeout(() => {
-      setIsScanning(true);
-    }, 3000);
-  };
+  }, [onError, handleScan]);
 
   return (
     <div className="scanner-container">

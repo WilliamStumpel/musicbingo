@@ -26,6 +26,22 @@
 3. Observe URL text below QR code
 **Resolution:** Added getServerInfo API function and updated ConnectionInfo to fetch real network URL from server-info endpoint
 
+### UAT-002: getServerInfo calls wrong API endpoint / iOS camera requires HTTPS
+
+**Discovered:** 2026-01-21
+**Resolved:** 2026-01-21
+**Phase/Plan:** 01-04
+**Severity:** Major
+**Feature:** Connection QR code and iOS camera
+**Description:** Multiple issues: (1) getServerInfo called wrong endpoint, (2) iOS Safari requires HTTPS for camera access
+**Root cause:** API endpoint was `/api/network/info` not `/api/server-info`; iOS blocks camera on HTTP
+**Resolution:**
+- Fixed endpoint URL in gameApi.js
+- Deployed scanner to Vercel for permanent HTTPS: https://musicbingo-verify.vercel.app
+- Added ngrok URL input in ConnectionInfo for venue use (DJ pastes ngrok URL)
+- QR code now opens Vercel scanner with ngrok API URL for auto-connect
+- Complete flow tested on iPhone: camera works!
+
 ---
 
 *Phase: 01-local-backend-infrastructure*

@@ -1,154 +1,176 @@
-# Phase 3: Spotify Integration - Discovery
+# Phase 3: Manual Playback Mode - Discovery
 
 **Discovery Level:** 2 (Standard Research)
-**Date:** 2026-01-14
+**Date:** 2026-01-18
+**Updated:** Pivoted from streaming integration to manual playback mode
+
+## Why Manual Playback Mode
+
+**Original Plan:** Integrate Spotify/Apple Music APIs for in-app playback.
+
+**Blockers Encountered:**
+- Spotify: Paused new app registrations (Jan 2026)
+- Apple Music: Requires Apple Developer Program ($99/year) - user setup issues
+- Tidal/Deezer: 30-second playback limit for third-party apps
+- Amazon Music: Closed beta
+
+**Solution:** Decouple playback from the app entirely.
+
+- DJ plays music in Spotify (or any player) with shuffle enabled
+- DJ marks songs as played in Music Bingo app
+- App focuses on game management, not music playback
+
+**Benefits:**
+- Works with ANY music source (Spotify, Apple Music, YouTube, local files)
+- No API keys, developer accounts, or service subscriptions required
+- Simpler architecture, faster to ship
+- DJs already know how to use their preferred player
 
 ## Research Topics
 
-1. Spotify Web Playback SDK - current docs and implementation
-2. OAuth PKCE flow for local/desktop apps
-3. Playing specific tracks with position control
+1. Exportify CSV format for playlist import
+2. Real-time sync options (WebSocket vs polling)
+3. Mobile-friendly sortable list UI patterns
 
 ## Key Findings
 
-### OAuth Authentication (PKCE)
+### Exportify CSV Format
 
-**Critical 2025 Update:** Spotify ends support for implicit grant flow, HTTP redirect URIs, and localhost aliases on November 27, 2025. Must use:
-- Authorization Code Flow with PKCE
-- HTTPS redirect URIs (except `http://127.0.0.1` which is still allowed)
+Exportify (https://exportify.net) exports Spotify playlists to CSV with these columns:
 
-**PKCE Flow Steps:**
-1. Generate code verifier (43-128 character random string)
-2. Create code challenge (SHA256 hash, base64url encoded)
-3. Redirect to `https://accounts.spotify.com/authorize` with challenge
-4. User authorizes, redirected back with authorization code
-5. Exchange code + verifier for access_token + refresh_token
-6. Use refresh_token to get new access tokens (they expire in 1 hour)
+**Core columns for Music Bingo:**
+| Column | Use |
+|--------|-----|
+| `Track Name` | Song title for cards and checklist |
+| `Artist Name(s)` | Artist for cards and checklist |
+| `Album Name` | Optional display |
+| `Track Duration (ms)` | Reference info |
+| `Album Image URL` | Album art display (optional) |
+| `ISRC` | International Standard Recording Code (future cross-service lookup) |
 
-**No client secret needed for PKCE** - safe for browser/client-side apps.
+**Other columns (less relevant for our use):**
+- Track URI, Artist URI(s), Album URI
+- Album Artist URI(s), Album Artist Name(s)
+- Album Release Date, Disc Number, Track Number
+- Track Preview URL, Explicit, Popularity
+- Added By, Added At
 
-### Required OAuth Scopes
+**Import strategy:**
+- Parse CSV with headers
+- Extract Track Name + Artist Name(s) as minimum required fields
+- Store ISRC for potential future use (Apple Music lookup)
+- Generate unique song_id from hash of title+artist or use ISRC
 
-For Music Bingo, we need:
-- `streaming` - Required for Web Playback SDK
-- `user-read-email` - Required for Web Playback SDK
-- `user-read-private` - Required for Web Playback SDK
-- `user-modify-playback-state` - Required to start/control playback
-- `user-read-playback-state` - Required to read current playback state
+### Spotify Shuffle Behavior
 
-### Web Playback SDK
+When using Spotify shuffle for games:
+- Turn OFF "Autoplay" in Spotify settings to prevent extra songs
+- Play from a playlist (not radio/artist page)
+- DJ doesn't know song order - finds song in list when it plays
 
-**What it does:** Creates a "Spotify Connect device" in the browser that can play music.
+**UI implications:**
+- Need fast song lookup (sort + search)
+- No "next song" concept since order is random
+- Simple tap to mark as played
 
-**Requirements:**
-- Spotify Premium account (mobile-only premium excluded)
-- Modern browser (Chrome, Firefox, Safari, Edge)
-- Valid access token with streaming scope
+### Real-time Sync Options
 
-**Key Methods:**
-- `new Spotify.Player({ name, getOAuthToken, volume })` - Create player
-- `player.connect()` - Connect to Spotify
-- `player.disconnect()` - Disconnect
-- `player.togglePlay()`, `player.pause()`, `player.resume()` - Playback control
-- `player.seek(position_ms)` - Seek to position
-- `player.nextTrack()`, `player.previousTrack()` - Track navigation
-- `player.setVolume(0-1)`, `player.getVolume()` - Volume control
+**Option 1: WebSocket**
+- Instant updates between host and scanner
+- More complex server implementation
+- Requires persistent connection
 
-**Key Events:**
-- `ready` - Player connected, provides `device_id`
-- `not_ready` - Player disconnected
-- `player_state_changed` - Playback state changed
-- `authentication_error` - Token invalid
-- `account_error` - Not Premium
-- `playback_error` - Track failed
+**Option 2: Polling**
+- Scanner polls API every 1-2 seconds
+- Simpler implementation
+- Slight delay (acceptable for this use case)
 
-### Playing Specific Tracks
+**Option 3: Server-Sent Events (SSE)**
+- One-way push from server to clients
+- Simpler than WebSocket
+- Good for "game state changed" notifications
 
-Web Playback SDK creates a device, but to play specific tracks you need the Web API:
+**Decision: Start with polling, upgrade to SSE if needed**
+- Polling every 2 seconds is simple and sufficient
+- Song marking isn't time-critical (not like chat)
+- Can add SSE later for smoother experience
 
-**Endpoint:** `PUT https://api.spotify.com/v1/me/player/play`
+### Mobile Sortable List Patterns
 
-**Request Body:**
-```json
-{
-  "device_id": "player_device_id",
-  "uris": ["spotify:track:4iV5W9uYEdYUVa79Axb7Rh"],
-  "position_ms": 30000
-}
-```
+**Sort controls:**
+- Dropdown or segmented control for sort field (Title/Artist)
+- Toggle button for direction (A-Z / Z-A)
+- Keep sort preference in localStorage
 
-This is perfect for music bingo - we can:
-1. Pass array of song URIs to play
-2. Start at `position_ms: 30000` (30 seconds in) by default
-3. Target our Web Playback SDK device via `device_id`
+**Search/filter:**
+- Sticky search box at top
+- Filter list as user types
+- Clear button to reset
 
-### Token Refresh
+**Played indication:**
+- Checkmark icon or filled circle
+- Dimmed/grayed text
+- Optional: strikethrough title
+- Row still tappable to un-mark if needed
 
-Access tokens expire in 1 hour. Refresh flow:
-```
-POST https://accounts.spotify.com/api/token
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=refresh_token
-refresh_token=[stored_refresh_token]
-client_id=[client_id]
-```
-
-Returns new access_token (and sometimes new refresh_token).
-
-## Architecture Decision
-
-**Use react-spotify-web-playback library?**
-
-Pros:
-- Pre-built UI with play/pause, seek, volume
-- Handles device switching
-- Nice styling options
-
-Cons:
-- Fixed UI that may not match our host view design
-- We need custom controls for music bingo (next song in our sequence, clip timing)
-- Doesn't handle authentication
-
-**Decision: Build custom integration using raw SDK**
-
-Reasons:
-1. Music bingo needs specific controls (play clip from offset, auto-stop after duration)
-2. Host view needs custom UI with call board, game state
-3. We want full control over playback flow
-4. Auth handling is the same either way
-
-## Implementation Architecture
+## Architecture
 
 ```
-Frontend (React)
-├── SpotifyAuth module
-│   ├── generatePKCE() - Create verifier + challenge
-│   ├── initiateLogin() - Redirect to Spotify
-│   ├── handleCallback() - Exchange code for tokens
-│   └── refreshToken() - Refresh before expiry
-├── SpotifyPlayer module
-│   ├── initializePlayer() - Load SDK, create player
-│   ├── connect() / disconnect()
-│   └── getDeviceId() - For API calls
-└── SpotifyPlayback module
-    ├── playSong(uri, position_ms) - Start specific track
-    ├── pause() / resume()
-    ├── getCurrentState()
-    └── seekTo(position_ms)
-
-Backend (FastAPI) - Optional
-└── Token storage/refresh could be backend or frontend-only
+┌─────────────────┐     ┌─────────────────┐
+│   Host App      │     │  Scanner App    │
+│   (Laptop)      │     │  (Phone)        │
+├─────────────────┤     ├─────────────────┤
+│ Song Checklist  │     │ Song Checklist  │
+│ - Sort/Search   │     │ - Sort/Search   │
+│ - Mark played   │     │ - Mark played   │
+│ - See status    │     │ - See status    │
+└────────┬────────┘     └────────┬────────┘
+         │                       │
+         │    Poll / Sync        │
+         ▼                       ▼
+    ┌─────────────────────────────────┐
+    │         Backend API             │
+    │  POST /api/game/{id}/mark-song  │
+    │  GET /api/game/{id}/state       │
+    └─────────────────────────────────┘
 ```
 
-For local-first app, we'll store tokens in localStorage with encryption consideration for refresh tokens.
+**Data flow:**
+1. DJ hears song on Spotify
+2. DJ finds song in checklist (search or scroll)
+3. DJ taps to mark played
+4. App calls POST /api/game/{id}/mark-song
+5. Other device polls GET /api/game/{id}/state
+6. UI updates to show song as played
+7. QR scanner uses same state for win verification
+
+## Implementation Plan
+
+### Plan 03-01: CSV Playlist Import
+- Add CSV import to card generator CLI
+- Parse Exportify format (Track Name, Artist Name(s), etc.)
+- Generate game JSON with songs array
+- Support drag-drop or file picker in future web UI
+
+### Plan 03-02: Host Checklist View
+- Replace musicbingo_host player UI with checklist
+- Sortable by title or artist (A-Z, Z-A)
+- Search/filter box
+- Tap to mark played, tap again to unmark
+- Poll API for sync with scanner
+
+### Plan 03-03: Scanner Checklist View
+- Add song checklist tab/view to scanner PWA
+- Same sort/search/mark features as host
+- Syncs with host via API polling
+- Complements existing QR scan functionality
+
+### Plan 03-04: API Sync Endpoints
+- POST /api/game/{id}/mark-song - Toggle song played status
+- GET /api/game/{id}/state - Returns played_songs array
+- Ensure atomic updates for concurrent access
 
 ## Sources
 
-- [Spotify Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk)
-- [Getting Started Tutorial](https://developer.spotify.com/documentation/web-playback-sdk/tutorials/getting-started)
-- [SDK Reference](https://developer.spotify.com/documentation/web-playback-sdk/reference)
-- [Authorization Code with PKCE](https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow)
-- [OAuth Scopes](https://developer.spotify.com/documentation/web-api/concepts/scopes)
-- [Start Playback API](https://developer.spotify.com/documentation/web-api/reference/start-a-users-playback)
-- [OAuth Migration Notice](https://developer.spotify.com/blog/2025-10-14-reminder-oauth-migration-27-nov-2025)
+- [Exportify](https://exportify.net) - Spotify playlist export tool
+- [Exportify GitHub](https://github.com/watsonbox/exportify) - Source and format details

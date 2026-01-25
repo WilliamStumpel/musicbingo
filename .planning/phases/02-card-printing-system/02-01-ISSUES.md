@@ -6,7 +6,25 @@
 
 ## Open Issues
 
-None - all issues resolved.
+### UAT-005: Card generator workflow doesn't create complete game files
+
+**Discovered:** 2026-01-25 during Phase 7 UAT
+**Phase/Plan:** 02-01
+**Severity:** Major
+**Feature:** Card generation CLI
+**Description:** The card generation workflow has a format mismatch that prevents games from loading:
+
+1. `musicbingo import-csv` creates files with `game_name`, `songs`, `song_count` format
+2. `musicbingo generate --export-json` only exports card data (`game_id`, `cards`), not the playlist
+3. Backend API expects complete files with `game_id`, `playlist`, `cards` together
+
+This requires manual JSON merging to create loadable game files.
+
+**Expected:** Running `musicbingo generate <input.json> --export-json <output.json>` should produce a complete game file that includes both the playlist and cards.
+
+**Workaround:** Manually merge the playlist data from the CSV import with the card data from the generator export.
+
+**Fix needed:** Modify the card exporter to include the playlist in the exported JSON, or add a `--complete-game` flag that merges both.
 
 ## Resolved Issues
 
@@ -44,6 +62,17 @@ None - all issues resolved.
 **Fix:**
 - Single layout: DJ contact centered below logo with TA_CENTER alignment
 - 4-up layout: DJ contact (5pt font) added to bottom of each individual card
+
+### UAT-004: Duplicate DJ branding footer causes page overflow (single layout)
+
+**Discovered:** 2026-01-14
+**Resolved:** 2026-01-14 - Quick fix
+**Commit:** 184c7613
+**Phase/Plan:** 02-01
+**Severity:** Major
+**Feature:** Custom branding - single card layout
+**Description:** DJ contact appeared twice (header and footer), causing page overflow
+**Fix:** Removed `_create_branding_footer()` call since DJ contact is now in the centered header
 
 ### UAT-001: 4-up layout text too small to read
 
