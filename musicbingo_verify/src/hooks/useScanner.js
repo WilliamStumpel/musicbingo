@@ -28,15 +28,29 @@ export function useScanner() {
     setResult(null);
 
     try {
-      console.log('Scanned QR code:', qrString);
+      console.log('[useScanner] Scanned QR code:', qrString);
 
       // Parse QR data
-      const { cardId, gameId } = parseQRData(qrString);
-      console.log('Parsed QR data:', { cardId, gameId });
+      let cardId, gameId;
+      try {
+        const parsed = parseQRData(qrString);
+        cardId = parsed.cardId;
+        gameId = parsed.gameId;
+        console.log('[useScanner] Parsed QR data:', { cardId, gameId });
+      } catch (parseErr) {
+        console.error('[useScanner] QR parse error:', parseErr);
+        throw new Error(`QR parse error: ${parseErr.message}`);
+      }
 
       // Verify with backend API
-      const verifyResult = await apiClient.verifyCard(gameId, cardId);
-      console.log('Verification result:', verifyResult);
+      let verifyResult;
+      try {
+        verifyResult = await apiClient.verifyCard(gameId, cardId);
+        console.log('[useScanner] Verification result:', verifyResult);
+      } catch (apiErr) {
+        console.error('[useScanner] API error:', apiErr);
+        throw new Error(`API error: ${apiErr.message}`);
+      }
 
       // If this is a winner, trigger announcement on PlayerView
       if (verifyResult.winner) {
@@ -48,13 +62,13 @@ export function useScanner() {
           timestamp: new Date().toISOString(),
         };
         localStorage.setItem('musicbingo_winner_announcement', JSON.stringify(announcement));
-        console.log('Winner announcement triggered:', announcement);
+        console.log('[useScanner] Winner announcement triggered:', announcement);
       }
 
       setResult(verifyResult);
 
     } catch (err) {
-      console.error('Scan error:', err);
+      console.error('[useScanner] Final error:', err.name, err.message, err.stack);
       setError(err.message);
     } finally {
       setIsProcessing(false);
