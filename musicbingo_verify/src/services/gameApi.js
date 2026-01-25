@@ -8,10 +8,17 @@ import { getApiUrl } from '../config';
  * Get list of available games.
  */
 export async function getGames() {
-  const response = await fetch(`${getApiUrl()}/api/games`);
-  if (!response.ok) throw new Error('Failed to fetch games');
-  const data = await response.json();
-  return data.games || [];
+  const url = `${getApiUrl()}/api/games`;
+  console.log('[gameApi] Fetching games from:', url);
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch games: ${response.status}`);
+    const data = await response.json();
+    return data.games || [];
+  } catch (error) {
+    console.error('[gameApi] Error fetching games:', error.name, error.message);
+    throw error;
+  }
 }
 
 /**

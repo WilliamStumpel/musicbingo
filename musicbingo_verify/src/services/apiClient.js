@@ -28,16 +28,16 @@ export class ApiClient {
    * @throws {Error} If verification fails
    */
   async verifyCard(gameId, cardId) {
+    const url = `${this.baseUrl}/api/verify/${gameId}/${cardId}`;
+    console.log('[ApiClient] Verifying card at:', url);
+
     try {
-      const response = await fetch(
-        `${this.baseUrl}/api/verify/${gameId}/${cardId}`,
-        {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-          },
-        }
-      );
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -53,9 +53,10 @@ export class ApiClient {
       return data;
 
     } catch (error) {
+      console.error('[ApiClient] Error:', error.name, error.message);
       // Re-throw with more context if it's a network error
       if (error.name === 'TypeError' || error.message.includes('fetch')) {
-        throw new Error('Network error. Please check your connection.');
+        throw new Error(`Network error: ${error.message}. Server: ${this.baseUrl}`);
       }
       throw error;
     }

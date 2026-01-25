@@ -15,7 +15,11 @@ import { useScanner } from './hooks/useScanner';
 import { useGameState } from './hooks/useGameState';
 import { ApiClient } from './services/apiClient';
 import { getApiUrl, setApiUrl, hasStoredUrl } from './config';
+import packageInfo from '../package.json';
 import './App.css';
+
+// App version for debugging deployment issues
+const APP_VERSION = packageInfo.version;
 
 function App() {
   const { result, error, isProcessing, handleScan, reset } = useScanner();
@@ -234,6 +238,9 @@ function App() {
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
+
+      {/* Version indicator */}
+      <div className="version-indicator">v{APP_VERSION}</div>
     </div>
   );
 }

@@ -190,3 +190,14 @@
 .error-state {
   color: #ff6b6b;
 }
+
+/* Version indicator */
+.version-indicator {
+  position: fixed;
+  bottom: 70px; /* Above tab bar */
+  right: 8px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  z-index: 999;
+  pointer-events: none;
+}
