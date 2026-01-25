@@ -7,6 +7,7 @@ const DEFAULT_URL = 'http://localhost:8000';
  */
 export function getApiUrl() {
   const stored = localStorage.getItem(STORAGE_KEY);
+  console.log('[config] getApiUrl - stored:', stored);
   if (stored) {
     return stored;
   }
@@ -18,6 +19,7 @@ export function getApiUrl() {
  * @param {string} url - The server URL to save
  */
 export function setApiUrl(url) {
+  console.log('[config] setApiUrl - saving:', url);
   localStorage.setItem(STORAGE_KEY, url);
 }
 
