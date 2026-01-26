@@ -44,6 +44,7 @@ from .schemas import (
 )
 from .venue_routes import router as venue_router
 from .venue_night_routes import router as venue_night_router
+from .game_routes import router as game_router
 
 app = FastAPI(
     title="Music Bingo API",
@@ -75,6 +76,7 @@ app.add_middleware(
 # Include venue routes for Game Prep UI
 app.include_router(venue_router)
 app.include_router(venue_night_router)
+app.include_router(game_router)
 
 
 @app.on_event("startup")
