@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-14)
 ## Current Position
 
 Phase: 9 of 9 (Testing & Quality)
-Plan: 2/? in progress
-Status: Plan 02 complete
-Last activity: 2026-01-25 — Completed 09-02-PLAN.md (Scanner PWA Unit Tests)
+Plan: 3/? in progress
+Status: Plan 03 complete
+Last activity: 2026-01-25 — Completed 09-03-PLAN.md (Host App Unit Tests)
 
-Progress: █████████░ 96% (Phase 9 in progress)
+Progress: █████████░ 97% (Phase 9 in progress)
 
 ## Pivot Notes
 
@@ -141,6 +141,9 @@ Recent decisions affecting current work:
 - **FileResponse downloads** - Stream files with Content-Disposition headers
 - **qr-scanner mock pattern** - Use function constructor with start/stop/destroy methods for Jest
 - **Config module mock** - Use jest.mock with imported reference for per-test control
+- **Host App setupTests.js** - Jest configuration with @testing-library/jest-dom and localStorage mock
+- **Service test pattern** - Mock global fetch, test success/error paths for all API functions
+- **Account for sorted order** - SongChecklist tests must use Title A-Z default sorting
 
 ### Deferred Issues
 
@@ -157,6 +160,6 @@ None - Manual Playback Mode removes all streaming API dependencies.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 09-02-PLAN.md (Scanner PWA Unit Tests)
+Stopped at: Completed 09-03-PLAN.md (Host App Unit Tests)
 Resume file: None
 Next action: Continue Phase 09 testing plans
