@@ -11,7 +11,9 @@ export async function getGames() {
   const url = `${getApiUrl()}/api/games`;
   console.log('[gameApi] Fetching games from:', url);
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: { 'ngrok-skip-browser-warning': '1' }
+    });
     if (!response.ok) throw new Error(`Failed to fetch games: ${response.status}`);
     const data = await response.json();
     return data.games || [];
@@ -21,12 +23,18 @@ export async function getGames() {
   }
 }
 
+// Common headers for all requests (ngrok skip warning)
+const commonHeaders = {
+  'ngrok-skip-browser-warning': '1',
+};
+
 /**
  * Load a game by filename.
  */
 export async function loadGame(filename) {
   const response = await fetch(`${getApiUrl()}/api/games/load/${filename}`, {
-    method: 'POST'
+    method: 'POST',
+    headers: commonHeaders,
   });
   if (!response.ok) throw new Error('Failed to load game');
   return response.json();
@@ -36,7 +44,9 @@ export async function loadGame(filename) {
  * Get current game state (played songs, etc.).
  */
 export async function getGameState(gameId) {
-  const response = await fetch(`${getApiUrl()}/api/game/${gameId}/state`);
+  const response = await fetch(`${getApiUrl()}/api/game/${gameId}/state`, {
+    headers: commonHeaders,
+  });
   if (!response.ok) {
     if (response.status === 404) {
       return { played_songs: [] };
@@ -52,7 +62,7 @@ export async function getGameState(gameId) {
 export async function markSongPlayed(gameId, songId, played = true) {
   const response = await fetch(`${getApiUrl()}/api/game/${gameId}/mark-song`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { ...commonHeaders, 'Content-Type': 'application/json' },
     body: JSON.stringify({ song_id: songId, played })
   });
   if (!response.ok) throw new Error('Failed to mark song');

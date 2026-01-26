@@ -36,6 +36,7 @@ export class ApiClient {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
+          'ngrok-skip-browser-warning': '1', // Bypass ngrok free tier interstitial
         },
       });
 
@@ -72,6 +73,7 @@ export class ApiClient {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
+          'ngrok-skip-browser-warning': '1',
         },
       });
       return response.ok;
@@ -92,7 +94,10 @@ export class ApiClient {
 export async function registerCard(gameId, cardId, playerName) {
   const response = await fetch(`${getApiUrl()}/api/game/${gameId}/register-card`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': '1',
+    },
     body: JSON.stringify({ card_id: cardId, player_name: playerName }),
   });
   if (!response.ok) {
