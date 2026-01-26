@@ -5,12 +5,15 @@ All routes are prefixed with /api/prep/games.
 """
 
 import json
+from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from . import game_repository
+from . import card_generation_service
 
 router = APIRouter(prefix="/api/prep/games", tags=["games"])
 
@@ -83,6 +86,15 @@ class ParseCSVResponse(BaseModel):
     """Response for parsing a CSV file."""
     songs: list[SongItem]
     song_count: int
+
+
+class GenerateCardsResponse(BaseModel):
+    """Response for card generation."""
+    success: bool
+    card_count: int
+    pdf_path: str
+    json_path: str
+    message: str
 
 
 # =============================================================================
@@ -237,4 +249,89 @@ async def parse_csv(file: UploadFile = File(...)):
     return ParseCSVResponse(
         songs=[SongItem(**s) for s in songs],
         song_count=len(songs),
+    )
+
+
+@router.post("/{game_id}/generate", response_model=GenerateCardsResponse)
+async def generate_cards(game_id: int):
+    """Generate bingo cards for a game.
+
+    Triggers card generation, creating PDF and JSON files.
+
+    Args:
+        game_id: The game ID.
+
+    Returns:
+        Generation result with file paths and card count.
+    """
+    try:
+        result = card_generation_service.generate_cards_for_game(game_id)
+        return GenerateCardsResponse(
+            success=True,
+            card_count=result["card_count"],
+            pdf_path=result["relative_pdf_path"],
+            json_path=f"generated/{game_id}/game.json",
+            message=f"Successfully generated {result['card_count']} cards",
+        )
+    except card_generation_service.CardServiceError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Card generation failed: {e}")
+
+
+@router.get("/{game_id}/download/pdf")
+async def download_pdf(game_id: int):
+    """Download the generated PDF file for a game.
+
+    Args:
+        game_id: The game ID.
+
+    Returns:
+        PDF file as attachment download.
+    """
+    pdf_path = card_generation_service.get_pdf_path(game_id)
+    if pdf_path is None:
+        raise HTTPException(
+            status_code=404,
+            detail="PDF not generated yet. Call /generate first."
+        )
+
+    # Get game name for filename
+    game = game_repository.get_game(game_id)
+    filename = f"{game['name'].replace(' ', '_')}_cards.pdf" if game else f"game_{game_id}_cards.pdf"
+
+    return FileResponse(
+        path=str(pdf_path),
+        media_type="application/pdf",
+        filename=filename,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get("/{game_id}/download/json")
+async def download_json(game_id: int):
+    """Download the generated JSON file for a game.
+
+    Args:
+        game_id: The game ID.
+
+    Returns:
+        JSON file as attachment download.
+    """
+    json_path = card_generation_service.get_json_path(game_id)
+    if json_path is None:
+        raise HTTPException(
+            status_code=404,
+            detail="JSON not generated yet. Call /generate first."
+        )
+
+    # Get game name for filename
+    game = game_repository.get_game(game_id)
+    filename = f"{game['name'].replace(' ', '_')}_game.json" if game else f"game_{game_id}.json"
+
+    return FileResponse(
+        path=str(json_path),
+        media_type="application/json",
+        filename=filename,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )

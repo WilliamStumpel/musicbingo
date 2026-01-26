@@ -263,3 +263,37 @@ export async function parseCSV(file) {
   }
   return response.json();
 }
+
+/**
+ * Generate bingo cards for a game.
+ * @param {number} gameId - Game ID
+ * @returns {Promise<{success: boolean, card_count: number, pdf_path: string, json_path: string, message: string}>}
+ */
+export async function generateCards(gameId) {
+  const response = await fetch(`${API_BASE}/api/prep/games/${gameId}/generate`, {
+    method: 'POST',
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to generate cards');
+  }
+  return response.json();
+}
+
+/**
+ * Get the URL for downloading a game's PDF.
+ * @param {number} gameId - Game ID
+ * @returns {string} URL for PDF download
+ */
+export function getDownloadPdfUrl(gameId) {
+  return `${API_BASE}/api/prep/games/${gameId}/download/pdf`;
+}
+
+/**
+ * Get the URL for downloading a game's JSON.
+ * @param {number} gameId - Game ID
+ * @returns {string} URL for JSON download
+ */
+export function getDownloadJsonUrl(gameId) {
+  return `${API_BASE}/api/prep/games/${gameId}/download/json`;
+}
