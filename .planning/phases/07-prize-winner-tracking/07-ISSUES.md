@@ -6,25 +6,7 @@
 
 ## Open Issues
 
-### UAT-001: CardStatusPanel not showing progress for registered cards
-
-**Discovered:** 2026-01-25
-**Phase/Plan:** 07-02
-**Severity:** Major
-**Feature:** Card status panel in Host app
-**Description:** After registering a card and marking songs as played, the Cards panel shows the registered card but does not display a progress indicator showing how many matches the card has toward a win.
-**Expected:** Each registered card should show a progress bar or match count (e.g., "3/5 matches")
-**Actual:** Cards are listed but no progress information is visible
-
-### UAT-002: Player View pattern not syncing with Host pattern selection
-
-**Discovered:** 2026-01-25
-**Phase/Plan:** 07-03 (related to 05-04)
-**Severity:** Major
-**Feature:** Pattern display sync between Host and Player View
-**Description:** The pattern displayed on the Player View (venue TV) does not match the pattern selected in the Host app.
-**Expected:** When DJ selects a pattern in the Host app, the Player View should update to show the same pattern
-**Actual:** Pattern on Player View doesn't reflect the Host selection
+[None]
 
 ## Pre-flight Issues Fixed During Testing
 
@@ -58,7 +40,27 @@
 
 ## Resolved Issues
 
-[None yet]
+### UAT-001: CardStatusPanel not showing progress for registered cards
+
+**Discovered:** 2026-01-25
+**Resolved:** 2026-01-25 - Commit dcad295f
+**Phase/Plan:** 07-02
+**Severity:** Major
+**Feature:** Card status panel in Host app
+**Description:** After registering a card and marking songs as played, the Cards panel shows the registered card but does not display a progress indicator showing how many matches the card has toward a win.
+**Root Cause:** Field name mismatch - component used `card.required` but API returns `card.total_needed`
+**Fix:** Changed `card.required` to `card.total_needed` in CardStatusPanel.jsx
+
+### UAT-002: Player View pattern not syncing with Host pattern selection
+
+**Discovered:** 2026-01-25
+**Resolved:** 2026-01-25 - Commit 983dc452
+**Phase/Plan:** 07-03 (related to 05-04)
+**Severity:** Major
+**Feature:** Pattern display sync between Host and Player View
+**Description:** The pattern displayed on the Player View (venue TV) does not match the pattern selected in the Host app.
+**Root Cause:** PlayerView relied solely on storage events for pattern sync, which only fire across different browsing contexts
+**Fix:** Added pattern sync from localStorage during polling interval
 
 ---
 
