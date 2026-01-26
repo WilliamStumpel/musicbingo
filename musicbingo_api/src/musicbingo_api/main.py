@@ -7,6 +7,7 @@ from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from .database import init_db
 from .game_loader import list_available_games, load_game_from_file
 from .game_service import get_game_service
 from .models import CardData, PatternType, Song
@@ -68,6 +69,12 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database on API startup."""
+    init_db()
 
 
 @app.get("/")
