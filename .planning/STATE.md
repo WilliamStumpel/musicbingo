@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-14)
 ## Current Position
 
 Phase: 8 of 9 (Game Prep UI)
-Plan: 3/5 complete
+Plan: 4/5 complete
 Status: In progress
-Last activity: 2026-01-25 — Completed 08-03-PLAN.md (VenueNight CRUD)
+Last activity: 2026-01-25 — Completed 08-04-PLAN.md (Game CRUD)
 
-Progress: ██████░░░░ 60% (Phase 8)
+Progress: ████████░░ 80% (Phase 8)
 
 ## Pivot Notes
 
@@ -133,6 +133,9 @@ Recent decisions affecting current work:
 - **VenueNight status badges** - draft=gray, ready=green, completed=blue
 - **VenueNight filter dropdown** - Filter list by venue using query param
 - **Date format** - Display weekday + month/day/year for venue nights
+- **CSV parse on server** - Ensure consistent song ID generation with SHA256 hash
+- **Playlist preview before save** - DJ confirms correct file uploaded
+- **List/detail view pattern** - Toggle views in same component for CRUD UI
 
 ### Deferred Issues
 
@@ -149,6 +152,6 @@ None - Manual Playback Mode removes all streaming API dependencies.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 08-03-PLAN.md (VenueNight CRUD)
+Stopped at: Completed 08-04-PLAN.md (Game CRUD)
 Resume file: None
-Next action: /gsd:execute-plan 08-04
+Next action: /gsd:execute-plan 08-05
