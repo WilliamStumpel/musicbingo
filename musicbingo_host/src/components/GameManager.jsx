@@ -32,6 +32,11 @@ export function GameManager() {
   const [isSaving, setIsSaving] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
 
+  // Generation state
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationResult, setGenerationResult] = useState(null);
+  const [generationError, setGenerationError] = useState(null);
+
   // Fetch venue nights for dropdown
   const fetchNights = useCallback(async () => {
     try {
@@ -94,6 +99,8 @@ export function GameManager() {
       });
       setPreviewPlaylist(null);
       setFormError(null);
+      setGenerationResult(null);
+      setGenerationError(null);
       setView('detail');
     } catch (e) {
       setError(e.message || 'Failed to load game');
@@ -106,6 +113,8 @@ export function GameManager() {
     setEditingGame(null);
     setPreviewPlaylist(null);
     setFormError(null);
+    setGenerationResult(null);
+    setGenerationError(null);
   };
 
   // Handle form input changes
@@ -218,6 +227,34 @@ export function GameManager() {
       handleBackToList();
     } catch (e) {
       setFormError(e.message || 'Failed to delete game');
+    }
+  };
+
+  // Generate cards
+  const handleGenerateCards = async () => {
+    if (!editingGame) return;
+
+    setIsGenerating(true);
+    setGenerationError(null);
+    setGenerationResult(null);
+
+    try {
+      const result = await prepApi.generateCards(editingGame.id);
+      setGenerationResult(result);
+      // Update the game in the list to reflect PDF status
+      setGames(prev =>
+        prev.map(g =>
+          g.id === editingGame.id
+            ? { ...g, pdf_path: result.pdf_path }
+            : g
+        )
+      );
+      // Update editingGame to show download buttons
+      setEditingGame(prev => ({ ...prev, pdf_path: result.pdf_path }));
+    } catch (e) {
+      setGenerationError(e.message || 'Failed to generate cards');
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -466,6 +503,73 @@ export function GameManager() {
               </div>
             )}
           </div>
+
+          {/* Card Generation Section - only show for existing games with enough songs */}
+          {editingGame && formData.playlist.length >= 24 && (
+            <div className="generation-section">
+              <h3>Card Generation</h3>
+
+              {/* Generation Error */}
+              {generationError && (
+                <div className="generation-error">
+                  {generationError}
+                </div>
+              )}
+
+              {/* Generation Success */}
+              {generationResult && (
+                <div className="generation-success">
+                  Successfully generated {generationResult.card_count} cards!
+                </div>
+              )}
+
+              {/* Generation Button */}
+              <div className="generation-controls">
+                <button
+                  type="button"
+                  className="generate-btn"
+                  onClick={handleGenerateCards}
+                  disabled={isGenerating || isSaving || formData.playlist.length < 48}
+                >
+                  {isGenerating ? 'Generating...' : 'Generate Cards'}
+                </button>
+                {formData.playlist.length < 48 && (
+                  <span className="generation-hint">
+                    Need at least 48 songs (have {formData.playlist.length})
+                  </span>
+                )}
+              </div>
+
+              {/* Download Buttons - show if PDF already generated or after successful generation */}
+              {(editingGame.pdf_path || generationResult) && (
+                <div className="download-section">
+                  <h4>Downloads</h4>
+                  <div className="download-buttons">
+                    <a
+                      href={prepApi.getDownloadPdfUrl(editingGame.id)}
+                      className="download-btn download-pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Download PDF
+                    </a>
+                    <a
+                      href={prepApi.getDownloadJsonUrl(editingGame.id)}
+                      className="download-btn download-json"
+                      download
+                    >
+                      Download Game JSON
+                    </a>
+                  </div>
+                  <p className="download-hint">
+                    {generationResult
+                      ? `${generationResult.card_count} cards generated`
+                      : `${editingGame.card_count} cards`}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Form Actions */}
           <div className="form-actions">

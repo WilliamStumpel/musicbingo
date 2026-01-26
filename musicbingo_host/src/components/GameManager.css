@@ -474,6 +474,130 @@
   text-align: right;
 }
 
+/* Card Generation Section */
+.generation-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #333;
+}
+
+.generation-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.generation-error {
+  padding: 10px 12px;
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.generation-success {
+  padding: 10px 12px;
+  background: rgba(29, 185, 84, 0.1);
+  border: 1px solid #1DB954;
+  border-radius: 6px;
+  color: #1DB954;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.generation-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.generate-btn {
+  padding: 12px 24px;
+  background: #1DB954;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: #1ed760;
+}
+
+.generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.generation-hint {
+  font-size: 13px;
+  color: #888;
+}
+
+/* Download Section */
+.download-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #3a3a3a;
+}
+
+.download-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #888;
+}
+
+.download-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.download-pdf {
+  background: #333;
+  border: 1px solid #1DB954;
+  color: #1DB954;
+}
+
+.download-pdf:hover {
+  background: rgba(29, 185, 84, 0.15);
+}
+
+.download-json {
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+}
+
+.download-json:hover {
+  background: #444;
+}
+
+.download-hint {
+  margin: 12px 0 0 0;
+  font-size: 12px;
+  color: #666;
+}
+
 /* Form Actions */
 .form-actions {
   display: flex;
