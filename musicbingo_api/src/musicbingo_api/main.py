@@ -61,6 +61,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://williamstumpel.github.io",  # GitHub Pages (deployed scanner PWA)
+        "https://musicbingo-verify.vercel.app",  # Vercel (deployed scanner PWA)
     ],
     allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
