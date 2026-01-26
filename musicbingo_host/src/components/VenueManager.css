@@ -1,0 +1,22 @@
+.venue-manager {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.venue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.venue-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.venue-content {
+  color: #888;
+}
