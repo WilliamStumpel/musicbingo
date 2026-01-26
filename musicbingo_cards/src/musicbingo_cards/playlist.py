@@ -235,13 +235,24 @@ class PlaylistParser:
                     if not title or not artist:
                         raise ValueError("Missing required fields (title, artist)")
 
-                    song = Song(
-                        title=title,
-                        artist=artist,
-                        album=item.get("album"),
-                        duration_seconds=item.get("duration"),
-                        metadata=item.get("metadata", {}),
-                    )
+                    # Build kwargs - only include song_id if present in JSON
+                    from uuid import UUID
+                    kwargs = {
+                        "title": title,
+                        "artist": artist,
+                        "album": item.get("album"),
+                        "duration_seconds": item.get("duration"),
+                        "metadata": item.get("metadata", {}),
+                    }
+
+                    # Preserve existing song_id if present in JSON
+                    if item.get("song_id"):
+                        try:
+                            kwargs["song_id"] = UUID(item["song_id"])
+                        except (ValueError, TypeError):
+                            pass  # Invalid UUID, will auto-generate
+
+                    song = Song(**kwargs)
                     songs.append(song)
                 except (ValueError, KeyError) as e:
                     raise PlaylistError(f"Song {i}: {e}")
