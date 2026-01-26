@@ -1,0 +1,639 @@
+.game-manager {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* Header */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+
+.game-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.game-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.game-filter {
+  display: flex;
+  align-items: center;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  max-width: 300px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #1DB954;
+}
+
+.add-game-btn {
+  padding: 10px 16px;
+  background: #1DB954;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.add-game-btn:hover {
+  background: #1ed760;
+}
+
+/* Error Banner */
+.game-error {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid #dc3545;
+  border-radius: 8px;
+  color: #dc3545;
+  margin-bottom: 16px;
+}
+
+.game-error .error-dismiss {
+  background: none;
+  border: none;
+  color: #dc3545;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.game-error .error-dismiss:hover {
+  color: #ff6b6b;
+}
+
+/* Loading */
+.game-loading {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}
+
+/* Game List */
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.game-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+/* Game Card */
+.game-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: #222;
+  border-radius: 8px;
+  border: 1px solid #333;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.game-card:hover {
+  border-color: #1DB954;
+  background: #262626;
+}
+
+.game-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.game-name {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.game-meta {
+  margin-bottom: 8px;
+}
+
+.game-night {
+  font-size: 13px;
+  color: #888;
+}
+
+.game-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.game-song-count,
+.game-card-count {
+  font-size: 13px;
+  color: #666;
+}
+
+.game-pdf-status {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.game-pdf-status.generated {
+  background: rgba(29, 185, 84, 0.2);
+  color: #1DB954;
+}
+
+.game-pdf-status.pending {
+  background: #333;
+  color: #888;
+}
+
+/* Detail View */
+.game-detail {
+  padding: 0;
+}
+
+.back-btn {
+  padding: 8px 12px;
+  background: #333;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: #444;
+}
+
+.game-detail h2 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* Form */
+.game-form {
+  background: #222;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #333;
+}
+
+.game-form .form-error {
+  padding: 10px 12px;
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.form-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.form-field-small {
+  flex: 0 0 100px;
+  min-width: 100px;
+}
+
+.form-field label {
+  display: block;
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  padding: 10px 12px;
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: #1DB954;
+}
+
+.form-field input::placeholder {
+  color: #666;
+}
+
+.form-field input:disabled,
+.form-field select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* CSV Section */
+.csv-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #333;
+}
+
+.csv-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.csv-upload {
+  margin-bottom: 16px;
+}
+
+.csv-upload-label {
+  display: inline-block;
+  padding: 10px 16px;
+  background: #333;
+  border: 1px dashed #555;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.csv-upload-label:hover {
+  border-color: #1DB954;
+  background: #3a3a3a;
+}
+
+.csv-file-input {
+  display: none;
+}
+
+.csv-hint {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.csv-hint a {
+  color: #1DB954;
+  text-decoration: none;
+}
+
+.csv-hint a:hover {
+  text-decoration: underline;
+}
+
+/* Playlist Preview */
+.playlist-preview {
+  background: rgba(29, 185, 84, 0.1);
+  border: 1px solid #1DB954;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.preview-count {
+  font-size: 14px;
+  color: #1DB954;
+  font-weight: 500;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.use-playlist-btn {
+  padding: 8px 14px;
+  background: #1DB954;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.use-playlist-btn:hover {
+  background: #1ed760;
+}
+
+.cancel-playlist-btn {
+  padding: 8px 14px;
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cancel-playlist-btn:hover {
+  background: #444;
+}
+
+.preview-list {
+  max-height: 300px;
+}
+
+/* Current Playlist */
+.current-playlist {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.playlist-header {
+  margin-bottom: 12px;
+}
+
+.playlist-count {
+  font-size: 14px;
+  color: #888;
+}
+
+.playlist-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #666;
+  background: #2a2a2a;
+  border-radius: 8px;
+}
+
+/* Song List */
+.song-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 6px;
+}
+
+.song-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px 12px;
+  background: #333;
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.song-item:first-child {
+  border-radius: 6px 6px 0 0;
+}
+
+.song-item:last-child {
+  border-bottom: none;
+  border-radius: 0 0 6px 6px;
+}
+
+.song-item:only-child {
+  border-radius: 6px;
+}
+
+.song-item:nth-child(even) {
+  background: #2e2e2e;
+}
+
+.song-number {
+  flex: 0 0 30px;
+  color: #666;
+  font-size: 13px;
+  text-align: right;
+}
+
+.song-title {
+  flex: 1;
+  color: #fff;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-artist {
+  flex: 0 0 200px;
+  color: #888;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #333;
+}
+
+.form-actions-right {
+  display: flex;
+  gap: 12px;
+}
+
+.delete-btn {
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  color: #dc3545;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-cancel-btn {
+  padding: 10px 16px;
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.form-cancel-btn:hover:not(:disabled) {
+  background: #444;
+}
+
+.form-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-submit-btn {
+  padding: 10px 20px;
+  background: #1DB954;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.form-submit-btn:hover:not(:disabled) {
+  background: #1ed760;
+}
+
+.form-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .game-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .game-header-left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .add-game-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-field,
+  .form-field-small {
+    min-width: auto;
+    flex: auto;
+  }
+
+  .song-artist {
+    flex: 0 0 120px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .form-actions-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .delete-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .song-item {
+    flex-wrap: wrap;
+  }
+
+  .song-number {
+    flex: 0 0 24px;
+  }
+
+  .song-title {
+    flex: 1 1 calc(100% - 36px);
+    order: 1;
+  }
+
+  .song-artist {
+    flex: 1 1 100%;
+    text-align: left;
+    padding-left: 36px;
+    order: 2;
+    margin-top: 2px;
+  }
+
+  .preview-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .preview-actions {
+    width: 100%;
+  }
+
+  .use-playlist-btn,
+  .cancel-playlist-btn {
+    flex: 1;
+  }
+}

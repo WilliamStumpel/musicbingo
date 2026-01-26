@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './PrepView.css';
 import { VenueManager } from '../components/VenueManager';
 import { VenueNightManager } from '../components/VenueNightManager';
+import { GameManager } from '../components/GameManager';
 
 const TABS = {
   VENUES: 'venues',
@@ -20,12 +21,7 @@ function PrepView() {
       case TABS.NIGHTS:
         return <VenueNightManager />;
       case TABS.GAMES:
-        return (
-          <div className="coming-soon">
-            <h3>Games</h3>
-            <p>Coming soon - Create and manage bingo games</p>
-          </div>
-        );
+        return <GameManager />;
       default:
         return null;
     }
