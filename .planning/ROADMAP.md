@@ -23,7 +23,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 5: Player View** - HDMI output with call board, delayed song reveal, pattern display
 - [ ] **Phase 6: Game Modes & Patterns** - Multiple patterns, pattern selection, lightning rounds
 - [ ] **Phase 7: Prize & Winner Tracking** - Winner log, prize types, multi-winner handling
-- [ ] **Phase 8: Testing & Quality** - Unit tests, E2E tests, manual device testing
+- [ ] **Phase 8: Game Prep UI** - Visual game/venue management, CSV upload, card generation from browser
+- [ ] **Phase 9: Testing & Quality** - Unit tests, E2E tests, manual device testing
 
 ## Phase Details
 
@@ -102,27 +103,53 @@ Plans:
 **Plans**: 3
 
 Plans:
-- [ ] 07-01: Card Registration (backend + scanner UI for assigning player names to cards)
-- [ ] 07-02: Winner Detection & Prize Config (proactive detection, card statuses, prize setting, host toasts)
-- [ ] 07-03: Host Panel & Venue Display (card status slide-out, winner log, prize display, winner announcement)
+- [x] 07-01: Card Registration (backend + scanner UI for assigning player names to cards)
+- [x] 07-02: Winner Detection & Prize Config (proactive detection, card statuses, prize setting, host toasts)
+- [x] 07-03: Host Panel & Venue Display (card status slide-out, winner log, prize display, winner announcement)
 
-### Phase 8: Testing & Quality
+### Phase 8: Game Prep UI
+**Goal**: Visual interface for managing venues, game nights, playlists, and card generation — replacing CLI workflow
+**Depends on**: Phase 7
+**Research**: None (React patterns, SQLite, existing card generation logic)
+**Plans**: TBD
+
+Data model:
+- Venue: name, logo, contact info (reusable across nights)
+- VenueNight: date, venue, list of games, status
+- Game: name, playlist (songs), card count, PDF generation status
+
+Features:
+- Prep tab in host app (alongside Host View and Player View)
+- Venue manager with logo upload
+- Venue night list (sorted by date, status badges)
+- Game editor with CSV upload, song preview, card count
+- Card generation from browser with PDF download
+- Edit existing games/nights
+
+Plans:
+- [x] 08-01: SQLite database schema and migrations
+- [ ] 08-02: Venue CRUD API and UI
+- [ ] 08-03: Venue Night CRUD API and UI
+- [ ] 08-04: Game management with CSV upload
+- [ ] 08-05: Card generation API and PDF download
+
+### Phase 9: Testing & Quality
 **Goal**: Comprehensive test coverage and real device validation
-**Depends on**: Phases 1-7
+**Depends on**: Phases 1-8
 **Research**: Unlikely (pytest/Playwright established patterns)
 **Plans**: TBD
 
 Plans:
-- [ ] 08-01: Unit tests for card generation algorithm
-- [ ] 08-02: Unit tests for QR parser and API client
-- [ ] 08-03: Unit tests for React components
-- [ ] 08-04: E2E tests with Playwright
-- [ ] 08-05: Manual device testing protocol
+- [ ] 09-01: Unit tests for card generation algorithm
+- [ ] 09-02: Unit tests for QR parser and API client
+- [ ] 09-03: Unit tests for React components
+- [ ] 09-04: E2E tests with Playwright
+- [ ] 09-05: Manual device testing protocol
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -132,5 +159,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Host View | 2/2 | Complete | 2026-01-18 |
 | 5. Player View | 4/4 | Complete | 2026-01-19 |
 | 6. Game Modes & Patterns | 1/1 | Complete | 2026-01-19 |
-| 7. Card Registration & Winner Tracking | 0/3 | Not started | - |
-| 8. Testing & Quality | 0/5 | Not started | - |
+| 7. Prize & Winner Tracking | 3/3 | Complete | 2026-01-22 |
+| 8. Game Prep UI | 1/5 | In progress | - |
+| 9. Testing & Quality | 0/5 | Not started | - |
