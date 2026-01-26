@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './HostView.css';
 import { useGameState } from '../hooks/useGameState';
 import { SongChecklist } from '../components/SongChecklist';
@@ -106,6 +107,7 @@ function HostView() {
       <header className="host-header">
         <div className="header-left">
           <h1>Music Bingo Host</h1>
+          <Link to="/prep" className="prep-link">Prep</Link>
           <button
             className="qr-button"
             onClick={() => setShowConnectionInfo(true)}
