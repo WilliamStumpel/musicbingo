@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from . import venue_repository
@@ -236,3 +237,33 @@ async def upload_venue_logo(venue_id: int, file: UploadFile = File(...)):
         raise HTTPException(status_code=404, detail=f"Venue {venue_id} not found")
 
     return venue_to_response(updated_venue)
+
+
+@router.get(
+    "/logos/{filename}",
+    responses={404: {"model": ErrorResponse}},
+)
+async def get_logo(filename: str):
+    """Serve a venue logo file.
+
+    Returns the logo image file for display in the UI.
+    """
+    # Sanitize filename to prevent path traversal
+    safe_filename = os.path.basename(filename)
+    logo_path = LOGOS_DIR / safe_filename
+
+    if not logo_path.exists():
+        raise HTTPException(status_code=404, detail=f"Logo '{filename}' not found")
+
+    # Determine media type from extension
+    ext = logo_path.suffix.lower()
+    media_types = {
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".gif": "image/gif",
+        ".webp": "image/webp",
+    }
+    media_type = media_types.get(ext, "application/octet-stream")
+
+    return FileResponse(logo_path, media_type=media_type)
