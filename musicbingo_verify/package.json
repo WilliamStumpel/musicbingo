@@ -33,7 +33,7 @@
       "!src/setupTests.js",
       "!src/**/*.css"
     ],
-    "coverageThresholds": {
+    "coverageThreshold": {
       "global": {
         "branches": 80,
         "functions": 85,
