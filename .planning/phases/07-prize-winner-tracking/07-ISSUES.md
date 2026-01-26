@@ -6,7 +6,7 @@
 
 ## Open Issues
 
-[None]
+(None)
 
 ## Pre-flight Issues Fixed During Testing
 
@@ -61,6 +61,31 @@
 **Description:** The pattern displayed on the Player View (venue TV) does not match the pattern selected in the Host app.
 **Root Cause:** PlayerView relied solely on storage events for pattern sync, which only fire across different browsing contexts
 **Fix:** Added pattern sync from localStorage during polling interval
+
+### UAT-003: PlayerView doesn't load current pattern on initial launch
+
+**Discovered:** 2026-01-25
+**Resolved:** 2026-01-25 - Commit 2895dd08
+**Phase/Plan:** 07-FIX (related to 05-04)
+**Severity:** Minor
+**Feature:** Pattern display on PlayerView
+**Description:** When Player View window first opens, it doesn't show the pattern currently selected in Host. It shows the default or last-known pattern instead.
+**Root Cause:** Initial load happened before first polling interval
+**Fix:** Added immediate poll() call on mount before starting interval
+
+### UAT-004: Card progress always shows 0 matches - song ID mismatch in game file
+
+**Discovered:** 2026-01-25
+**Resolved:** 2026-01-25 - Commits 1a2fac82, 67e8d9d6
+**Phase/Plan:** Pre-existing data issue (card generation)
+**Severity:** Blocker
+**Feature:** Card progress tracking
+**Description:** Card progress always shows "0/N" even when marking songs that appear on the physical card. Investigation showed game file had data integrity issue: playlist song IDs didn't match card song_positions IDs (0 overlap between 150 playlist songs and 148 card positions).
+**Root Cause:** `playlist.py parse_json()` was creating new Song objects with auto-generated UUIDs instead of preserving existing song_id values from JSON
+**Fix:**
+1. Modified parse_json() to preserve song_id if present in JSON
+2. Regenerated all-out-90s.json cards with correct song IDs from playlist
+**Note:** Physical cards printed from old file need to be reprinted
 
 ---
 
