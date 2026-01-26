@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-14)
 ## Current Position
 
 Phase: 9 of 9 (Testing & Quality)
-Plan: 1/? in progress
-Status: Plan 01 complete
-Last activity: 2026-01-25 — Completed 09-01-PLAN.md (API Unit Tests)
+Plan: 2/? in progress
+Status: Plan 02 complete
+Last activity: 2026-01-25 — Completed 09-02-PLAN.md (Scanner PWA Unit Tests)
 
-Progress: █████████░ 95% (Phase 9 in progress)
+Progress: █████████░ 96% (Phase 9 in progress)
 
 ## Pivot Notes
 
@@ -139,6 +139,8 @@ Recent decisions affecting current work:
 - **MD5 hash for song UUID** - Convert any song_id format to deterministic UUID
 - **Card generation service** - Wrap musicbingo_cards for API use
 - **FileResponse downloads** - Stream files with Content-Disposition headers
+- **qr-scanner mock pattern** - Use function constructor with start/stop/destroy methods for Jest
+- **Config module mock** - Use jest.mock with imported reference for per-test control
 
 ### Deferred Issues
 
@@ -155,6 +157,6 @@ None - Manual Playback Mode removes all streaming API dependencies.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 09-01-PLAN.md (API Unit Tests)
+Stopped at: Completed 09-02-PLAN.md (Scanner PWA Unit Tests)
 Resume file: None
 Next action: Continue Phase 09 testing plans
