@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-14)
 ## Current Position
 
 Phase: 8 of 9 (Game Prep UI)
-Plan: 4/5 complete
-Status: In progress
-Last activity: 2026-01-25 — Completed 08-04-PLAN.md (Game CRUD)
+Plan: 5/5 complete
+Status: Phase complete
+Last activity: 2026-01-25 — Completed 08-05-PLAN.md (Card Generation API)
 
-Progress: ████████░░ 80% (Phase 8)
+Progress: █████████░ 90% (Phase 8 complete)
 
 ## Pivot Notes
 
@@ -136,6 +136,9 @@ Recent decisions affecting current work:
 - **CSV parse on server** - Ensure consistent song ID generation with SHA256 hash
 - **Playlist preview before save** - DJ confirms correct file uploaded
 - **List/detail view pattern** - Toggle views in same component for CRUD UI
+- **MD5 hash for song UUID** - Convert any song_id format to deterministic UUID
+- **Card generation service** - Wrap musicbingo_cards for API use
+- **FileResponse downloads** - Stream files with Content-Disposition headers
 
 ### Deferred Issues
 
@@ -152,6 +155,6 @@ None - Manual Playback Mode removes all streaming API dependencies.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 08-04-PLAN.md (Game CRUD)
+Stopped at: Completed 08-05-PLAN.md (Card Generation API)
 Resume file: None
-Next action: /gsd:execute-plan 08-05
+Next action: /gsd:plan-phase 09

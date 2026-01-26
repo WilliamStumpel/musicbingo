@@ -131,7 +131,7 @@ Plans:
 - [x] 08-02: Venue CRUD API and UI
 - [x] 08-03: Venue Night CRUD API and UI
 - [x] 08-04: Game management with CSV upload
-- [ ] 08-05: Card generation API and PDF download
+- [x] 08-05: Card generation API and PDF download
 
 ### Phase 9: Testing & Quality
 **Goal**: Comprehensive test coverage and real device validation
@@ -160,5 +160,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 5. Player View | 4/4 | Complete | 2026-01-19 |
 | 6. Game Modes & Patterns | 1/1 | Complete | 2026-01-19 |
 | 7. Prize & Winner Tracking | 3/3 | Complete | 2026-01-22 |
-| 8. Game Prep UI | 4/5 | In progress | - |
+| 8. Game Prep UI | 5/5 | Complete | 2026-01-25 |
 | 9. Testing & Quality | 0/5 | Not started | - |
