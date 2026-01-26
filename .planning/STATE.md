@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-14)
 ## Current Position
 
 Phase: 8 of 9 (Game Prep UI)
-Plan: 1/5 complete
+Plan: 3/5 complete
 Status: In progress
-Last activity: 2026-01-25 — Completed 08-01-PLAN.md (SQLite Database Foundation)
+Last activity: 2026-01-25 — Completed 08-03-PLAN.md (VenueNight CRUD)
 
-Progress: █░░░░░░░░░ 20% (Phase 8)
+Progress: ██████░░░░ 60% (Phase 8)
 
 ## Pivot Notes
 
@@ -126,6 +126,13 @@ Recent decisions affecting current work:
 - **SQLite with Row factory** - Dict-like access for database query results
 - **database.transaction() pattern** - Context manager for atomic operations
 - **Dataclass.from_row() factory** - Standard pattern for query result conversion
+- **Repository pattern** - Separate database logic from route handlers
+- **Logo file naming** - {venue_id}_{original_filename} prevents collisions
+- **Inline form vs modal** - Simpler UX for CRUD operations
+- **prepApi.js service** - Game Prep API calls mirror gameApi.js pattern
+- **VenueNight status badges** - draft=gray, ready=green, completed=blue
+- **VenueNight filter dropdown** - Filter list by venue using query param
+- **Date format** - Display weekday + month/day/year for venue nights
 
 ### Deferred Issues
 
@@ -142,6 +149,6 @@ None - Manual Playback Mode removes all streaming API dependencies.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: Completed 08-01-PLAN.md (SQLite Database Foundation)
+Stopped at: Completed 08-03-PLAN.md (VenueNight CRUD)
 Resume file: None
-Next action: /gsd:execute-plan 08-02
+Next action: /gsd:execute-plan 08-04
