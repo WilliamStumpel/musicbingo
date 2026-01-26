@@ -68,16 +68,21 @@ export class ApiClient {
    * @returns {Promise<boolean>} True if API is accessible
    */
   async healthCheck() {
+    const url = `${this.baseUrl}/health`;
+    console.log('[ApiClient] Health check:', url);
     try {
-      const response = await fetch(`${this.baseUrl}/health`, {
+      const response = await fetch(url, {
         method: 'GET',
+        mode: 'cors',
         headers: {
           'Accept': 'application/json',
           'ngrok-skip-browser-warning': '1',
         },
       });
+      console.log('[ApiClient] Health response:', response.status, response.ok);
       return response.ok;
     } catch (error) {
+      console.error('[ApiClient] Health check error:', error.name, error.message);
       return false;
     }
   }
