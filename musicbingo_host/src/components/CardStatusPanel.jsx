@@ -155,11 +155,11 @@ export function CardStatusPanel({ isOpen, onClose, gameId, winners = [], onAssig
                     <div className="progress-bar">
                       <div
                         className="progress-fill"
-                        style={{ width: `${(card.matches / card.required) * 100}%` }}
+                        style={{ width: `${(card.matches / card.total_needed) * 100}%` }}
                       />
                     </div>
                     <span className="progress-text">
-                      {card.matches}/{card.required}
+                      {card.matches}/{card.total_needed}
                     </span>
                   </>
                 )}
