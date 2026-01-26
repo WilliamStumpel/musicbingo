@@ -85,15 +85,17 @@ def generate_cards_for_game(game_id: int) -> dict:
 
     # Convert songs - the playlist stores songs with 12-char hex song_ids, not UUIDs
     # We need to convert them to UUID format for musicbingo_cards
+    import hashlib
+
     try:
         songs = []
         for song_data in playlist_data:
-            # Generate a deterministic UUID from the 12-char song_id
-            # Pad the 12-char hex to 32 chars for UUID
-            song_id_hex = song_data["song_id"]
-            # Pad with zeros to make a valid UUID (32 hex chars)
-            padded_hex = song_id_hex.ljust(32, "0")
-            song_uuid = UUID(padded_hex)
+            # Generate a deterministic UUID from the song_id
+            # Use hash to handle any song_id format (hex or otherwise)
+            song_id_str = song_data["song_id"]
+            # Create a deterministic UUID using MD5 hash of the song_id
+            hash_bytes = hashlib.md5(song_id_str.encode()).digest()
+            song_uuid = UUID(bytes=hash_bytes)
 
             song = CardSong(
                 title=song_data["title"],
