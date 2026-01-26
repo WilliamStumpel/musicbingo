@@ -42,6 +42,7 @@ from .schemas import (
     StartGameResponse,
     VerifyCardResponse,
 )
+from .venue_routes import router as venue_router
 
 app = FastAPI(
     title="Music Bingo API",
@@ -66,9 +67,12 @@ app.add_middleware(
     ],
     allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_credentials=True,
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
+
+# Include venue routes for Game Prep UI
+app.include_router(venue_router)
 
 
 @app.on_event("startup")
