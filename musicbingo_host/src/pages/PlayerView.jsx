@@ -100,6 +100,9 @@ function PlayerView() {
       setCurrentPrize(storedPrize || null);
     };
 
+    // Run poll immediately on mount to sync state
+    poll();
+
     pollRef.current = setInterval(poll, POLL_INTERVAL);
 
     return () => {
