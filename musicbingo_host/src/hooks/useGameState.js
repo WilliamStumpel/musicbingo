@@ -54,11 +54,19 @@ export function useGameState() {
       setPlayedSongs(new Set(playedSongIds));
       setPlayedOrder(playedSongIds); // Initialize playedOrder from state
       setRevealedSongs(new Set(revealedSongIds)); // Initialize revealedSongs from state
-      setCurrentPatternState(state.current_pattern || 'five_in_a_row');
+      const pattern = state.current_pattern || 'five_in_a_row';
+      setCurrentPatternState(pattern);
+      localStorage.setItem('musicbingo_current_pattern', pattern); // Sync to player view
       setNowPlayingState(null); // Reset now playing when loading new game
 
       // Initialize winner detection state
-      setCurrentPrizeState(state.current_prize || null);
+      const prize = state.current_prize || null;
+      setCurrentPrizeState(prize);
+      if (prize) {
+        localStorage.setItem('musicbingo_current_prize', prize);
+      } else {
+        localStorage.removeItem('musicbingo_current_prize');
+      }
       setDetectedWinners(state.detected_winners || []);
       setNewWinners([]); // Clear new winners toast
       prevWinnerIdsRef.current = new Set((state.detected_winners || []).map(w => w.card_id));

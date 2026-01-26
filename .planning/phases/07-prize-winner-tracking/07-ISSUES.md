@@ -65,13 +65,15 @@
 ### UAT-003: PlayerView doesn't load current pattern on initial launch
 
 **Discovered:** 2026-01-25
-**Resolved:** 2026-01-25 - Commit 2895dd08
+**Resolved:** 2026-01-25 - Commits 2895dd08, 3c94e4d8
 **Phase/Plan:** 07-FIX (related to 05-04)
 **Severity:** Minor
 **Feature:** Pattern display on PlayerView
 **Description:** When Player View window first opens, it doesn't show the pattern currently selected in Host. It shows the default or last-known pattern instead.
-**Root Cause:** Initial load happened before first polling interval
-**Fix:** Added immediate poll() call on mount before starting interval
+**Root Cause:** Host only wrote pattern to localStorage when user changed it, not on initial game load
+**Fix:**
+1. Added immediate poll() on mount in PlayerView (partial fix)
+2. Host now syncs pattern and prize to localStorage when game loads (actual fix)
 
 ### UAT-004: Card progress always shows 0 matches - song ID mismatch in game file
 
