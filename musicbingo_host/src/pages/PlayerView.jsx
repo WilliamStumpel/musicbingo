@@ -88,6 +88,16 @@ function PlayerView() {
         setPlayedSongs(new Set(played));
         setPlayedOrder(played); // Update playedOrder from API
       }
+
+      // Sync pattern from localStorage (Host sets this)
+      const storedPattern = localStorage.getItem('musicbingo_current_pattern');
+      if (storedPattern) {
+        setCurrentPattern(storedPattern);
+      }
+
+      // Sync prize from localStorage (Host sets this)
+      const storedPrize = localStorage.getItem('musicbingo_current_prize');
+      setCurrentPrize(storedPrize || null);
     };
 
     pollRef.current = setInterval(poll, POLL_INTERVAL);
