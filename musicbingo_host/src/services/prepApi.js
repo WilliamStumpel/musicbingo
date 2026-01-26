@@ -168,3 +168,98 @@ export async function deleteVenueNight(id) {
   }
   return true;
 }
+
+// ============================================================================
+// Games
+// ============================================================================
+
+/**
+ * Get all games.
+ * @param {number|null} venueNightId - Optional filter by venue night ID
+ */
+export async function getGames(venueNightId = null) {
+  const url = venueNightId
+    ? `${API_BASE}/api/prep/games?venue_night_id=${venueNightId}`
+    : `${API_BASE}/api/prep/games`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Failed to fetch games');
+  const data = await response.json();
+  return data.games || [];
+}
+
+/**
+ * Get a single game by ID with full playlist.
+ */
+export async function getGame(id) {
+  const response = await fetch(`${API_BASE}/api/prep/games/${id}`);
+  if (!response.ok) throw new Error(`Failed to fetch game ${id}`);
+  return response.json();
+}
+
+/**
+ * Create a new game.
+ * @param {Object} data - { venue_night_id, name, playlist, card_count }
+ */
+export async function createGame(data) {
+  const response = await fetch(`${API_BASE}/api/prep/games`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create game');
+  }
+  return response.json();
+}
+
+/**
+ * Update a game.
+ * @param {number} id - Game ID
+ * @param {Object} data - { name, playlist, card_count, sort_order }
+ */
+export async function updateGame(id, data) {
+  const response = await fetch(`${API_BASE}/api/prep/games/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to update game');
+  }
+  return response.json();
+}
+
+/**
+ * Delete a game.
+ */
+export async function deleteGame(id) {
+  const response = await fetch(`${API_BASE}/api/prep/games/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete game');
+  }
+  return true;
+}
+
+/**
+ * Parse a CSV file and return the playlist.
+ * @param {File} file - CSV file to parse
+ */
+export async function parseCSV(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${API_BASE}/api/prep/games/parse-csv`, {
+    method: 'POST',
+    body: formData,
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to parse CSV');
+  }
+  return response.json();
+}
