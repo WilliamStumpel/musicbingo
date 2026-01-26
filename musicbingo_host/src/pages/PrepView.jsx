@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './PrepView.css';
 import { VenueManager } from '../components/VenueManager';
+import { VenueNightManager } from '../components/VenueNightManager';
 
 const TABS = {
   VENUES: 'venues',
@@ -17,12 +18,7 @@ function PrepView() {
       case TABS.VENUES:
         return <VenueManager />;
       case TABS.NIGHTS:
-        return (
-          <div className="coming-soon">
-            <h3>Venue Nights</h3>
-            <p>Coming soon - Schedule game nights at your venues</p>
-          </div>
-        );
+        return <VenueNightManager />;
       case TABS.GAMES:
         return (
           <div className="coming-soon">
