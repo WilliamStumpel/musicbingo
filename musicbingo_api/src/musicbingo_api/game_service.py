@@ -398,6 +398,47 @@ class GameService:
 
         return registered
 
+    def unregister_card(self, game_id: UUID, card_id: UUID) -> bool:
+        """Unregister a card from a player.
+
+        Args:
+            game_id: Game identifier
+            card_id: Card identifier
+
+        Returns:
+            True if card was unregistered, False if it wasn't registered
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+
+        if card_id not in game.registered_cards:
+            return False
+
+        del game.registered_cards[card_id]
+        game.updated_at = datetime.now()
+        return True
+
+    def clear_all_registrations(self, game_id: UUID) -> int:
+        """Clear all card registrations for a game.
+
+        Args:
+            game_id: Game identifier
+
+        Returns:
+            Number of registrations cleared
+
+        Raises:
+            ValueError: If game not found
+        """
+        game = self.get_game_or_raise(game_id)
+
+        count = len(game.registered_cards)
+        game.registered_cards.clear()
+        game.updated_at = datetime.now()
+        return count
+
     def check_for_new_winners(self, game_id: UUID, triggering_song_id: UUID) -> list[dict]:
         """Check all registered cards for new winners.
 

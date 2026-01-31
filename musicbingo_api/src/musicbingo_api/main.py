@@ -19,6 +19,7 @@ from .schemas import (
     BulkAddCardsResponse,
     CardStatusesResponse,
     CardStatusInfo,
+    ClearRegistrationsResponse,
     CreateGameRequest,
     CreateGameResponse,
     DetectedWinner,
@@ -40,6 +41,7 @@ from .schemas import (
     SongInfo,
     StartGameRequest,
     StartGameResponse,
+    UnregisterCardResponse,
     VerifyCardResponse,
 )
 from .venue_routes import router as venue_router
@@ -625,6 +627,56 @@ async def get_registered_cards(game_id: UUID):
         if "not found" in str(e).lower():
             raise HTTPException(status_code=404, detail=str(e))
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.delete(
+    "/api/game/{game_id}/register-card/{card_id}",
+    response_model=UnregisterCardResponse,
+    responses={404: {"model": ErrorResponse}},
+)
+async def unregister_card(game_id: UUID, card_id: UUID):
+    """Unregister a card from a player.
+
+    Removes the player name assignment from a card. The card remains
+    in the game but is no longer associated with a player.
+    """
+    try:
+        service = get_game_service()
+        unregistered = service.unregister_card(game_id, card_id)
+
+        return UnregisterCardResponse(
+            game_id=game_id,
+            card_id=card_id,
+            unregistered=unregistered,
+        )
+
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.post(
+    "/api/game/{game_id}/clear-registrations",
+    response_model=ClearRegistrationsResponse,
+    responses={404: {"model": ErrorResponse}},
+)
+async def clear_registrations(game_id: UUID):
+    """Clear all card registrations for a game.
+
+    Removes all player name assignments from cards. Cards remain in
+    the game but are no longer associated with players. Use this when
+    redistributing cards to new players between games.
+    """
+    try:
+        service = get_game_service()
+        count = service.clear_all_registrations(game_id)
+
+        return ClearRegistrationsResponse(
+            game_id=game_id,
+            registrations_cleared=count,
+        )
+
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @app.get(

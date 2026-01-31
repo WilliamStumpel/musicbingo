@@ -482,3 +482,167 @@ def test_verify_unregistered_card_no_player_name(reset_game_service):
     data = response.json()
     assert data["winner"] is True
     assert data["player_name"] is None
+
+
+# =============================================================================
+# Unregister Card Tests
+# =============================================================================
+
+
+def test_unregister_card(reset_game_service):
+    """Test unregistering a single card."""
+    game_id, playlist, card_ids = setup_active_game()
+    card_id = card_ids[0]
+
+    # Register the card
+    client.post(
+        f"/api/game/{game_id}/register-card",
+        json={"card_id": card_id, "player_name": "Alice"},
+    )
+
+    # Verify it's registered
+    response = client.get(f"/api/game/{game_id}/registered-cards")
+    assert response.json()["total_registered"] == 1
+
+    # Unregister the card
+    response = client.delete(f"/api/game/{game_id}/register-card/{card_id}")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["game_id"] == game_id
+    assert data["card_id"] == card_id
+    assert data["unregistered"] is True
+
+    # Verify it's no longer registered
+    response = client.get(f"/api/game/{game_id}/registered-cards")
+    assert response.json()["total_registered"] == 0
+
+
+def test_unregister_card_not_registered(reset_game_service):
+    """Test unregistering a card that wasn't registered returns false."""
+    game_id, playlist, card_ids = setup_active_game()
+    card_id = card_ids[0]
+
+    # Don't register the card, just try to unregister
+    response = client.delete(f"/api/game/{game_id}/register-card/{card_id}")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["unregistered"] is False
+
+
+def test_unregister_card_game_not_found(reset_game_service):
+    """Test unregistering from non-existent game returns 404."""
+    fake_game_id = str(uuid4())
+    fake_card_id = str(uuid4())
+
+    response = client.delete(f"/api/game/{fake_game_id}/register-card/{fake_card_id}")
+
+    assert response.status_code == 404
+
+
+# =============================================================================
+# Clear All Registrations Tests
+# =============================================================================
+
+
+def test_clear_registrations(reset_game_service):
+    """Test clearing all card registrations."""
+    game_id, playlist, card_ids = setup_active_game()
+
+    # Register all 3 cards
+    for i, card_id in enumerate(card_ids):
+        client.post(
+            f"/api/game/{game_id}/register-card",
+            json={"card_id": card_id, "player_name": f"Player {i+1}"},
+        )
+
+    # Verify all registered
+    response = client.get(f"/api/game/{game_id}/registered-cards")
+    assert response.json()["total_registered"] == 3
+
+    # Clear all registrations
+    response = client.post(f"/api/game/{game_id}/clear-registrations")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["game_id"] == game_id
+    assert data["registrations_cleared"] == 3
+
+    # Verify all cleared
+    response = client.get(f"/api/game/{game_id}/registered-cards")
+    assert response.json()["total_registered"] == 0
+
+
+def test_clear_registrations_empty(reset_game_service):
+    """Test clearing registrations when none exist."""
+    game_id, playlist, card_ids = setup_active_game()
+
+    response = client.post(f"/api/game/{game_id}/clear-registrations")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["registrations_cleared"] == 0
+
+
+def test_clear_registrations_game_not_found(reset_game_service):
+    """Test clearing registrations for non-existent game returns 404."""
+    fake_game_id = str(uuid4())
+
+    response = client.post(f"/api/game/{fake_game_id}/clear-registrations")
+
+    assert response.status_code == 404
+
+
+def test_clear_registrations_does_not_affect_round(reset_game_service):
+    """Test clearing registrations doesn't clear played songs."""
+    game_id, playlist, card_ids = setup_active_game()
+
+    # Register a card
+    client.post(
+        f"/api/game/{game_id}/register-card",
+        json={"card_id": card_ids[0], "player_name": "Alice"},
+    )
+
+    # Play some songs
+    for i in range(3):
+        client.post(
+            f"/api/game/{game_id}/mark-song",
+            json={"song_id": playlist[i]["song_id"], "played": True},
+        )
+
+    # Clear registrations
+    client.post(f"/api/game/{game_id}/clear-registrations")
+
+    # Verify played songs still there
+    state = client.get(f"/api/game/{game_id}/state").json()
+    assert state["played_count"] == 3
+
+
+def test_reset_round_does_not_clear_registrations(reset_game_service):
+    """Test round reset preserves card registrations."""
+    game_id, playlist, card_ids = setup_active_game()
+
+    # Register cards
+    client.post(
+        f"/api/game/{game_id}/register-card",
+        json={"card_id": card_ids[0], "player_name": "Alice"},
+    )
+    client.post(
+        f"/api/game/{game_id}/register-card",
+        json={"card_id": card_ids[1], "player_name": "Bob"},
+    )
+
+    # Play some songs
+    for i in range(3):
+        client.post(
+            f"/api/game/{game_id}/mark-song",
+            json={"song_id": playlist[i]["song_id"], "played": True},
+        )
+
+    # Reset round
+    client.post(f"/api/game/{game_id}/reset")
+
+    # Verify registrations preserved
+    response = client.get(f"/api/game/{game_id}/registered-cards")
+    assert response.json()["total_registered"] == 2

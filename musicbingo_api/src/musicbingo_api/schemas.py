@@ -231,6 +231,21 @@ class RegisteredCardsResponse(BaseModel):
     total_registered: int
 
 
+class UnregisterCardResponse(BaseModel):
+    """Response after unregistering a card."""
+
+    game_id: UUID
+    card_id: UUID
+    unregistered: bool
+
+
+class ClearRegistrationsResponse(BaseModel):
+    """Response after clearing all card registrations."""
+
+    game_id: UUID
+    registrations_cleared: int
+
+
 class CardStatusInfo(BaseModel):
     """Status info for a registered card."""
 
