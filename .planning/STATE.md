@@ -148,7 +148,10 @@ Recent decisions affecting current work:
 
 ### Deferred Issues
 
-None yet.
+**Prep → Host Integration Bugs (found 2026-01-31):**
+1. **Game JSON not exported to games/ folder** - Card generation saves to `data/generated/{id}/game.json` but Host looks in `games/` folder. Workaround: manually copy files.
+2. **Exported JSON missing fields** - CardExporter only saves `game_id` and `cards`, but Host also needs `name` and `playlist`. Workaround: augment JSON with database data.
+3. **Song ID format mismatch** - Playlist uses 12-char hex IDs, but cards use UUID format (MD5 hash). Workaround: convert playlist IDs to UUID format.
 
 ### Pending Todos
 

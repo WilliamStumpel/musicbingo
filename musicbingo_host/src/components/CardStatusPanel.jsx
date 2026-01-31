@@ -82,6 +82,20 @@ export function CardStatusPanel({ isOpen, onClose, gameId, winners = [], onAssig
   const totalRegistered = cardStatuses.length;
   const totalWinners = cardStatuses.filter(c => c.is_winner).length;
 
+  // Handle clear all registrations
+  const handleClearRegistrations = async () => {
+    if (!gameId) return;
+    if (!window.confirm('Clear ALL card registrations? This cannot be undone.')) return;
+
+    try {
+      await gameApi.clearRegistrations(gameId);
+      setCardStatuses([]);
+    } catch (e) {
+      setError('Failed to clear registrations');
+      console.error('Clear registrations error:', e);
+    }
+  };
+
   // Handle backdrop click
   const handleBackdropClick = (e) => {
     if (e.target.classList.contains('card-status-backdrop')) {
@@ -117,6 +131,18 @@ export function CardStatusPanel({ isOpen, onClose, gameId, winners = [], onAssig
             <span className="stat-label">Winners</span>
           </span>
         </div>
+
+        {/* Clear All Button */}
+        {totalRegistered > 0 && (
+          <div className="card-status-actions">
+            <button
+              className="clear-registrations-btn"
+              onClick={handleClearRegistrations}
+            >
+              Clear All Registrations
+            </button>
+          </div>
+        )}
 
         {/* Loading / Error States */}
         {isLoading && (

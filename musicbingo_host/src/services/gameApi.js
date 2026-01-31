@@ -131,3 +131,14 @@ export async function setPrize(gameId, prize) {
   if (!response.ok) throw new Error('Failed to set prize');
   return response.json();
 }
+
+/**
+ * Clear all card registrations for a game.
+ */
+export async function clearRegistrations(gameId) {
+  const response = await fetch(`${API_BASE}/api/game/${gameId}/clear-registrations`, {
+    method: 'POST',
+  });
+  if (!response.ok) throw new Error('Failed to clear registrations');
+  return response.json();
+}
