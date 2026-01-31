@@ -144,6 +144,7 @@ Recent decisions affecting current work:
 - **Host App setupTests.js** - Jest configuration with @testing-library/jest-dom and localStorage mock
 - **Service test pattern** - Mock global fetch, test success/error paths for all API functions
 - **Account for sorted order** - SongChecklist tests must use Title A-Z default sorting
+- **Card recall separate from reset** - Unregister/clear registrations is distinct from round reset (user requirement)
 
 ### Deferred Issues
 

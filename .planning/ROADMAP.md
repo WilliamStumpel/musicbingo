@@ -100,12 +100,13 @@ Plans:
 **Goal**: Register cards to players, detect winners proactively, display prizes, celebrate winners on venue TV
 **Depends on**: Phase 4
 **Research**: None (internal feature work)
-**Plans**: 3
+**Plans**: 4
 
 Plans:
 - [x] 07-01: Card Registration (backend + scanner UI for assigning player names to cards)
 - [x] 07-02: Winner Detection & Prize Config (proactive detection, card statuses, prize setting, host toasts)
 - [x] 07-03: Host Panel & Venue Display (card status slide-out, winner log, prize display, winner announcement)
+- [x] 07-04: Card Recall (unregister single card, clear all registrations)
 
 ### Phase 8: Game Prep UI
 **Goal**: Visual interface for managing venues, game nights, playlists, and card generation — replacing CLI workflow
@@ -159,6 +160,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 4. Host View | 2/2 | Complete | 2026-01-18 |
 | 5. Player View | 4/4 | Complete | 2026-01-19 |
 | 6. Game Modes & Patterns | 1/1 | Complete | 2026-01-19 |
-| 7. Prize & Winner Tracking | 3/3 | Complete | 2026-01-22 |
+| 7. Prize & Winner Tracking | 4/4 | Complete | 2026-01-31 |
 | 8. Game Prep UI | 5/5 | Complete | 2026-01-25 |
 | 9. Testing & Quality | 5/5 | Complete | 2026-01-31 |
