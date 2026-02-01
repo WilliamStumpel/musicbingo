@@ -155,20 +155,19 @@ Plans:
 
 Issues to address:
 
-1. **Prep → Host Integration**
-   - Game JSON not exported to `games/` folder automatically
-   - Exported JSON missing `name` and `playlist` fields
-   - Song ID format mismatch (12-char hex vs UUID)
-
-2. **Card Progress UI**
+1. **Card Progress UI**
    - Progress shows "songs played on card" not "progress toward pattern"
    - Misleading when card has 5 songs played but not in winning pattern
    - Fix: Calculate pattern-aware progress (best line for row/col/diag patterns, fixed cell count for corners/X/frame/blackout)
 
+2. **Player View Winner Indicator**
+   - DJ has no way to trigger winner celebration on TV display
+   - WinnerAnnouncement component exists but isn't triggered from Host
+   - Fix: Add "Announce" button in CardStatusPanel to send winner to PlayerView
+
 Plans:
-- [ ] 10-01: Fix Prep → Host game export (auto-export with correct format)
-- [ ] 10-02: Pattern-aware card progress display
-- [ ] 10-03: Player view winner indicator (show when there's a winner on TV display)
+- [ ] 10-01: Pattern-aware card progress display
+- [ ] 10-02: Player view winner indicator (Announce button triggers TV celebration)
 
 ### Phase 11: Prize Tracking
 **Goal**: Track prize assignments and winner history
@@ -181,10 +180,12 @@ Features:
 - Persist prize assignments (winner + prize + timestamp)
 - Winner history/log in Host view
 - Export winner log for record keeping
+- Fix Prep → Host game export (auto-export to games/ folder)
 
 Plans:
 - [ ] 11-01: Prize assignment tracking (backend + frontend)
 - [ ] 11-02: Winner history log in Host view
+- [ ] 11-03: Fix Prep → Host game export (auto-export with correct format)
 
 ## Progress
 
@@ -202,5 +203,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 7. Prize & Winner Tracking | 4/4 | Complete | 2026-01-31 |
 | 8. Game Prep UI | 5/5 | Complete | 2026-01-25 |
 | 9. Testing & Quality | 5/5 | Complete | 2026-01-31 |
-| 10. Post-Launch Fixes | 0/3 | Pending | — |
-| 11. Prize Tracking | 0/2 | Pending | — |
+| 10. Post-Launch Fixes | 0/2 | Pending | — |
+| 11. Prize Tracking | 0/3 | Pending | — |
