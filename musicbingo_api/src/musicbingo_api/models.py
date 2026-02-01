@@ -330,21 +330,22 @@ class GameState:
             if card is None:
                 continue
 
-            # Count matches
+            # Get marked positions for this card
             marked_positions = card.get_marked_positions(played_song_ids)
-            # Don't count free space as a "match" for progress display
-            matches_without_free = len(marked_positions) - 1  # Subtract 1 for free space
 
             # Check if winner
             is_winner = pattern.check_win(marked_positions)
 
-            progress = "WINNER" if is_winner else f"{matches_without_free}/{total_needed}"
+            # Calculate pattern-aware progress (not raw song count)
+            pattern_progress = self._calculate_pattern_progress(marked_positions, self.current_pattern)
+
+            progress = "WINNER" if is_winner else f"{pattern_progress}/{total_needed}"
 
             statuses.append({
                 "card_id": card_id,
                 "card_number": card.card_number,
                 "player_name": registration["player_name"],
-                "matches": matches_without_free,
+                "matches": pattern_progress,
                 "total_needed": total_needed,
                 "is_winner": is_winner,
                 "progress": progress,
