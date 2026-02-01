@@ -8,6 +8,12 @@ Transform the existing card generator, verification API, and scanner PWA into a 
 
 None
 
+---
+
+# Milestone 1: Paper Card System (COMPLETE)
+
+Complete DJ system for running music bingo with printed paper cards at venues.
+
 ## Phases
 
 **Phase Numbering:**
@@ -16,15 +22,16 @@ None
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Local Backend Infrastructure** - Run backend on laptop, phone scanner connects via WiFi
-- [ ] **Phase 2: Card Printing System** - 4 cards per page with custom branding for venues
-- [ ] **Phase 3: Manual Playback Mode** - CSV playlist import, song checklist for marking played songs
-- [ ] **Phase 4: Host View** - Laptop interface with playback controls, call board, game management
-- [ ] **Phase 5: Player View** - HDMI output with call board, delayed song reveal, pattern display
-- [ ] **Phase 6: Game Modes & Patterns** - Multiple patterns, pattern selection, lightning rounds
-- [ ] **Phase 7: Prize & Winner Tracking** - Winner log, prize types, multi-winner handling
-- [ ] **Phase 8: Game Prep UI** - Visual game/venue management, CSV upload, card generation from browser
-- [ ] **Phase 9: Testing & Quality** - Unit tests, E2E tests, manual device testing
+- [x] **Phase 1: Local Backend Infrastructure** - Run backend on laptop, phone scanner connects via WiFi
+- [x] **Phase 2: Card Printing System** - 4 cards per page with custom branding for venues
+- [x] **Phase 3: Manual Playback Mode** - CSV playlist import, song checklist for marking played songs
+- [x] **Phase 4: Host View** - Laptop interface with playback controls, call board, game management
+- [x] **Phase 5: Player View** - HDMI output with call board, delayed song reveal, pattern display
+- [x] **Phase 6: Game Modes & Patterns** - Multiple patterns, pattern selection, lightning rounds
+- [x] **Phase 7: Prize & Winner Tracking** - Winner log, prize types, multi-winner handling
+- [x] **Phase 8: Game Prep UI** - Visual game/venue management, CSV upload, card generation from browser
+- [x] **Phase 9: Testing & Quality** - Unit tests, E2E tests, manual device testing
+- [x] **Phase 10: Post-Launch Fixes** - Bug fixes from real-world testing
 
 ## Phase Details
 
@@ -169,28 +176,10 @@ Plans:
 - [x] 10-01: Pattern-aware card progress display
 - [x] 10-02: Player view winner indicator (Announce button triggers TV celebration)
 
-### Phase 11: Prize Tracking
-**Goal**: Track prize assignments and winner history
-**Depends on**: Phase 10
-**Research**: None
-**Plans**: TBD
-
-Features:
-- Wire up "Assign Prize" button in CardStatusPanel
-- Persist prize assignments (winner + prize + timestamp)
-- Winner history/log in Host view
-- Export winner log for record keeping
-- Fix Prep → Host game export (auto-export to games/ folder)
-
-Plans:
-- [ ] 11-01: Prize assignment tracking (backend + frontend)
-- [ ] 11-02: Winner history log in Host view
-- [ ] 11-03: Fix Prep → Host game export (auto-export with correct format)
-
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -204,4 +193,88 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 8. Game Prep UI | 5/5 | Complete | 2026-01-25 |
 | 9. Testing & Quality | 5/5 | Complete | 2026-01-31 |
 | 10. Post-Launch Fixes | 2/2 | Complete | 2026-02-01 |
-| 11. Prize Tracking | 0/3 | Pending | — |
+
+**Milestone 1 Complete: 2026-02-01**
+
+---
+
+# Milestone 2: Data Architecture & Online Mode
+
+Unified data architecture enabling prize persistence, online players, and hybrid paper+phone games.
+
+## Overview
+
+Current architecture has two disconnected storage systems (SQLite for Prep, JSON for runtime). This milestone consolidates to SQLite as single source of truth, enabling:
+- Prize tracking with persistent winner history
+- Server restart resilience (no lost game state)
+- Online mode (players use phones instead of paper cards)
+- Hybrid mode (mix of paper + online cards)
+
+## Phases
+
+- [ ] **Phase 1: SQLite Migration** - Unified data layer, prize tracking, game state persistence
+- [ ] **Phase 2: Online Player Foundation** - Cards as first-class entities, player card assignment
+- [ ] **Phase 3: Online Player UI** - Phone player interface, real-time sync
+- [ ] **Phase 4: Hybrid Mode** - Mixed paper + online games, card type management
+
+## Phase Details
+
+### Phase 1: SQLite Migration
+**Goal**: SQLite as single source of truth with prize tracking and persistent game state
+**Depends on**: Milestone 1 complete
+**Research**: Likely (WebSocket/SSE for real-time sync, migration strategies)
+**Plans**: TBD
+
+Features:
+- `winners` table for prize assignment tracking
+- `game_sessions` and `played_songs` tables for persistent game state
+- Winner history/log in Host view
+- Export winner log for record keeping
+- Remove JSON file dependency (Prep → Host integration fixed)
+- GameState hydrates from DB, persists on change
+- Server restart = no data loss
+
+### Phase 2: Online Player Foundation
+**Goal**: Cards become first-class database entities, foundation for online play
+**Depends on**: Phase 1
+**Research**: Unlikely
+**Plans**: TBD
+
+Features:
+- `cards` table (move from JSON blob to proper entities)
+- `player_cards` table for assignment tracking
+- Card generation writes to DB
+- PDF storage in DB (optional, for reprints)
+
+### Phase 3: Online Player UI
+**Goal**: Players can use phones instead of paper cards
+**Depends on**: Phase 2
+**Research**: Likely (real-time sync at scale, mobile UX patterns)
+**Plans**: TBD
+
+Features:
+- Phone player interface (view card, mark squares, submit bingo)
+- Real-time sync (WebSockets/SSE instead of polling)
+- Player session management
+- Scalable to 50+ concurrent players
+
+### Phase 4: Hybrid Mode
+**Goal**: Support mixed paper + online games at same venue
+**Depends on**: Phase 3
+**Research**: Unlikely
+**Plans**: TBD
+
+Features:
+- Configure paper_card_count vs max_cards per game
+- First N cards printed for tech-challenged players
+- Remaining cards available online
+- Unified winner detection across card types
+
+## Progress
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. SQLite Migration | 0/? | Not Started | — |
+| 2. Online Player Foundation | 0/? | Not Started | — |
+| 3. Online Player UI | 0/? | Not Started | — |
+| 4. Hybrid Mode | 0/? | Not Started | — |

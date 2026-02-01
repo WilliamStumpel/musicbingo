@@ -5,16 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-01-14)
 
 **Core value:** Smooth host experience — the DJ can focus on the crowd and the energy, not on fighting software.
-**Current focus:** Phase 10 — Post-Launch Fixes
+**Current focus:** Milestone 1 Complete — Planning Milestone 2
 
 ## Current Position
 
-Phase: 10 of 11 (Post-Launch Fixes)
-Plan: 2/2 in current phase
-Status: Phase complete
-Last activity: 2026-02-01 — Completed 10-01-PLAN.md (pattern-aware card progress)
+Milestone: 1 of 2 (Paper Card System)
+Phase: 10 of 10 (Post-Launch Fixes)
+Status: **MILESTONE 1 COMPLETE**
+Last activity: 2026-02-01 — Completed Milestone 1, created Milestone 2 roadmap
 
-Progress: ██████████ 97% (Phase 11 pending)
+Progress: ██████████ 100% (Milestone 1)
+
+Next milestone: Data Architecture & Online Mode (not yet started)
 
 ## Pivot Notes
 
@@ -153,17 +155,19 @@ Recent decisions affecting current work:
 2. **Exported JSON missing fields** - CardExporter only saves `game_id` and `cards`, but Host also needs `name` and `playlist`. Workaround: augment JSON with database data.
 3. **Song ID format mismatch** - Playlist uses 12-char hex IDs, but cards use UUID format (MD5 hash). Workaround: convert playlist IDs to UUID format.
 
+*These issues will be resolved in Milestone 2, Phase 1 (SQLite Migration) which removes the JSON file dependency.*
+
 ### Pending Todos
 
-1. **Data redesign for online and hybrid mode** - SQLite as single source of truth, cards as first-class entities, PDF storage in DB, support for paper+online hybrid games. See `.planning/todos/pending/2026-02-01-data-redesign-for-online-hybrid-mode.md`
+None — Data architecture todo has been incorporated into Milestone 2 roadmap.
 
 ### Blockers/Concerns
 
-None - Manual Playback Mode removes all streaming API dependencies.
+None — Milestone 1 complete. Milestone 2 planning can begin when ready.
 
 ## Session Continuity
 
 Last session: 2026-02-01
-Stopped at: Completed 10-01-PLAN.md (pattern-aware card progress)
+Stopped at: Completed Milestone 1, created Milestone 2 roadmap
 Resume file: None
-Next action: Phase 10 complete - ready for Phase 11 planning
+Next action: Milestone 2 planning when ready (/gsd:discuss-milestone or /gsd:discuss-phase)
