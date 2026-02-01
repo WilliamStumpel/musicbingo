@@ -29,7 +29,24 @@ export function CardStatusPanel({ isOpen, onClose, gameId, winners = [], onAssig
   const [cardStatuses, setCardStatuses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [announcedId, setAnnouncedId] = useState(null);
   const pollRef = useRef(null);
+
+  /**
+   * Announce a winner to the PlayerView via localStorage.
+   * PlayerView listens for 'musicbingo_winner_announcement' storage events.
+   */
+  const handleAnnounceWinner = useCallback((winner) => {
+    localStorage.setItem('musicbingo_winner_announcement', JSON.stringify({
+      card_number: winner.card_number,
+      player_name: winner.player_name,
+      pattern: winner.pattern,
+      prize: currentPrize || null
+    }));
+    setAnnouncedId(winner.card_id);
+    // Clear feedback after 2 seconds
+    setTimeout(() => setAnnouncedId(null), 2000);
+  }, [currentPrize]);
 
   // Fetch card statuses from API
   const fetchStatuses = useCallback(async () => {
@@ -205,22 +222,35 @@ export function CardStatusPanel({ isOpen, onClose, gameId, winners = [], onAssig
                   <span className="winner-player">{winner.player_name}</span>
                   <span className="winner-pattern">({formatPattern(winner.pattern)})</span>
                 </div>
-                <div className="winner-prize">
-                  {winner.prize_assigned ? (
-                    <span className="prize-assigned">
-                      <span className="prize-check">&#10003;</span>
-                      {winner.prize_assigned}
-                    </span>
-                  ) : currentPrize ? (
-                    <button
-                      className="prize-assign-btn"
-                      onClick={() => onAssignPrize && onAssignPrize(winner.card_id, currentPrize)}
-                    >
-                      Assign Prize
-                    </button>
-                  ) : (
-                    <span className="prize-pending">Set prize first</span>
-                  )}
+                <div className="winner-actions">
+                  <button
+                    className={`announce-btn ${announcedId === winner.card_id ? 'announce-btn--sent' : ''}`}
+                    onClick={() => handleAnnounceWinner(winner)}
+                    disabled={announcedId === winner.card_id}
+                  >
+                    {announcedId === winner.card_id ? (
+                      <><span className="announce-check">&#10003;</span> Sent!</>
+                    ) : (
+                      'Announce'
+                    )}
+                  </button>
+                  <div className="winner-prize">
+                    {winner.prize_assigned ? (
+                      <span className="prize-assigned">
+                        <span className="prize-check">&#10003;</span>
+                        {winner.prize_assigned}
+                      </span>
+                    ) : currentPrize ? (
+                      <button
+                        className="prize-assign-btn"
+                        onClick={() => onAssignPrize && onAssignPrize(winner.card_id, currentPrize)}
+                      >
+                        Assign Prize
+                      </button>
+                    ) : (
+                      <span className="prize-pending">Set prize first</span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
