@@ -155,7 +155,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+1. **Data redesign for online and hybrid mode** - SQLite as single source of truth, cards as first-class entities, PDF storage in DB, support for paper+online hybrid games. See `.planning/todos/pending/2026-02-01-data-redesign-for-online-hybrid-mode.md`
 
 ### Blockers/Concerns
 
