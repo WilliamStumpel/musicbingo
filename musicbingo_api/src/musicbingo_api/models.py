@@ -365,3 +365,72 @@ class GameState:
         elif pattern_type == PatternType.FRAME:
             return 16  # All edge cells
         return 5  # Default
+
+    def _calculate_pattern_progress(self, marked_positions: set[tuple[int, int]], pattern_type: PatternType) -> int:
+        """Calculate progress toward completing a winning pattern.
+
+        For line-based patterns (row/column/diagonal), returns the best line count.
+        For fixed-position patterns (corners, X, frame, blackout), returns matched cells.
+
+        Args:
+            marked_positions: Set of (row, col) tuples that are marked
+            pattern_type: The winning pattern type
+
+        Returns:
+            Number representing progress toward pattern completion
+        """
+        if pattern_type in (PatternType.FIVE_IN_A_ROW, PatternType.ROW, PatternType.COLUMN, PatternType.DIAGONAL):
+            # Calculate best line progress
+            best_count = 0
+
+            # Check all rows (for ROW or FIVE_IN_A_ROW)
+            if pattern_type in (PatternType.FIVE_IN_A_ROW, PatternType.ROW):
+                for row in range(5):
+                    count = sum(1 for col in range(5) if (row, col) in marked_positions)
+                    best_count = max(best_count, count)
+
+            # Check all columns (for COLUMN or FIVE_IN_A_ROW)
+            if pattern_type in (PatternType.FIVE_IN_A_ROW, PatternType.COLUMN):
+                for col in range(5):
+                    count = sum(1 for row in range(5) if (row, col) in marked_positions)
+                    best_count = max(best_count, count)
+
+            # Check both diagonals (for DIAGONAL or FIVE_IN_A_ROW)
+            if pattern_type in (PatternType.FIVE_IN_A_ROW, PatternType.DIAGONAL):
+                # Main diagonal (0,0) to (4,4)
+                main_diag_count = sum(1 for i in range(5) if (i, i) in marked_positions)
+                best_count = max(best_count, main_diag_count)
+
+                # Anti-diagonal (0,4) to (4,0)
+                anti_diag_count = sum(1 for i in range(5) if (i, 4 - i) in marked_positions)
+                best_count = max(best_count, anti_diag_count)
+
+            return best_count
+
+        elif pattern_type == PatternType.FOUR_CORNERS:
+            # Count marked corners (free space at 2,2 is not a corner)
+            corners = {(0, 0), (0, 4), (4, 0), (4, 4)}
+            return len(corners & marked_positions)
+
+        elif pattern_type == PatternType.X_PATTERN:
+            # Both diagonals (9 unique cells - center is shared)
+            x_positions = {(i, i) for i in range(5)} | {(i, 4 - i) for i in range(5)}
+            return len(x_positions & marked_positions)
+
+        elif pattern_type == PatternType.FRAME:
+            # Edge cells (16 unique cells)
+            frame_positions = set()
+            for i in range(5):
+                frame_positions.add((0, i))  # Top row
+                frame_positions.add((4, i))  # Bottom row
+                frame_positions.add((i, 0))  # Left column
+                frame_positions.add((i, 4))  # Right column
+            return len(frame_positions & marked_positions)
+
+        elif pattern_type == PatternType.FULL_CARD:
+            # All 25 positions except free space (24 total needed)
+            # Count marked positions, but exclude free space from count
+            all_except_free = {(r, c) for r in range(5) for c in range(5) if not (r == 2 and c == 2)}
+            return len(all_except_free & marked_positions)
+
+        return 0  # Unknown pattern
