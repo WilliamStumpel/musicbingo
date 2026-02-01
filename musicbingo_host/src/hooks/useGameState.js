@@ -372,6 +372,14 @@ export function useGameState() {
     loadGames();
   }, [loadGames]);
 
+  // Auto-restore game session from localStorage on mount
+  useEffect(() => {
+    const savedGame = localStorage.getItem('musicbingo_current_game');
+    if (savedGame && !currentGame) {
+      loadGame(savedGame);
+    }
+  }, [loadGame, currentGame]);
+
   // Stats
   const playedCount = playedSongs.size;
   const totalCount = songs.length;
