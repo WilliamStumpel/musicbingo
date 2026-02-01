@@ -168,6 +168,23 @@ Issues to address:
 Plans:
 - [ ] 10-01: Fix Prep → Host game export (auto-export with correct format)
 - [ ] 10-02: Pattern-aware card progress display
+- [ ] 10-03: Player view winner indicator (show when there's a winner on TV display)
+
+### Phase 11: Prize Tracking
+**Goal**: Track prize assignments and winner history
+**Depends on**: Phase 10
+**Research**: None
+**Plans**: TBD
+
+Features:
+- Wire up "Assign Prize" button in CardStatusPanel
+- Persist prize assignments (winner + prize + timestamp)
+- Winner history/log in Host view
+- Export winner log for record keeping
+
+Plans:
+- [ ] 11-01: Prize assignment tracking (backend + frontend)
+- [ ] 11-02: Winner history log in Host view
 
 ## Progress
 
@@ -185,4 +202,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 7. Prize & Winner Tracking | 4/4 | Complete | 2026-01-31 |
 | 8. Game Prep UI | 5/5 | Complete | 2026-01-25 |
 | 9. Testing & Quality | 5/5 | Complete | 2026-01-31 |
-| 10. Post-Launch Fixes | 0/2 | Pending | — |
+| 10. Post-Launch Fixes | 0/3 | Pending | — |
+| 11. Prize Tracking | 0/2 | Pending | — |
