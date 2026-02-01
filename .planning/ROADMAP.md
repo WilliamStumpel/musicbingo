@@ -167,7 +167,7 @@ Issues to address:
 
 Plans:
 - [ ] 10-01: Pattern-aware card progress display
-- [ ] 10-02: Player view winner indicator (Announce button triggers TV celebration)
+- [x] 10-02: Player view winner indicator (Announce button triggers TV celebration)
 
 ### Phase 11: Prize Tracking
 **Goal**: Track prize assignments and winner history
@@ -203,5 +203,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 7. Prize & Winner Tracking | 4/4 | Complete | 2026-01-31 |
 | 8. Game Prep UI | 5/5 | Complete | 2026-01-25 |
 | 9. Testing & Quality | 5/5 | Complete | 2026-01-31 |
-| 10. Post-Launch Fixes | 0/2 | Pending | — |
+| 10. Post-Launch Fixes | 1/2 | In progress | — |
 | 11. Prize Tracking | 0/3 | Pending | — |
