@@ -147,6 +147,28 @@ Plans:
 - [x] 09-04: E2E tests with Playwright
 - [x] 09-05: Manual device testing protocol
 
+### Phase 10: Post-Launch Fixes
+**Goal**: Fix bugs and UX issues discovered during real-world testing
+**Depends on**: Phase 9
+**Research**: None
+**Plans**: TBD
+
+Issues to address:
+
+1. **Prep → Host Integration**
+   - Game JSON not exported to `games/` folder automatically
+   - Exported JSON missing `name` and `playlist` fields
+   - Song ID format mismatch (12-char hex vs UUID)
+
+2. **Card Progress UI**
+   - Progress shows "songs played on card" not "progress toward pattern"
+   - Misleading when card has 5 songs played but not in winning pattern
+   - Fix: Calculate pattern-aware progress (best line for row/col/diag patterns, fixed cell count for corners/X/frame/blackout)
+
+Plans:
+- [ ] 10-01: Fix Prep → Host game export (auto-export with correct format)
+- [ ] 10-02: Pattern-aware card progress display
+
 ## Progress
 
 **Execution Order:**
@@ -163,3 +185,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 7. Prize & Winner Tracking | 4/4 | Complete | 2026-01-31 |
 | 8. Game Prep UI | 5/5 | Complete | 2026-01-25 |
 | 9. Testing & Quality | 5/5 | Complete | 2026-01-31 |
+| 10. Post-Launch Fixes | 0/2 | Pending | — |

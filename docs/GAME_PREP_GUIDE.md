@@ -62,18 +62,20 @@ Each game is one round of bingo with its own playlist and cards.
    - Save
 4. Repeat for each round
 
-## Step 5: Generate Cards
+## Step 5: Generate & Download Cards
 
 For each game:
 
 1. Click **Generate Cards** button
 2. Wait for generation to complete
-3. **Download PDF** - this is your print-ready file
+3. Click **Download PDF**
 
 Each PDF has 4 cards per page with:
 - Unique QR code per card
 - Venue logo
 - Contact info
+
+The game is automatically available in the Host tab after generation.
 
 ## Step 6: Print Cards
 
