@@ -2,21 +2,26 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-14)
+See: .planning/PROJECT.md (updated 2026-02-01)
 
 **Core value:** Smooth host experience — the DJ can focus on the crowd and the energy, not on fighting software.
-**Current focus:** Milestone 1 Complete — Planning Milestone 2
+**Current focus:** v1.0 shipped — Ready for Milestone 2 planning
 
 ## Current Position
 
-Milestone: 1 of 2 (Paper Card System)
-Phase: 10 of 10 (Post-Launch Fixes)
-Status: **MILESTONE 1 COMPLETE**
-Last activity: 2026-02-01 — Completed Milestone 1, created Milestone 2 roadmap
+Milestone: 2 of 2 (Data Architecture & Online Mode)
+Phase: 11 of 14 (SQLite Migration)
+Status: **NOT STARTED**
+Last activity: 2026-02-01 — v1.0 milestone archived
 
-Progress: ██████████ 100% (Milestone 1)
+Progress: ██████████ 100% (Milestone 1) | ░░░░░░░░░░ 0% (Milestone 2)
 
-Next milestone: Data Architecture & Online Mode (not yet started)
+## Shipped
+
+**v1.0 Paper Card System** (2026-02-01)
+- Complete application for running music bingo with printed paper cards
+- 10 phases, 33 plans, 20,442 LOC, 20 days
+- See: .planning/MILESTONES.md
 
 ## Pivot Notes
 
@@ -34,119 +39,27 @@ Apple Developer Program setup blocked progress. User proposed simpler approach:
 - Both host and scanner apps can mark songs
 - Real-time sync via API polling (2 second interval)
 
----
-
-**Spotify → Apple Music (2026-01-14)**
-
-Spotify paused new app registrations, blocking Phase 3 implementation. After researching alternatives:
-- Tidal: 30-second limit for third-party apps
-- Amazon Music: Closed beta
-- Deezer: 30-second limit
-- YouTube Music: No official playback API
-
-**Decision:** Pivot to Apple Music via MusicKit JS (subsequently pivoted to Manual Playback)
-
 ## Performance Metrics
 
-**Velocity:**
-- Total plans completed: 21 (Phases 1-7)
-- Average duration: 7.4 min
-- Total execution time: 155 min
-
-**By Phase:**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 1 | 5/5 | 57 min | 11.4 min |
-| 2 | 3/3 | 26 min | 8.7 min |
-| 3 | 4/4 | 11 min | 2.8 min |
-| 4 | 2/2 | 7 min | 3.5 min |
-| 5 | 4/4 | 11 min | 2.8 min |
-| 6 | 1/1 | 8 min | 8.0 min |
-| 7 | 3/3 | 35 min | 11.7 min |
+**v1.0 Velocity:**
+- Total plans completed: 33
+- Average duration: ~7 min
+- Total execution time: ~4 hours
+- Timeline: 20 days (2026-01-12 → 2026-02-01)
 
 ## Accumulated Context
 
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+Key architectural decisions from v1.0:
 
-- CORS regex for private network IPs (allow_origin_regex pattern)
-- UDP socket to 8.8.8.8 for reliable local IP detection
-- JSON game format matches card generator export structure
-- Games directory at project root for easy access
-- localStorage for server URL persistence in scanner PWA
-- Auto-add http:// protocol for user-entered IP addresses
-- 4-up layout uses 0.6 inch cells (fits 3.5x4.5 inch cards in 2x2 grid)
-- Card limit increased to 1000 (from 200) for large venue support
-- Canvas-based PDF rendering for complex multi-card layouts
-- Word wrap + dynamic font sizing for 4-up cells (min 4pt, max 2 lines each for title/artist)
-- Image conversion to RGB PNG buffer for reliable rendering (supports JPEG, PNG, etc.)
-- **Manual Playback Mode** - DJ uses existing music player, marks songs in app (service-agnostic)
-- **Exportify CSV import** - Standard format for playlist import from Spotify exports
-- **2-second polling** - Simple sync mechanism between host and scanner apps
-- **Song ID generation** - SHA256 hash of lowercase title+artist, truncated to 12 chars
-- **Optimistic updates** - Toggle song played status immediately, rollback on API error
-- **Game API service pattern** - All backend calls go through gameApi.js
-- **30/70 column split** - Call Board 30%, Song Checklist 70% for desktop host view
-- **Amber (#ffc107) for now playing** - Distinct from green (played) with pulsing animation
-- **Combined click action** - Clicking song sets as now playing AND marks played
-- **playedOrder array** - Track play order separate from playedSongs Set for Call Board history
-- **window.confirm for reset** - Simple native dialog for destructive action confirmation
-- **Red danger color for reset** - Using #dc3545 to indicate destructive action
-- **localStorage for cross-window game sharing** - Host stores game filename, player view reads it
-- **Full viewport player layout** - 100vw x 100vh with overflow:hidden for TV display
-- **30-second song timer default** - Amber flash animation when target reached
-- **localStorage for nowPlaying sync** - Host broadcasts nowPlaying to player view via localStorage
-- **4-column responsive grid** - PlayerCallBoard uses 4 columns, responsive down to 2
-- **Max 20 visible played songs** - Prevent grid overflow in player view
-- **localStorage for pattern sync** - Host broadcasts currentPattern to player view
-- **PatternDisplay 5x5 grid** - CSS Grid with green (#1DB954) highlighted cells
-- **Pattern change animation** - Scale 1.1x + glow pulse on change (0.3s ease)
-- **Connection QR code** - Host app displays server URL as QR code for easy scanner connection
-- **Vercel for scanner PWA** - Deployed to https://musicbingo-verify.vercel.app for permanent HTTPS
-- **ngrok for venue API** - HTTPS tunnel works at any venue regardless of IP
-- **ngrok auto-detection** - Host app queries localhost:4040/api/tunnels to find ngrok URL
-- **URL param auto-connect** - Scanner reads ?server= param and connects automatically
-- **100dvh for iOS Safari** - Dynamic viewport height fixes mobile Safari layout issues
-- **One-click venue startup** - ./start-venue.sh starts API + ngrok + host app
-- **Card registration flow** - Show registration modal after closing non-winner result
-- **registered_cards dict** - Store {player_name, registered_at} per card_id on GameState
-- **Proactive winner detection** - Check all registered cards when songs marked played
-- **detected_winners list** - Track winners with card_id, player_name, pattern, detected_at
-- **current_prize persists** - Prize survives round reset, only detected_winners cleared
-- **Toast notification pattern** - newWinners separate from detectedWinners for UI control
-- **10-second auto-dismiss** - Toast notifications dismiss automatically or on click
-- **CardStatusPanel slide-out** - Shows all registered cards with progress, polls every 5s
-- **PrizeInput inline edit** - Click to edit prize in host header, gold accent styling
-- **Prize display alternation** - Show prize in footer when song title is hidden
-- **Winner announcement localStorage** - Cross-window sync via musicbingo_winner_announcement key
-- **8-second announcement auto-dismiss** - Celebration overlay auto-dismisses or tap to close
-- **CSS confetti animation** - 50 pseudo-elements with random delays/colors for performance
-- **VerifyCardResponse player_name** - Backend includes player_name for registered cards
-- **SQLite with Row factory** - Dict-like access for database query results
-- **database.transaction() pattern** - Context manager for atomic operations
-- **Dataclass.from_row() factory** - Standard pattern for query result conversion
-- **Repository pattern** - Separate database logic from route handlers
-- **Logo file naming** - {venue_id}_{original_filename} prevents collisions
-- **Inline form vs modal** - Simpler UX for CRUD operations
-- **prepApi.js service** - Game Prep API calls mirror gameApi.js pattern
-- **VenueNight status badges** - draft=gray, ready=green, completed=blue
-- **VenueNight filter dropdown** - Filter list by venue using query param
-- **Date format** - Display weekday + month/day/year for venue nights
-- **CSV parse on server** - Ensure consistent song ID generation with SHA256 hash
-- **Playlist preview before save** - DJ confirms correct file uploaded
-- **List/detail view pattern** - Toggle views in same component for CRUD UI
-- **MD5 hash for song UUID** - Convert any song_id format to deterministic UUID
-- **Card generation service** - Wrap musicbingo_cards for API use
-- **FileResponse downloads** - Stream files with Content-Disposition headers
-- **qr-scanner mock pattern** - Use function constructor with start/stop/destroy methods for Jest
-- **Config module mock** - Use jest.mock with imported reference for per-test control
-- **Host App setupTests.js** - Jest configuration with @testing-library/jest-dom and localStorage mock
-- **Service test pattern** - Mock global fetch, test success/error paths for all API functions
-- **Account for sorted order** - SongChecklist tests must use Title A-Z default sorting
-- **Card recall separate from reset** - Unregister/clear registrations is distinct from round reset (user requirement)
+- Local-first over cloud — no venue WiFi dependencies
+- Manual playback mode — service-agnostic, no API registrations
+- ngrok for venue HTTPS — iOS camera requires HTTPS
+- localStorage for cross-window sync — simple, reliable
+- SQLite for Prep data — structured storage for venues, nights, games
+- Repository pattern — separate database logic from route handlers
 
 ### Deferred Issues
 
@@ -155,19 +68,19 @@ Recent decisions affecting current work:
 2. **Exported JSON missing fields** - CardExporter only saves `game_id` and `cards`, but Host also needs `name` and `playlist`. Workaround: augment JSON with database data.
 3. **Song ID format mismatch** - Playlist uses 12-char hex IDs, but cards use UUID format (MD5 hash). Workaround: convert playlist IDs to UUID format.
 
-*These issues will be resolved in Milestone 2, Phase 1 (SQLite Migration) which removes the JSON file dependency.*
+*These issues will be resolved in Milestone 2, Phase 11 (SQLite Migration) which removes the JSON file dependency.*
 
 ### Pending Todos
 
-None — Data architecture todo has been incorporated into Milestone 2 roadmap.
+None — Ready for Milestone 2 planning.
 
 ### Blockers/Concerns
 
-None — Milestone 1 complete. Milestone 2 planning can begin when ready.
+None — v1.0 complete. Milestone 2 planning can begin when ready.
 
 ## Session Continuity
 
 Last session: 2026-02-01
-Stopped at: Completed Milestone 1, created Milestone 2 roadmap
+Stopped at: v1.0 milestone archived
 Resume file: None
-Next action: Milestone 2 planning when ready (/gsd:discuss-milestone or /gsd:discuss-phase)
+Next action: Milestone 2 planning when ready (`/gsd:discuss-phase` for Phase 11 or `/gsd:plan-phase 11`)
